@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/flecs-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/glfw3-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/flecs" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/glfw3" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/glm" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/quill" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/quill-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/vma" vcs="Git" />
+  </component>
+</project>
