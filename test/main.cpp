@@ -1,5 +1,5 @@
 #include <GLFW/glfw3.h>
-#include "entropy.h"
+#include "entropy_test.h"
 #include <ecs/components/sprite.h>
 #include <cameras/orthographic_camera.h>
 #include <renderers/vulkan_batch_renderer.h>
@@ -92,7 +92,7 @@ void Test() {
 #if 1
   while (!glfwWindowShouldClose(window)) {
     // Poll window events
-    batch_renderer->Render(640*2, 640*2);
+    batch_renderer->Render(640, 640);
     glfwPollEvents();
   }
 #endif

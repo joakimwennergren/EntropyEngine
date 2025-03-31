@@ -22,12 +22,12 @@ flecs::entity TextureManager::LoadTexture(const std::string &path) {
 
   // Create an ECS entity for the texture
   const auto texture_entity = world->Get()->entity();
-  texture_entity.set<Components::Texture>({next_texture_id_, path, texture});
+  texture_entity.set<Components::Texture>({next_texture_id_++, path, texture});
 
   // Store the entity in the map
   texture_map[path] = texture_entity;
 
-  next_texture_id_++;
+
   return texture_entity;
 }
 

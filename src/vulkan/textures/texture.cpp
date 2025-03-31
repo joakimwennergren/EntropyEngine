@@ -4,6 +4,24 @@
 #include "stb/stb_image.h"
 #include "vulkan/utilities/helpers.h"
 
+#if PLATFORM == IOS
+#include <CoreFoundation/CoreFoundation.h>
+
+static std::string GetProjectBasePath() {
+
+    const CFURLRef resourceURL =
+        CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+    if (char resourcePath[PATH_MAX];CFURLGetFileSystemRepresentation(resourceURL, true, reinterpret_cast<UInt8 *>(resourcePath),
+                                         PATH_MAX)) {
+        if (resourceURL != nullptr) {
+            CFRelease(resourceURL);
+        }
+        return resourcePath;
+                                         }
+    return "";
+}
+#endif
+
 using namespace Entropy::Graphics::Vulkan::Textures;
 
 Texture::Texture(const std::string &path) {
@@ -12,7 +30,7 @@ Texture::Texture(const std::string &path) {
   stbi_set_flip_vertically_on_load(true);
 
   // Load the image pixels
-  stbi_uc *pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels,
+  stbi_uc *pixels = stbi_load((GetProjectBasePath() + "/" + path).c_str(), &texWidth, &texHeight, &texChannels,
                               STBI_rgb_alpha);
 
   const VkDeviceSize imageSize = texWidth * texHeight * 4;
@@ -64,7 +82,7 @@ explicit Texture(const FT_Bitmap &bitmap) {
 void Texture::Create(const int width, const int height) {
 
   // @TODO why is this not the same as in getColorFormat?
-  constexpr VkFormat colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+  constexpr VkFormat colorFormat = VK_FORMAT_B8G8R8A8_UNORM;
 
   CreateImage(width, height, colorFormat, VK_IMAGE_TILING_OPTIMAL,
               VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,

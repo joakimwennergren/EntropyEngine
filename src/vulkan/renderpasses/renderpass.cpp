@@ -1,4 +1,7 @@
 #include "renderpass.h"
+
+#include <iostream>
+
 #include "config.h"
 #include "vulkan/utilities/helpers.h"
 

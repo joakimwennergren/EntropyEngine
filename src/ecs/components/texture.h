@@ -21,12 +21,11 @@
 #ifndef ENTROPY_ECS_COMPONENT_TEXTURE_H
 #define ENTROPY_ECS_COMPONENT_TEXTURE_H
 
-#include <glm/glm.hpp>
 #include "vulkan/textures/texture.h"
 
 namespace Entropy::ECS::Components {
 struct Texture {
-  uint32_t texture_id;
+  int32_t texture_id;
   std::string path;
   std::shared_ptr<Graphics::Vulkan::Textures::Texture> texture;
 };

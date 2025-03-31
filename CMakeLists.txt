@@ -22,12 +22,12 @@ project(Entropy VERSION 1.0.0 LANGUAGES CXX)
 
 # Detect platform
 if (APPLE)
-    set(PLATFORM MACOS)
+    set(ENTROPY_PLATFORM MACOS)
     find_package(Vulkan REQUIRED)
 endif ()
 
 if (IOS)
-    set(PLATFORM IOS)
+    set(ENTROPY_PLATFORM IOS)
     set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
     set(CMAKE_XCODE_SCHEME_ENABLE_GPU_API_VALIDATION FALSE)
     set(CMAKE_XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE DISABLED)
@@ -70,6 +70,7 @@ set(VMA_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
 set(VMA_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(vma)
 
+if (false)
 FetchContent_Declare(glfw3
         GIT_REPOSITORY https://github.com/glfw/glfw.git
         GIT_TAG master
@@ -77,16 +78,27 @@ FetchContent_Declare(glfw3
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(glfw3)
+endif()
 
 # Glob source files
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
+set(ENTROPY_INCLUDE_DIRS
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/metal-cpp
+        PARENT_SCOPE)
+
 # Create the library
-add_executable(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC
         ${SOURCES}
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE
+target_include_directories(${PROJECT_NAME} PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
         ${Vulkan_INCLUDE_DIRS}
 
         ${CMAKE_BINARY_DIR}/glm
@@ -96,10 +108,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_BINARY_DIR}/glfw3/include
 
         ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src # this is the shit
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/metal-cpp
 )
 
-if (PLATFORM STREQUAL "MACOS")
+if (false)
     target_link_libraries(${PROJECT_NAME} PRIVATE
             ${Vulkan_LIBRARIES}
             flecs::flecs_static
@@ -107,20 +120,23 @@ if (PLATFORM STREQUAL "MACOS")
     )
 endif ()
 
-if (PLATFORM STREQUAL "IOS")
-    target_link_libraries(${PROJECT_NAME} PRIVATE
+if (ENTROPY_PLATFORM STREQUAL "IOS")
+    target_link_libraries(${PROJECT_NAME} PUBLIC
             Vulkan::MoltenVK
             flecs::flecs_static
+            GPUOpen::VulkanMemoryAllocator
+            glm::glm
+            quill
     )
 endif ()
 
-file(COPY ${CMAKE_SOURCE_DIR}/shaders/compiled/2d_shader/2d_shader_vert.spv DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/shaders/compiled/2d_shader/2d_shader_frag.spv DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY shaders/compiled/2d_shader/2d_shader_vert.spv DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY shaders/compiled/2d_shader/2d_shader_frag.spv DESTINATION ${CMAKE_BINARY_DIR})
 
 # For testing only..
-file(COPY ${CMAKE_SOURCE_DIR}/test/blank_.png DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/test/test.png DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/test/test2.png DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/blank_.png DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/test.png DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/test2.png DESTINATION ${CMAKE_BINARY_DIR})
 
 # Build config file
-configure_file(config.h.in ${PROJECT_SOURCE_DIR}/include/config.h @ONLY)
+configure_file(config.h.in ${PROJECT_BINARY_DIR} @ONLY)

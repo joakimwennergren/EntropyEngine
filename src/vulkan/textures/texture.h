@@ -21,8 +21,7 @@
 #ifndef ENTROPY_VULKAN_TEXTURE_H
 #define ENTROPY_VULKAN_TEXTURE_H
 
-#include <string>
-#include "vulkan/textures/base_texture.h"
+#include "base_texture.h"
 
 namespace Entropy::Graphics::Vulkan::Textures {
 class Texture final : public BaseTexture {

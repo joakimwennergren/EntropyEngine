@@ -1,4 +1,4 @@
-#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
 #include "vulkan_batch_renderer.h"
 #include "vulkan/data/data.h"
@@ -20,7 +20,7 @@ using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Cameras;
 using namespace Entropy::Graphics::Vulkan::Data;
 
-BatchRenderer::BatchRenderer() {
+BatchRenderer::BatchRenderer(uint32_t width, uint32_t height) {
   const ServiceLocator *sl = ServiceLocator::GetInstance();
   world_ = sl->getService<ECS::IWorld>();
   allocator_ = sl->getService<IAllocator>();
@@ -31,9 +31,8 @@ BatchRenderer::BatchRenderer() {
 
   renderPass_ = std::make_shared<RenderPass>();
 
-  constexpr uint32_t scaling = 2;
-  renderPass_->RecreateDepthBuffer(640 * scaling, 640 * scaling);
-  renderPass_->CreateFrameBuffers(640 * scaling, 640 * scaling);
+  renderPass_->RecreateDepthBuffer(width, height);
+  renderPass_->CreateFrameBuffers(width, height);
 
   synchronizer_ = std::make_unique<Synchronizer>(CONCURRENT_FRAMES_IN_FLIGHT);
   two_d_pipeline_ = std::make_unique<TwoDPipeline>(renderPass_);
@@ -277,7 +276,7 @@ void BatchRenderer::UpdateInstance(const ECS::Components::Sprite &sprite) {
   const auto translate = glm::translate(glm::mat4(1.0f), position);
   const auto scaling = glm::scale(glm::mat4(1.0f), scale);
   const auto rotation =
-      rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+      glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
   void *objectData;
   vmaMapMemory(allocator_->Get(), instanceData_->GetVmaAllocation(),

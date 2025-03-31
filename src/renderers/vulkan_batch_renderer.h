@@ -43,12 +43,12 @@
 namespace Entropy::Vulkan::Renderers {
 class BatchRenderer {
 public:
-  BatchRenderer();
+  BatchRenderer(uint32_t width, uint32_t height);
   void Render(uint32_t width, uint32_t height);
   void Resize(uint32_t width, uint32_t height);
 
 private:
-  VkDescriptorImageInfo imageInfos[TEXTURE_ARRAY_SIZE];
+  VkDescriptorImageInfo imageInfos[TEXTURE_ARRAY_SIZE]{};
 
   uint32_t currentFrame_{};
   uint32_t imageIndex_{};

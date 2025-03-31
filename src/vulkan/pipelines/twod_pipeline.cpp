@@ -1,4 +1,7 @@
 #include "twod_pipeline.h"
+
+#include <iostream>
+
 #include "config.h"
 
 #if PLATFORM == IOS
@@ -6,12 +9,11 @@
 
 static std::string GetProjectBasePath() {
 
-  CFURLRef resourceURL =
+  const CFURLRef resourceURL =
       CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
-  char resourcePath[PATH_MAX];
-  if (CFURLGetFileSystemRepresentation(resourceURL, true, (UInt8 *)resourcePath,
+  if (char resourcePath[PATH_MAX];CFURLGetFileSystemRepresentation(resourceURL, true, reinterpret_cast<UInt8 *>(resourcePath),
                                        PATH_MAX)) {
-    if (resourceURL != NULL) {
+    if (resourceURL != nullptr) {
       CFRelease(resourceURL);
     }
     return resourcePath;
@@ -63,6 +65,8 @@ TwoDPipeline::TwoDPipeline(
 descriptorSetLayouts_.push_back(
     std::make_shared<DescriptorSetLayout>(bindings2, bindingFlags1));
     */
+
+    std::cout << GetProjectBasePath() + "/2d_shader_vert.spv" << std::endl;
 
   #if PLATFORM == IOS
   shader_ = std::make_shared<Shaders::Shader>(GetProjectBasePath() + "/2d_shader_vert.spv",

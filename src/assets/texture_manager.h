@@ -16,7 +16,7 @@ public:
   flecs::entity GetTexture(const std::string &path) override;
 
 private:
-  uint32_t next_texture_id_ = 0;
+  int32_t next_texture_id_ = 0;
   std::unordered_map<std::string, flecs::entity>
     texture_map; // Maps paths to ECS entities
 };

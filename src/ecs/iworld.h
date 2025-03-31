@@ -22,7 +22,6 @@
 #define ENTROPY_ECS_IWORLD_H
 
 #include <flecs.h>
-
 #include "servicelocators/servicelocator.h"
 
 namespace Entropy::ECS {
