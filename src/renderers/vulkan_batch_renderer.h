@@ -54,14 +54,14 @@ private:
   uint32_t imageIndex_{};
   uint32_t objectIndex_{};
 
-  std::vector<std::shared_ptr<Graphics::Vulkan::CommandBuffers::CommandBuffer>> commandBuffers_;
+  std::vector<std::shared_ptr<CommandBuffer>> commandBuffers_;
 
-  std::unique_ptr<Graphics::Vulkan::Buffers::UniformBuffer> UBO_;
-  std::unique_ptr<Graphics::Vulkan::Buffers::StorageBuffer> instanceData_;
+  std::unique_ptr<UniformBuffer> UBO_;
+  std::unique_ptr<StorageBuffer> instanceData_;
 
-  std::shared_ptr<Graphics::Vulkan::Buffers::VertexBuffer<Graphics::Vulkan::Data::TwoDVertex>>
+  std::shared_ptr<VertexBuffer<Graphics::Vulkan::Data::TwoDVertex>>
       vertexDataBuffer_;
-  std::shared_ptr<Graphics::Vulkan::Buffers::IndexBuffer<uint32_t>> indexDataBuffer_;
+  std::shared_ptr<IndexBuffer<uint32_t>> indexDataBuffer_;
   std::vector<Graphics::Vulkan::Data::TwoDVertex> vertices;
   std::vector<uint32_t> indices;
 

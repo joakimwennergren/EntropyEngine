@@ -282,9 +282,9 @@ void BatchRenderer::UpdateInstance(const ECS::Components::Sprite &sprite) {
   vmaMapMemory(allocator_->Get(), instanceData_->GetVmaAllocation(),
                &objectData);
 
-  auto *objectSSBO = static_cast<InstanceData *>(objectData);
-  objectSSBO[objectIndex_].model = (translate * scaling * rotation);
-  objectSSBO[objectIndex_].textureIndex =
+  auto *object = static_cast<InstanceData *>(objectData);
+  object[objectIndex_].model = (translate * scaling * rotation);
+  object[objectIndex_].textureIndex =
       sprite.texture.get<ECS::Components::Texture>()->texture_id;
 
   vmaUnmapMemory(allocator_->Get(), instanceData_->GetVmaAllocation());
