@@ -80,7 +80,7 @@ void Test() {
 
   swapchain->Build(surface, VkExtent2D{640, 640}, nullptr);
 
-  const auto batch_renderer = new BatchRenderer();
+  const auto batch_renderer = new BatchRenderer(640, 640);
   CreateSprite("test2.png", glm::vec3{0, 0, 0.0f});
   CreateSprite("test.png", glm::vec3{500, 500, 0.0f},
                glm::vec3{100, 100, 0.0f});

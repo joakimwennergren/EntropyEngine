@@ -9,7 +9,7 @@
 #define IOS (4)
 #define ANDROID (5)
 
-#define PLATFORM @ENTROPY_PLATFORM@
+#define PLATFORM MACOS
 
 #define USE_VALIDATION_LAYERS 0
 

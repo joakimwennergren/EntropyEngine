@@ -14,5 +14,10 @@
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/quill" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/quill-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/vma" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/test/build/_deps/flecs-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/test/build/_deps/glfw3-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/test/build/_deps/glm-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/test/build/_deps/quill-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/test/build/_deps/vma-src" vcs="Git" />
   </component>
 </project>

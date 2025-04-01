@@ -53,7 +53,7 @@ public:
   void operator=(const ServiceLocator &) = delete;
   static ServiceLocator *GetInstance();
 
-  template <typename T> void registerService(std::shared_ptr<T> service) {
+  template <typename T> void RegisterService(std::shared_ptr<T> service) {
     static_assert(std::is_base_of_v<IService, T>,
                   "T must inherit from IService");
     std::lock_guard lock(mutex);
@@ -65,7 +65,7 @@ public:
     services[typeIndex] = service;
   }
 
-  template <typename T> void unregisterService() {
+  template <typename T> void UnregisterService() {
     std::lock_guard lock(mutex);
     const auto typeIndex = std::type_index(typeid(T));
     if (services.find(typeIndex) == services.end()) {
