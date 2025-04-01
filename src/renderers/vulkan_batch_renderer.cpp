@@ -8,7 +8,6 @@
 #include "ecs/components/texture.h"
 #include "ecs/components/position.h"
 
-
 using namespace Entropy::Vulkan::Renderers;
 using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::Graphics::Vulkan::Devices;
@@ -46,7 +45,7 @@ BatchRenderer::BatchRenderer(uint32_t width, uint32_t height) {
   instanceData_ = std::make_unique<StorageBuffer>(MAX_INSTANCE_COUNT *
                                                   sizeof(InstanceData));
   blankTexture_ =
-      std::make_unique<Graphics::Vulkan::Textures::Texture>("blank_.png");
+      std::make_unique<Graphics::Vulkan::Textures::Texture>(1, 1);
 
   // Update descriptor sets
   for (uint32_t i = 0; i < CONCURRENT_FRAMES_IN_FLIGHT; i++) {
