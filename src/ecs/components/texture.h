@@ -27,6 +27,7 @@ namespace Entropy::ECS::Components {
 struct Texture {
   std::string path;
   int32_t index;
+  bool async;
 };
 } // namespace Entropy::ECS::Components
 

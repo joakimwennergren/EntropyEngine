@@ -1,7 +1,5 @@
-#include <iostream>
 #include <GLFW/glfw3.h>
 #include "entropy_test.h"
-#include <ecs/components/sprite.h>
 #include <cameras/orthographic_camera.h>
 #include <renderers/vulkan_batch_renderer.h>
 
@@ -48,7 +46,7 @@ flecs::entity CreateSprite(const std::string &path,
         .set<Components::Position>({pos})
         .set<Components::Dimension>({dim})
         .set<Components::TwoDQuad>({})
-        .set<Components::Texture>({path, textureId});
+        .set<Components::Texture>({path, textureId, true});
 }
 
 void Test() {

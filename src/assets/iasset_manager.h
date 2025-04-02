@@ -30,7 +30,7 @@ namespace Entropy::Assets {
     ~IAssetManager() override = default;
 
     template <typename T>
-    std::shared_ptr<T> Load(const std::string& path) {
+    int32_t Load(const std::string& path) {
       return LoadImpl<T>(path);
     }
 
@@ -55,7 +55,7 @@ namespace Entropy::Assets {
         }
 
   protected:
-    virtual std::shared_ptr<Graphics::Vulkan::Textures::Texture> LoadTexture(const std::string& path) = 0;
+    virtual int32_t LoadTexture(const std::string& path) = 0;
     virtual int32_t LoadTextureAsync(const std::string& path) = 0;
     virtual std::shared_ptr<Graphics::Vulkan::Textures::Texture> GetTexture(const std::string& path) = 0;
     virtual std::shared_ptr<Graphics::Vulkan::Textures::Texture> GetTextureAsync(const std::string& path) = 0;
@@ -63,7 +63,7 @@ namespace Entropy::Assets {
 
   private:
     template <typename T>
-    std::shared_ptr<T> LoadImpl(const std::string& path);
+    int32_t LoadImpl(const std::string& path);
 
     template <typename T>
     int32_t LoadAsyncImpl(const std::string& path);
@@ -80,7 +80,7 @@ namespace Entropy::Assets {
 
   // Template Specialization in Interface
   template <>
-  inline std::shared_ptr<Graphics::Vulkan::Textures::Texture> IAssetManager::LoadImpl<Graphics::Vulkan::Textures::Texture>(const std::string& path) {
+  inline int32_t IAssetManager::LoadImpl<Graphics::Vulkan::Textures::Texture>(const std::string& path) {
     return LoadTexture(path);
   }
 
