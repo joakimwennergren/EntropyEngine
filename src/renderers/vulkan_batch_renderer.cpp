@@ -1,8 +1,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
+#include <iostream>
 #include "vulkan_batch_renderer.h"
 #include "vulkan/data/data.h"
-#include "assets/itexture_manager.h"
 #include "ecs/components/dimension.h"
 #include "ecs/components/2d_quad.h"
 #include "ecs/components/texture.h"
@@ -16,8 +16,9 @@ using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Graphics::Vulkan::Pipelines;
 using namespace Entropy::Graphics::Vulkan::RenderPasses;
 using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Cameras;
 using namespace Entropy::Graphics::Vulkan::Data;
+using namespace Entropy::Cameras;
+using namespace Entropy::Assets;
 
 BatchRenderer::BatchRenderer(uint32_t width, uint32_t height) {
   const ServiceLocator *sl = ServiceLocator::GetInstance();
@@ -26,7 +27,7 @@ BatchRenderer::BatchRenderer(uint32_t width, uint32_t height) {
   logicalDevice_ = sl->getService<ILogicalDevice>();
   swapChain_ = sl->getService<ISwapChain>();
   cameraManager_ = sl->getService<ICameraManager>();
-  textureManager_ = sl->getService<ITextureManager>();
+  assetManager_ = sl->getService<IAssetManager>();
 
   renderPass_ = std::make_shared<RenderPass>();
 
@@ -145,34 +146,34 @@ void BatchRenderer::Render(const uint32_t width, const uint32_t height) {
   indices.clear();
   vertices.clear();
 
-  // Process sorted sprites
-  world_->Get()->each<ECS::Components::Sprite>(
-      [&](const flecs::entity e, const ECS::Components::Sprite &sprite) {
-        auto spriteVertices =
-            sprite.two_d_quad.get<ECS::Components::TwoDQuad>()->vertices;
-        auto spriteIndices =
-            sprite.two_d_quad.get<ECS::Components::TwoDQuad>()->indices;
+  world_->Get()->each<ECS::Components::TwoDQuad>(
+      [&](const flecs::entity e, const ECS::Components::TwoDQuad& quad) {
 
-        vertices.insert(vertices.end(), spriteVertices.begin(),
-                        spriteVertices.end());
-        indices.insert(indices.end(), spriteIndices.begin(),
-                       spriteIndices.end());
+        vertices.insert(vertices.end(), quad.vertices.begin(),
+                       quad.vertices.end());
+        indices.insert(indices.end(), quad.indices.begin(),
+                      quad.indices.end());
 
-        const auto texture_e = textureManager_->GetTexture(
-            sprite.texture.get<ECS::Components::Texture>()->path);
 
-        imageInfos[objectIndex_].imageLayout =
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        const auto texture = assetManager_->GetAsync<Graphics::Vulkan::Textures::Texture>(
+            e.get_ref<ECS::Components::Texture>()->path);
 
-        imageInfos[objectIndex_].imageView =
-            texture_e.get<ECS::Components::Texture>()
-                ->texture->GetImageView()
-                ->Get();
+          if (texture) {
+              imageInfos[objectIndex_].imageLayout =
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfos[objectIndex_].imageView =
+                texture->GetImageView()->Get();
+                imageInfos[objectIndex_].sampler = texture->GetSampler();
+          } else {
+              imageInfos[objectIndex_].imageLayout =
+              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+              imageInfos[objectIndex_].imageView =
+              blankTexture_->GetImageView()->Get();
+              imageInfos[objectIndex_].sampler = blankTexture_->GetSampler();
+          }
 
-        imageInfos[objectIndex_].sampler =
-            texture_e.get<ECS::Components::Texture>()->texture->GetSampler();
+        UpdateInstance(e);
 
-        UpdateInstance(sprite);
         objectIndex_++;
       });
 
@@ -268,9 +269,9 @@ void BatchRenderer::Render(const uint32_t width, const uint32_t height) {
   currentFrame_ = (currentFrame_ + 1) % CONCURRENT_FRAMES_IN_FLIGHT;
 }
 
-void BatchRenderer::UpdateInstance(const ECS::Components::Sprite &sprite) {
-  const auto position = sprite.position.get<ECS::Components::Position>()->pos;
-  const auto scale = sprite.position.get<ECS::Components::Dimension>()->scale;
+void BatchRenderer::UpdateInstance(const flecs::entity e) {
+  const auto position = e.get_ref<ECS::Components::Position>()->pos;
+  const auto scale = e.get_ref<ECS::Components::Dimension>()->scale;
 
   const auto translate = glm::translate(glm::mat4(1.0f), position);
   const auto scaling = glm::scale(glm::mat4(1.0f), scale);
@@ -283,8 +284,7 @@ void BatchRenderer::UpdateInstance(const ECS::Components::Sprite &sprite) {
 
   auto *object = static_cast<InstanceData *>(objectData);
   object[objectIndex_].model = (translate * scaling * rotation);
-  object[objectIndex_].textureIndex =
-      sprite.texture.get<ECS::Components::Texture>()->texture_id;
+  object[objectIndex_].textureIndex = 0;
 
   vmaUnmapMemory(allocator_->Get(), instanceData_->GetVmaAllocation());
 }

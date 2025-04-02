@@ -32,7 +32,7 @@
 #include "vulkan/synchronization/synchronizer.h"
 #include "ecs/components/sprite.h"
 #include "ecs/iworld.h"
-#include "assets/itexture_manager.h"
+#include "assets/iasset_manager.h"
 #include "vulkan/textures/texture.h"
 #include "vulkan/buffers/uniform_buffer.h"
 #include "vulkan/buffers/storage_buffer.h"
@@ -77,11 +77,11 @@ private:
   std::shared_ptr<Graphics::Vulkan::Devices::ILogicalDevice> logicalDevice_;
   std::shared_ptr<Graphics::Vulkan::SwapChains::ISwapChain> swapChain_;
   std::shared_ptr<Cameras::ICameraManager> cameraManager_;
-  std::shared_ptr<ITextureManager> textureManager_;
+  std::shared_ptr<Assets::IAssetManager> assetManager_;
 
   std::unique_ptr<Graphics::Vulkan::Textures::Texture> blankTexture_;
 
-  void UpdateInstance(const ECS::Components::Sprite &sprite);
+  void UpdateInstance(flecs::entity e);
 };
 } // namespace Entropy::Vulkan::Renderers
 #endif // ENTROPY_VULKAN_BATCH_RENDERER_H

@@ -21,15 +21,18 @@
 #ifndef ENTROPY_ECS_COMPONENT_SPRITE_H
 #define ENTROPY_ECS_COMPONENT_SPRITE_H
 
-#include <flecs.h>
 #include <glm/glm.hpp>
+#include "ecs/components/position.h"
+#include "ecs/components/dimension.h"
+#include "ecs/components/texture.h"
+#include "ecs/components/2d_quad.h"
 
 namespace Entropy::ECS::Components {
 struct Sprite {
-  flecs::entity two_d_quad;
-  flecs::entity texture;
-  flecs::entity position;
-  flecs::entity dimension;
+  TwoDQuad two_d_quad;
+  Texture texture;
+  Position position;
+  Dimension dimension;
   glm::vec4 color;
 };
 } // namespace Entropy::ECS::Components

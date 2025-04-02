@@ -25,9 +25,8 @@
 
 namespace Entropy::ECS::Components {
 struct Texture {
-  int32_t texture_id;
   std::string path;
-  std::shared_ptr<Graphics::Vulkan::Textures::Texture> texture;
+  int32_t index;
 };
 } // namespace Entropy::ECS::Components
 

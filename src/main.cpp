@@ -1,3 +1,4 @@
+#include <iostream>
 #include <GLFW/glfw3.h>
 #include "entropy_test.h"
 #include <ecs/components/sprite.h>
@@ -24,7 +25,7 @@ using namespace Entropy::Graphics::Vulkan::Pipelines;
 using namespace Entropy::Graphics::Vulkan::Synchronization;
 using namespace Entropy::Vulkan::Renderers;
 using namespace Entropy::ECS;
-using namespace Entropy::Assets::Textures;
+using namespace Entropy::Assets;
 using namespace Entropy::Cameras;
 
 void OnFramebufferResize(GLFWwindow *window, const int width,
@@ -37,24 +38,17 @@ void OnFramebufferResize(GLFWwindow *window, const int width,
   }
 }
 
-void CreateSprite(const std::string &path,
+flecs::entity CreateSprite(const std::string &path,
                   const glm::vec3 pos = glm::vec3(0.0f),
                   const glm::vec3 dim = glm::vec3(100.0f)) {
+
   const ServiceLocator *sl = ServiceLocator::GetInstance();
-  const auto texture_e = sl->getService<ITextureManager>()->LoadTexture(path);
-
-  const auto quad_e = sl->getService<IWorld>()->Get()->entity();
-  quad_e.set<Components::TwoDQuad>({});
-
-  const auto pos_e = sl->getService<IWorld>()->Get()->entity();
-  pos_e.set<Components::Position>({pos});
-
-  const auto dimension_e = sl->getService<IWorld>()->Get()->entity();
-  pos_e.set<Components::Dimension>({dim});
-
-  const auto sprite_e = sl->getService<IWorld>()->Get()->entity();
-  sprite_e.set<Components::Sprite>({quad_e, texture_e, pos_e, dimension_e,
-                                    glm::vec4{0.0f, 0.0f, 1.0f, 1.0f}});
+  const auto textureId = sl->getService<IAssetManager>()->LoadAsync<Texture>(path);
+   return sl->getService<IWorld>()->Get()->entity()
+        .set<Components::Position>({pos})
+        .set<Components::Dimension>({dim})
+        .set<Components::TwoDQuad>({})
+        .set<Components::Texture>({path, textureId});
 }
 
 void Test() {
@@ -73,26 +67,26 @@ void Test() {
     return;
   }
 
+    float xscale, yscale;
+    glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &xscale, &yscale);
+
   const auto surface = std::make_shared<Surface>(window);
 
   const ServiceLocator *sl = ServiceLocator::GetInstance();
   const auto swapchain = sl->getService<ISwapChain>();
 
-  swapchain->Build(surface, VkExtent2D{640, 640}, nullptr);
+  swapchain->Build(surface, VkExtent2D{static_cast<uint32_t>(640 * xscale), static_cast<uint32_t>(640 * yscale)}, nullptr);
 
-  const auto batch_renderer = new BatchRenderer(640, 640);
-  CreateSprite("test2.png", glm::vec3{0, 0, 0.0f});
-  CreateSprite("test.png", glm::vec3{500, 500, 0.0f},
+  const auto batch_renderer = new BatchRenderer(static_cast<uint32_t>(640 * xscale), static_cast<uint32_t>(640 * yscale));
+  auto bg = CreateSprite("test.png", glm::vec3{500, 500, 0.0f},
                glm::vec3{100, 100, 0.0f});
-  CreateSprite("test2.png", glm::vec3{500.0f, 100.0f, 0.0f});
 
   glfwSetWindowUserPointer(window, batch_renderer);
   glfwSetFramebufferSizeCallback(window, OnFramebufferResize);
 
 #if 1
   while (!glfwWindowShouldClose(window)) {
-    // Poll window events
-    batch_renderer->Render(640, 640);
+    batch_renderer->Render(static_cast<uint32_t>(640 * xscale), static_cast<uint32_t>(640 * yscale));
     glfwPollEvents();
   }
 #endif
@@ -116,7 +110,7 @@ int main() {
   sl->RegisterService(std::make_shared<PipelineCache>());
   sl->RegisterService(std::make_shared<SwapChain>());
   sl->RegisterService(std::make_shared<World>());
-  sl->RegisterService(std::make_shared<TextureManager>());
+  sl->RegisterService(std::make_shared<AssetManager>());
   sl->RegisterService(std::make_shared<CameraManager>());
 
   /*
@@ -213,7 +207,7 @@ int main() {
 
   // Unregister services
   sl->UnregisterService<ICameraManager>();
-  sl->UnregisterService<ITextureManager>();
+  sl->UnregisterService<IAssetManager>();
   sl->UnregisterService<IWorld>();
   sl->UnregisterService<ISwapChain>();
   sl->UnregisterService<IPipelineCache>();

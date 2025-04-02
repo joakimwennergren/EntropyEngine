@@ -9,8 +9,8 @@
 #include "cameras/icamera_manger.h"
 
 // TextureManager
-#include "assets/itexture_manager.h"
-#include "assets/texture_manager.h"
+#include "assets/iasset_manager.h"
+#include "assets/asset_manager.h"
 
 // ECS
 #include "ecs/components/2d_quad.h"
@@ -49,7 +49,7 @@
 // DescriptorSet
 #include "vulkan/descriptorsets/descriptorset.h"
 
-// DesciptorSetLayout
+// DescriptorSetLayout
 #include "vulkan/descriptorsetlayouts/descriptorset_layout.h"
 
 // DescriptorPools
