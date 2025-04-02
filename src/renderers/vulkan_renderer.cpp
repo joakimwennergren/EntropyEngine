@@ -1,7 +1,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
 #include <iostream>
-#include "vulkan_batch_renderer.h"
+#include "vulkan_renderer.h"
 #include "vulkan/data/data.h"
 #include "ecs/components/dimension.h"
 #include "ecs/components/2d_quad.h"
@@ -20,7 +20,7 @@ using namespace Entropy::Graphics::Vulkan::Data;
 using namespace Entropy::Cameras;
 using namespace Entropy::Assets;
 
-BatchRenderer::BatchRenderer(uint32_t width, uint32_t height) {
+VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
   const ServiceLocator *sl = ServiceLocator::GetInstance();
   world_ = sl->getService<ECS::IWorld>();
   allocator_ = sl->getService<IAllocator>();
@@ -83,14 +83,14 @@ BatchRenderer::BatchRenderer(uint32_t width, uint32_t height) {
   }
 }
 
-void BatchRenderer::Resize(const uint32_t width, const uint32_t height) {
+void VulkanRenderer::Resize(const uint32_t width, const uint32_t height) {
   synchronizer_ = std::make_unique<Synchronizer>(CONCURRENT_FRAMES_IN_FLIGHT);
   swapChain_->RecreateSwapChain(width, height);
   renderPass_->RecreateDepthBuffer(width, height);
   renderPass_->RecreateFrameBuffers(width, height);
 }
 
-void BatchRenderer::Render(const uint32_t width, const uint32_t height) {
+void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
 
   const auto currentFence = synchronizer_->GetFences()[currentFrame_];
 
@@ -269,7 +269,7 @@ void BatchRenderer::Render(const uint32_t width, const uint32_t height) {
   currentFrame_ = (currentFrame_ + 1) % CONCURRENT_FRAMES_IN_FLIGHT;
 }
 
-void BatchRenderer::UpdateInstance(const flecs::entity e) {
+void VulkanRenderer::UpdateInstance(const flecs::entity e) {
   const auto position = e.get_ref<ECS::Components::Position>()->pos;
   const auto scale = e.get_ref<ECS::Components::Dimension>()->scale;
 

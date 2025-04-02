@@ -1,7 +1,7 @@
 #include <GLFW/glfw3.h>
 #include "entropy_test.h"
 #include <cameras/orthographic_camera.h>
-#include <renderers/vulkan_batch_renderer.h>
+#include <renderers/vulkan_renderer.h>
 
 using namespace Entropy::Graphics::Vulkan::Instances;
 using namespace Entropy::Graphics::Vulkan::Devices;
@@ -29,7 +29,7 @@ using namespace Entropy::Cameras;
 void OnFramebufferResize(GLFWwindow *window, const int width,
                          const int height) {
   if (const auto renderer =
-          static_cast<BatchRenderer *>(glfwGetWindowUserPointer(window));
+          static_cast<VulkanRenderer *>(glfwGetWindowUserPointer(window));
       renderer != nullptr) {
     renderer->Resize(width, height);
     renderer->Render(width, height);
@@ -75,7 +75,7 @@ void Test() {
 
   swapchain->Build(surface, VkExtent2D{static_cast<uint32_t>(640 * xscale), static_cast<uint32_t>(640 * yscale)}, nullptr);
 
-  const auto batch_renderer = new BatchRenderer(static_cast<uint32_t>(640 * xscale), static_cast<uint32_t>(640 * yscale));
+  const auto batch_renderer = new VulkanRenderer(static_cast<uint32_t>(640 * xscale), static_cast<uint32_t>(640 * yscale));
   auto bg = CreateSprite("test.png", glm::vec3{500, 500, 0.0f},
                glm::vec3{100, 100, 0.0f});
 

@@ -41,9 +41,9 @@
 #include "config.h"
 
 namespace Entropy::Vulkan::Renderers {
-class BatchRenderer {
+class VulkanRenderer {
 public:
-  BatchRenderer(uint32_t width, uint32_t height);
+  VulkanRenderer(uint32_t width, uint32_t height);
   void Render(uint32_t width, uint32_t height);
   void Resize(uint32_t width, uint32_t height);
 

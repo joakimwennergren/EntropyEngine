@@ -1,5 +1,5 @@
 // Renderers
-#include "renderers/vulkan_batch_renderer.h"
+#include "renderers/vulkan_renderer.h"
 
 // sync
 #include "vulkan/synchronization/synchronizer.h"
