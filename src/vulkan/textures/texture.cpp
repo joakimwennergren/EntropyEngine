@@ -1,7 +1,11 @@
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
+#include <vulkan/vulkan.h>
+#include "stb/stb_image.h"
+#include "stb/stb_image_write.h"
 #include "texture.h"
 #include "vulkan/buffers/staging_buffer.h"
-#include "stb/stb_image.h"
 #include "vulkan/utilities/helpers.h"
 
 #if PLATFORM == IOS
@@ -23,6 +27,38 @@ static std::string GetProjectBasePath() {
 #endif
 
 using namespace Entropy::Graphics::Vulkan::Textures;
+
+// Custom write callback to store PNG data in a stbi_uc* buffer
+void write_callback(void *context, void *data, int size) {
+    // Cast context to a stbi_uc pointer to store data
+    stbi_uc **buffer = (stbi_uc **)context;
+    // Resize the buffer to accommodate the new data
+    *buffer = (stbi_uc *)realloc(*buffer, size);
+    // Copy the new data into the buffer
+    memcpy(*buffer, data, size);
+}
+
+Texture::Texture(uint32_t width, uint32_t height) {
+    // Define the pixel data for the 1x1 white image (RGB)
+    unsigned char image_data[4] = {255, 255, 255, 255}; // RGB for white color
+
+    // Allocate a stbi_uc* buffer to hold the PNG data (initially empty)
+    stbi_uc *pixels= nullptr;
+
+    // Create the PNG in memory (1x1 image, 3 channels, RGB color)
+    stbi_write_png_to_func(write_callback, &pixels, width, height, 4, image_data, 0);
+
+    const VkDeviceSize imageSize = width * height * 4;
+    assert(pixels != nullptr);
+
+    stagingBuffer_ = std::make_unique<StagingBuffer>(
+        imageSize, pixels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+
+    // Create a buffer and free pixels
+    free(pixels);
+
+    Create(width, height);
+}
 
 Texture::Texture(const std::string &path) {
   assert(!path.empty());
@@ -82,7 +118,7 @@ explicit Texture(const FT_Bitmap &bitmap) {
 void Texture::Create(const int width, const int height) {
 
   // @TODO why is this not the same as in getColorFormat?
-  constexpr VkFormat colorFormat = VK_FORMAT_B8G8R8A8_UNORM;
+  constexpr VkFormat colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 
   CreateImage(width, height, colorFormat, VK_IMAGE_TILING_OPTIMAL,
               VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
