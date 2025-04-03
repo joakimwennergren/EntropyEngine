@@ -215,8 +215,8 @@ int main() {
     // Initialize the Mono runtime
     //domain = mono_jit_init("game_domain");
 
-    mono_set_dirs("/opt/homebrew/Cellar/mono/6.14.0/lib", "/opt/homebrew/Cellar/mono/6.14.0/etc");
-    mono_config_parse ("/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config");
+    mono_set_dirs("/usr/lib", "/etc/mono");
+    mono_config_parse ("/etc/mono/config");
     domain = mono_jit_init ("test");
 
     // Load the GameScript assembly

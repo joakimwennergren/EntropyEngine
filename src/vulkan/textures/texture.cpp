@@ -7,6 +7,7 @@
 #include "texture.h"
 #include "vulkan/buffers/staging_buffer.h"
 #include "vulkan/utilities/helpers.h"
+#include "config.h"
 
 #if PLATFORM == IOS
 #include <CoreFoundation/CoreFoundation.h>
@@ -66,7 +67,7 @@ Texture::Texture(const std::string &path) {
   stbi_set_flip_vertically_on_load(true);
 
   // Load the image pixels
-  stbi_uc *pixels = stbi_load((GetProjectBasePath() + "/" + path).c_str(), &texWidth, &texHeight, &texChannels,
+  stbi_uc *pixels = stbi_load((path).c_str(), &texWidth, &texHeight, &texChannels,
                               STBI_rgb_alpha);
 
   const VkDeviceSize imageSize = texWidth * texHeight * 4;

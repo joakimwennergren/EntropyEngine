@@ -59,6 +59,11 @@ private:
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 #endif
 
+#if PLATFORM == LINUX
+  std::vector<const char *> deviceExtensions_ = {
+      VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+#endif
+
 #if PLATFORM == ANDROID
   std::vector<const char *> deviceExtensions_ = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};

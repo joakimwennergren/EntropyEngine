@@ -23,6 +23,7 @@
 
 #include <map>
 #include <mutex>
+#include <memory>
 #include <stdexcept>
 #include <typeindex>
 

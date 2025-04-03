@@ -7,7 +7,7 @@
 #                             | |     __/ |              __/ |
 #                             |_|    |___/              |___/               v 1.0.0
 
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.28.3)
 
 include(FetchContent)
 project(Entropy VERSION 1.0.0 LANGUAGES CXX)
@@ -27,13 +27,13 @@ find_package(Vulkan REQUIRED)
 # Locate the Mono headers
 find_path(MONO_INCLUDE_DIR
         NAMES mono/jit/jit.h
-        PATHS "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0"
+        PATHS "/usr/include/mono-2.0"
 )
 
 # Locate the Mono library
 find_library(MONO_LIBRARY
         NAMES mono-2.0
-        PATHS "/opt/homebrew/Cellar/mono/6.14.0/lib"
+        PATHS "/usr/lib/mono"
 )
 
 FetchContent_Declare(quill
@@ -68,6 +68,7 @@ FetchContent_Declare(glfw3
     GIT_TAG master
 )
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(glfw3)
 

@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/joakim-wennergren/CLionProjects/EntropyEngine/build/_deps/quill-subbuild/CMakeFiles/quill-populate"
+		},
+		{
+			"file" : "/home/joakim-wennergren/CLionProjects/EntropyEngine/build/_deps/quill-subbuild/CMakeFiles/quill-populate.rule"
+		},
+		{
+			"file" : "/home/joakim-wennergren/CLionProjects/EntropyEngine/build/_deps/quill-subbuild/CMakeFiles/quill-populate-complete.rule"
+		},
+		{
+			"file" : "/home/joakim-wennergren/CLionProjects/EntropyEngine/build/_deps/quill-subbuild/quill-populate-prefix/src/quill-populate-stamp/quill-populate-build.rule"
+		},
+		{
+			"file" : "/home/joakim-wennergren/CLionProjects/EntropyEngine/build/_deps/quill-subbuild/quill-populate-prefix/src/quill-populate-stamp/quill-populate-configure.rule"
+		},
+		{
+			"file" : "/home/joakim-wennergren/CLionProjects/EntropyEngine/build/_deps/quill-subbuild/quill-populate-prefix/src/quill-populate-stamp/quill-populate-download.rule"
+		},
+		{
+			"file" : "/home/joakim-wennergren/CLionProjects/EntropyEngine/build/_deps/quill-subbuild/quill-populate-prefix/src/quill-populate-stamp/quill-populate-install.rule"
+		},
+		{
+			"file" : "/home/joakim-wennergren/CLionProjects/EntropyEngine/build/_deps/quill-subbuild/quill-populate-prefix/src/quill-populate-stamp/quill-populate-mkdir.rule"
+		},
+		{
+			"file" : "/home/joakim-wennergren/CLionProjects/EntropyEngine/build/_deps/quill-subbuild/quill-populate-prefix/src/quill-populate-stamp/quill-populate-patch.rule"
+		},
+		{
+			"file" : "/home/joakim-wennergren/CLionProjects/EntropyEngine/build/_deps/quill-subbuild/quill-populate-prefix/src/quill-populate-stamp/quill-populate-test.rule"
+		},
+		{
+			"file" : "/home/joakim-wennergren/CLionProjects/EntropyEngine/build/_deps/quill-subbuild/quill-populate-prefix/src/quill-populate-stamp/quill-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"quill-populate"
+		],
+		"name" : "quill-populate"
+	}
+}
