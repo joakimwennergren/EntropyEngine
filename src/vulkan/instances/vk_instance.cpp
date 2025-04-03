@@ -42,6 +42,11 @@ VulkanInstance::VulkanInstance() {
   createInfo.ppEnabledExtensionNames = extensions.data();
 #endif
 
+#if PLATFORM ==LINUX
+  createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+  createInfo.ppEnabledExtensionNames = extensions.data();
+#endif
+
 #if PLATFORM == ANDROID
   extensions.push_back("VK_KHR_surface");
   extensions.push_back("VK_KHR_android_surface");

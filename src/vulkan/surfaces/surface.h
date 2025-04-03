@@ -28,6 +28,11 @@
 #include <GLFW/glfw3.h>
 #endif
 
+#if PLATFORM == LINUX
+  #include <vulkan/vulkan.hpp>
+  #include <GLFW/glfw3.h>
+#endif
+
 #if PLATFORM == WINDOWS
   #define WIN32_LEAN_AND_MEAN
   #include <windows.h>
@@ -65,6 +70,7 @@ public:
 #if PLATFORM == MACOS || PLATFORM == LINUX || PLATFORM == WINDOWS
   explicit Surface(GLFWwindow *window);
 #endif
+  //Surface(VkSurfaceKHR surface);
 #if PLATFORM == IOS
   explicit Surface(CA::MetalLayer *layer);
 #endif

@@ -7,7 +7,7 @@
 #                             | |     __/ |              __/ |
 #                             |_|    |___/              |___/               v 1.0.0
 
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.28.3)
 
 include(FetchContent)
 project(Entropy VERSION 1.0.0 LANGUAGES CXX)
@@ -21,7 +21,20 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Detect platform
 set(ENTROPY_PLATFORM MACOS)
+
 find_package(Vulkan REQUIRED)
+
+# Locate the Mono headers
+find_path(MONO_INCLUDE_DIR
+        NAMES mono/jit/jit.h
+        PATHS "/usr/include/mono-2.0"
+)
+
+# Locate the Mono library
+find_library(MONO_LIBRARY
+        NAMES mono-2.0
+        PATHS "/usr/lib/mono"
+)
 
 FetchContent_Declare(quill
     GIT_REPOSITORY https://github.com/odygrd/quill.git
@@ -55,6 +68,7 @@ FetchContent_Declare(glfw3
     GIT_TAG master
 )
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(glfw3)
 
@@ -82,7 +96,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-${Vulkan_INCLUDE_DIRS}
+        ${Vulkan_INCLUDE_DIRS}
+        ${MONO_INCLUDE_DIR}
 
 ${CMAKE_BINARY_DIR}/glm
 ${CMAKE_BINARY_DIR}/quill/include
@@ -98,6 +113,7 @@ ${CMAKE_BINARY_DIR}/glfw3/include
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ${Vulkan_LIBRARIES}
+        ${MONO_LIBRARY}
         flecs::flecs_static
         GPUOpen::VulkanMemoryAllocator
         glfw

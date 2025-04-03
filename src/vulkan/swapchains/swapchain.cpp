@@ -1,4 +1,7 @@
 #include "swapchain.h"
+
+#include <iostream>
+
 #include "vulkan/queuefamilies/queuefamily.h"
 #include "vulkan/utilities/helpers.h"
 #include "vulkan/imageviews/imageview.h"
@@ -16,6 +19,7 @@ SwapChain::SwapChain() {
 }
 
 SwapChain::~SwapChain() {
+    std::cout << "Destroying swapchain" << std::endl;
   vkDestroySwapchainKHR(logicalDevice_->Get(), swapChain_, nullptr);
 }
 

@@ -7,6 +7,7 @@
 #include "texture.h"
 #include "vulkan/buffers/staging_buffer.h"
 #include "vulkan/utilities/helpers.h"
+#include "config.h"
 
 #if PLATFORM == IOS
 #include <CoreFoundation/CoreFoundation.h>
@@ -38,9 +39,9 @@ void write_callback(void *context, void *data, int size) {
     memcpy(*buffer, data, size);
 }
 
-Texture::Texture(uint32_t width, uint32_t height) {
-    // Define the pixel data for the 1x1 white image (RGB)
-    unsigned char image_data[4] = {255, 255, 255, 255}; // RGB for white color
+Texture::Texture(const int32_t width, const int32_t height) {
+    // Define the pixel data for the 1x1 transparent image (RGBA)
+     constexpr uint8_t image_data[4] = {255, 255, 255, 0};
 
     // Allocate a stbi_uc* buffer to hold the PNG data (initially empty)
     stbi_uc *pixels= nullptr;
@@ -66,7 +67,7 @@ Texture::Texture(const std::string &path) {
   stbi_set_flip_vertically_on_load(true);
 
   // Load the image pixels
-  stbi_uc *pixels = stbi_load((GetProjectBasePath() + "/" + path).c_str(), &texWidth, &texHeight, &texChannels,
+  stbi_uc *pixels = stbi_load((path).c_str(), &texWidth, &texHeight, &texChannels,
                               STBI_rgb_alpha);
 
   const VkDeviceSize imageSize = texWidth * texHeight * 4;

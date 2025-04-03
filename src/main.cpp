@@ -1,9 +1,11 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include "entropy_test.h"
-#include <ecs/components/sprite.h>
 #include <cameras/orthographic_camera.h>
-#include <renderers/vulkan_batch_renderer.h>
+#include <renderers/vulkan_renderer.h>
+#include <mono/jit/jit.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/mono-config.h>
 
 using namespace Entropy::Graphics::Vulkan::Instances;
 using namespace Entropy::Graphics::Vulkan::Devices;
@@ -31,7 +33,7 @@ using namespace Entropy::Cameras;
 void OnFramebufferResize(GLFWwindow *window, const int width,
                          const int height) {
   if (const auto renderer =
-          static_cast<BatchRenderer *>(glfwGetWindowUserPointer(window));
+          static_cast<VulkanRenderer *>(glfwGetWindowUserPointer(window));
       renderer != nullptr) {
     renderer->Resize(width, height);
     renderer->Render(width, height);
@@ -48,7 +50,7 @@ flecs::entity CreateSprite(const std::string &path,
         .set<Components::Position>({pos})
         .set<Components::Dimension>({dim})
         .set<Components::TwoDQuad>({})
-        .set<Components::Texture>({path, textureId});
+        .set<Components::Texture>({path, textureId, true});
 }
 
 void Test() {
@@ -77,9 +79,9 @@ void Test() {
 
   swapchain->Build(surface, VkExtent2D{static_cast<uint32_t>(640 * xscale), static_cast<uint32_t>(640 * yscale)}, nullptr);
 
-  const auto batch_renderer = new BatchRenderer(static_cast<uint32_t>(640 * xscale), static_cast<uint32_t>(640 * yscale));
+  const auto batch_renderer = new VulkanRenderer(static_cast<uint32_t>(640 * xscale), static_cast<uint32_t>(640 * yscale));
   auto bg = CreateSprite("test.png", glm::vec3{500, 500, 0.0f},
-               glm::vec3{100, 100, 0.0f});
+               glm::vec3{200, 200, 0.0f});
 
   glfwSetWindowUserPointer(window, batch_renderer);
   glfwSetFramebufferSizeCallback(window, OnFramebufferResize);
@@ -94,6 +96,10 @@ void Test() {
   // Cleanup
   glfwTerminate();
 }
+
+MonoDomain *domain;
+MonoAssembly *assembly;
+MonoImage *image;
 
 int main() {
   // Initialize quill, logging library
@@ -203,7 +209,49 @@ int main() {
   const auto camera_manager = sl->getService<ICameraManager>();
   camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
 
+    // Set Mono library directories
+    //mono_set_dirs("path/to/mono/lib", "path/to/mono/etc");
+
+    // Initialize the Mono runtime
+    //domain = mono_jit_init("game_domain");
+
+    mono_set_dirs("/usr/lib", "/etc/mono");
+    mono_config_parse ("/etc/mono/config");
+    domain = mono_jit_init ("test");
+
+    // Load the GameScript assembly
+    assembly = mono_domain_assembly_open(domain, "../GameScript.dll");
+    if (!assembly) {
+        std::cout  << "Failed to load GameScript.dll!" << std::endl;
+    }
+
+    // Get the Mono image from the assembly
+    image = mono_assembly_get_image(assembly);
+
+    // Get the class from the assembly (namespace and class name)
+    MonoClass *klass = mono_class_from_name(image, "", "GameScript");
+    if (!klass) {
+        std::cerr << "Failed to find class GameScript!" << std::endl;
+        //return;
+    }
+
+    // Get the method to invoke (method name and signature)
+    MonoMethod *method = mono_class_get_method_from_name(klass, "Start", 0);  // No parameters
+    if (!method) {
+        std::cerr << "Failed to find method Start!" << std::endl;
+        //return;
+    }
+
+    // Create an instance of the class
+    MonoObject *object = mono_object_new(domain, klass);
+    mono_runtime_object_init(object);
+
+    // Invoke the method on the created object
+    MonoObject *result = mono_runtime_invoke(method, object, nullptr, nullptr);
+
   Test();
+
+    mono_jit_cleanup(domain);
 
   // Unregister services
   sl->UnregisterService<ICameraManager>();
