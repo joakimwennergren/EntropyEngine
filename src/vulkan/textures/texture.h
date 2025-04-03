@@ -26,7 +26,7 @@
 namespace Entropy::Graphics::Vulkan::Textures {
 class Texture final : public BaseTexture {
 public:
-  explicit Texture(uint32_t width, uint32_t height);
+  explicit Texture(int32_t width, int32_t height);
   explicit Texture(const std::string &path);
   // Texture(const FT_Bitmap &bitmap);
   int32_t textureIndex{};

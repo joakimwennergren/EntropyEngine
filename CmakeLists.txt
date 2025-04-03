@@ -21,7 +21,20 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Detect platform
 set(ENTROPY_PLATFORM MACOS)
+
 find_package(Vulkan REQUIRED)
+
+# Locate the Mono headers
+find_path(MONO_INCLUDE_DIR
+        NAMES mono/jit/jit.h
+        PATHS "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0"
+)
+
+# Locate the Mono library
+find_library(MONO_LIBRARY
+        NAMES mono-2.0
+        PATHS "/opt/homebrew/Cellar/mono/6.14.0/lib"
+)
 
 FetchContent_Declare(quill
     GIT_REPOSITORY https://github.com/odygrd/quill.git
@@ -82,7 +95,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-${Vulkan_INCLUDE_DIRS}
+        ${Vulkan_INCLUDE_DIRS}
+        ${MONO_INCLUDE_DIR}
 
 ${CMAKE_BINARY_DIR}/glm
 ${CMAKE_BINARY_DIR}/quill/include
@@ -98,6 +112,7 @@ ${CMAKE_BINARY_DIR}/glfw3/include
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ${Vulkan_LIBRARIES}
+        ${MONO_LIBRARY}
         flecs::flecs_static
         GPUOpen::VulkanMemoryAllocator
         glfw

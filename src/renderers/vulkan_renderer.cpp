@@ -30,7 +30,6 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
   assetManager_ = sl->getService<IAssetManager>();
 
   renderPass_ = std::make_shared<RenderPass>();
-
   renderPass_->RecreateDepthBuffer(width, height);
   renderPass_->CreateFrameBuffers(width, height);
 
@@ -48,8 +47,6 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
   blankTexture_ =
       std::make_unique<Graphics::Vulkan::Textures::Texture>(1, 1);
 
-  // Update descriptor sets
-  for (uint32_t i = 0; i < CONCURRENT_FRAMES_IN_FLIGHT; i++) {
     std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
     VkDescriptorBufferInfo uboInfo{};
@@ -80,7 +77,7 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
 
     vkUpdateDescriptorSets(logicalDevice_->Get(), descriptorWrites.size(),
                            descriptorWrites.data(), 0, nullptr);
-  }
+
 }
 
 void VulkanRenderer::Resize(const uint32_t width, const uint32_t height) {

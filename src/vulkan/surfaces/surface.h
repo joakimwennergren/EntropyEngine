@@ -65,6 +65,7 @@ public:
 #if PLATFORM == MACOS || PLATFORM == LINUX || PLATFORM == WINDOWS
   explicit Surface(GLFWwindow *window);
 #endif
+  //Surface(VkSurfaceKHR surface);
 #if PLATFORM == IOS
   explicit Surface(CA::MetalLayer *layer);
 #endif
