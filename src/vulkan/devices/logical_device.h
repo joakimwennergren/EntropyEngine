@@ -41,30 +41,30 @@ private:
   VkQueue graphicsQueue_ = VK_NULL_HANDLE;
 
 
-#if PLATFORM == MACOS
+#if ENTROPY_PLATFORM == MACOS
   std::vector<const char *> deviceExtensions_ = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
     VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME,
     "VK_KHR_portability_subset"};
 #endif
 
-#if PLATFORM == IOS
+#if ENTROPY_PLATFORM == IOS
   std::vector<const char *> deviceExtensions_ = {VK_KHR_SWAPCHAIN_EXTENSION_NAME,
                                                 "VK_KHR_portability_subset",
                                                 "VK_EXT_metal_objects"};
 #endif
 
-#if PLATFORM == WINDOWS
+#if ENTROPY_PLATFORM == WINDOWS
   std::vector<const char *> deviceExtensions_ = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 #endif
 
-#if PLATFORM == LINUX
+#if ENTROPY_PLATFORM == LINUX
   std::vector<const char *> deviceExtensions_ = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 #endif
 
-#if PLATFORM == ANDROID
+#if ENTROPY_PLATFORM == ANDROID
   std::vector<const char *> deviceExtensions_ = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 #endif

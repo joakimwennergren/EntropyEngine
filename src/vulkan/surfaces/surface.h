@@ -23,35 +23,34 @@
 
 #include "config.h"
 
-#if PLATFORM == MACOS
-#include <vulkan/vulkan.hpp>
-#include <GLFW/glfw3.h>
-#endif
+#if ENTROPY_PLATFORM == MACOS
+    #include <vulkan/vulkan.hpp>
+    #include <GLFW/glfw3.h>
 
-#if PLATFORM == LINUX
-  #include <vulkan/vulkan.hpp>
-  #include <GLFW/glfw3.h>
-#endif
+#elif ENTROPY_PLATFORM == LINUX
+    #include <vulkan/vulkan.hpp>
+    #include <GLFW/glfw3.h>
 
-#if PLATFORM == WINDOWS
-  #define WIN32_LEAN_AND_MEAN
-  #include <windows.h>
-  #include <vulkan/vulkan_win32.h>
-  #include <GLFW/glfw3.h>
-  #define GLFW_EXPOSE_NATIVE_WIN32
-  #include <GLFW/glfw3native.h>
-  #undef max
-#endif
+#elif ENTROPY_PLATFORM == WINDOWS
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+    #define GLFW_EXPOSE_NATIVE_WIN32
+    #include <GLFW/glfw3.h>
+    #include <GLFW/glfw3native.h>
+    #include <vulkan/vulkan_win32.h>
+    #undef max
 
-#if PLATFORM == IOS
-#define VK_USE_PLATFORM_METAL_EXT
-#include <vulkan/vulkan.hpp>
-#include <MetalKit/MetalKit.hpp>
-#endif
+#elif ENTROPY_PLATFORM == IOS
+    #define VK_USE_PLATFORM_METAL_EXT
+    #include <vulkan/vulkan.hpp>
+    #include <MetalKit/MetalKit.hpp>
 
-#if PLATFORM == ANDROID
-#include <vulkan/vulkan.hpp>
-#include <vulkan/vulkan_android.h>
+#elif ENTROPY_PLATFORM == ANDROID
+    #include <vulkan/vulkan.hpp>
+    #include <vulkan/vulkan_android.h>
+
+#else
+    #include <vulkan/vulkan.hpp>
 #endif
 
 #include "vulkan/instances/ivk_instance.h"
@@ -67,12 +66,12 @@ namespace Entropy::Graphics::Vulkan::Surfaces {
  */
 class Surface {
 public:
-#if PLATFORM == MACOS || PLATFORM == LINUX || PLATFORM == WINDOWS
-  explicit Surface(GLFWwindow *window);
-#endif
-  //Surface(VkSurfaceKHR surface);
-#if PLATFORM == IOS
-  explicit Surface(CA::MetalLayer *layer);
+#if ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX || ENTROPY_PLATFORM == WINDOWS
+    explicit Surface(GLFWwindow *window);
+#elif ENTROPY_PLATFORM == IOS
+    explicit Surface(CA::MetalLayer *layer);
+#else
+    explicit Surface(VkSurfaceKHR surface);
 #endif
   ~Surface();
   [[nodiscard]] VkSurfaceKHR Get() const { return surface_; };

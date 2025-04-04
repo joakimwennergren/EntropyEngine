@@ -18,7 +18,7 @@ VulkanInstance::VulkanInstance() {
   createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   createInfo.pApplicationInfo = &appInfo;
 
-#if PLATFORM == MACOS
+#if ENTROPY_PLATFORM == MACOS
   createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
@@ -35,19 +35,19 @@ VulkanInstance::VulkanInstance() {
   }
   extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
-#if PLATFORM == MACOS
+#if ENTROPY_PLATFORM == MACOS
   extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
   extensions.push_back("VK_MVK_macos_surface");
   createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
   createInfo.ppEnabledExtensionNames = extensions.data();
 #endif
 
-#if PLATFORM ==LINUX
+#if ENTROPY_PLATFORM ==LINUX
   createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
   createInfo.ppEnabledExtensionNames = extensions.data();
 #endif
 
-#if PLATFORM == ANDROID
+#if ENTROPY_PLATFORM == ANDROID
   extensions.push_back("VK_KHR_surface");
   extensions.push_back("VK_KHR_android_surface");
   // extensions.push_back("VK_KHR_surface_protected_capabilities");
@@ -55,7 +55,7 @@ VulkanInstance::VulkanInstance() {
   createInfo.ppEnabledExtensionNames = extensions.data();
 #endif
 
-#if PLATFORM == WINDOWS
+#if ENTROPY_PLATFORM == WINDOWS
   createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
   createInfo.ppEnabledExtensionNames = extensions.data();
 #endif

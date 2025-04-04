@@ -27,13 +27,13 @@ find_package(Vulkan REQUIRED)
 # Locate the Mono headers
 find_path(MONO_INCLUDE_DIR
         NAMES mono/jit/jit.h
-        PATHS "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0"
+        PATHS "/usr/include/mono-2.0"
 )
 
 # Locate the Mono library
 find_library(MONO_LIBRARY
         NAMES mono-2.0
-        PATHS "/opt/homebrew/Cellar/mono/6.14.0/lib"
+        PATHS "/usr/lib/mono"
 )
 
 FetchContent_Declare(quill

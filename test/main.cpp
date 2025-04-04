@@ -1,6 +1,6 @@
 #include <iostream>
-#include <GLFW/glfw3.h>
-#include "entropy_test.h"
+#include <../cmake-build-debug/glfw3/include/GLFW/glfw3.h>
+#include "../include/entropy_test.h"
 #include <cameras/orthographic_camera.h>
 #include <renderers/vulkan_renderer.h>
 #include <mono/jit/jit.h>
@@ -80,8 +80,10 @@ void Test() {
   swapchain->Build(surface, VkExtent2D{static_cast<uint32_t>(640 * xscale), static_cast<uint32_t>(640 * yscale)}, nullptr);
 
   const auto batch_renderer = new VulkanRenderer(static_cast<uint32_t>(640 * xscale), static_cast<uint32_t>(640 * yscale));
-  auto bg = CreateSprite("test.png", glm::vec3{500, 500, 0.0f},
+    CreateSprite("test.png", glm::vec3{500, 500, 0.0f},
                glm::vec3{200, 200, 0.0f});
+    CreateSprite("test2.png", glm::vec3{200, 200, 0.0f},
+             glm::vec3{200, 200, 0.0f});
 
   glfwSetWindowUserPointer(window, batch_renderer);
   glfwSetFramebufferSizeCallback(window, OnFramebufferResize);
@@ -214,6 +216,7 @@ int main() {
 
     // Initialize the Mono runtime
     //domain = mono_jit_init("game_domain");
+    /*
 
     mono_set_dirs("/usr/lib", "/etc/mono");
     mono_config_parse ("/etc/mono/config");
@@ -249,9 +252,11 @@ int main() {
     // Invoke the method on the created object
     MonoObject *result = mono_runtime_invoke(method, object, nullptr, nullptr);
 
+    */
+
   Test();
 
-    mono_jit_cleanup(domain);
+    //mono_jit_cleanup(domain);
 
   // Unregister services
   sl->UnregisterService<ICameraManager>();
