@@ -59,6 +59,8 @@
 
 ### Build Status
 
+[![CMake on multiple platforms](https://github.com/joakimwennergren/EntropyEngine/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/joakimwennergren/EntropyEngine/actions/workflows/cmake-multi-platform.yml)
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
