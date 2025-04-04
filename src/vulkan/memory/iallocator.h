@@ -21,17 +21,6 @@
 #ifndef ENTROPY_VULKAN_IALLOCATOR_H
 #define ENTROPY_VULKAN_IALLOCATOR_H
 
-/*
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnullability-extension"
-#pragma clang diagnostic ignored "-Wnullability-completeness"
-#pragma clang diagnostic ignored "-Wmissing-field-initializers"
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wunused-variable"
-#pragma clang diagnostic ignored "-Wunused-function"
-#pragma clang diagnostic pop
-*/
-
 #include <vk_mem_alloc.h>
 #include "servicelocators/servicelocator.h"
 

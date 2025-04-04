@@ -19,8 +19,7 @@ SwapChain::SwapChain() {
 }
 
 SwapChain::~SwapChain() {
-    std::cout << "Destroying swapchain" << std::endl;
-  vkDestroySwapchainKHR(logicalDevice_->Get(), swapChain_, nullptr);
+    vkDestroySwapchainKHR(logicalDevice_->Get(), swapChain_, nullptr);
 }
 
 void SwapChain::Build(const std::shared_ptr<Surfaces::Surface> surface,

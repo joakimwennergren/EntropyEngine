@@ -6,9 +6,6 @@
 #define ENTROPY_VERSION_MINOR 0
 #define ENTROPY_VERSION_PATCH 0
 
-// Combined version as a string
-#define ENTROPY_VERSION_STRING 1.0.0
-
 // Combined version as a single integer (e.g., 10003)
 #define ENTROPY_VERSION_NUMBER ((PROJECT_VERSION_MAJOR * 10000) + (PROJECT_VERSION_MINOR * 100) + PROJECT_VERSION_PATCH)
 

@@ -15,6 +15,7 @@ project(Entropy VERSION 1.0.0 LANGUAGES CXX)
 
 # Define an option to choose between executable or library
 option(BUILD_ENTROPY_AS_EXECUTABLE "Build Entropy as executable" ON)
+option(ENTROPY_LIBRARY_TYPE SHARED)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -23,7 +24,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(ENTROPY_VERSION_MAJOR 1)
 set(ENTROPY_VERSION_MINOR 0)
 set(ENTROPY_VERSION_PATCH 0)
-set(ENTROPY_VERSION_STRING "1.0.0")
 
 if(IOS)
     if(${CMAKE_OSX_SYSROOT} MATCHES "iphonesimulator")
@@ -148,28 +148,29 @@ endif()
 if(BUILD_ENTROPY_AS_EXECUTABLE)
     add_executable(${PROJECT_NAME} ${SOURCES} ${PROJECT_SOURCE_DIR}/test/main.cpp)
 else()
-    add_library(${PROJECT_NAME} STATIC ${SOURCES})
+    add_library(${PROJECT_NAME} ${ENTROPY_LIBRARY_TYPE} ${SOURCES})
 endif()
 
-target_include_directories(${PROJECT_NAME} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+target_include_directories(${PROJECT_NAME} INTERFACE
+        ${vma_SOURCE_DIR}/include
+        ${quill_SOURCE_DIR}/include
+        ${glfw3_SOURCE_DIR}/include
+        ${flecs_SOURCE_DIR}/include
+        ${glm_SOURCE_DIR}
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${MONO_INCLUDE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${Vulkan_INCLUDE_DIRS}
-        ${MONO_INCLUDE_DIR}
-
-${CMAKE_BINARY_DIR}/glm
-${CMAKE_BINARY_DIR}/quill/include
-${CMAKE_BINARY_DIR}/flecs/include
-${CMAKE_BINARY_DIR}/vma/include
-${CMAKE_BINARY_DIR}/glfw3/include
-
-        ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/src # this is the shit
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/metal-cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        #${CMAKE_CURRENT_SOURCE_DIR}/include/metal-cpp
+        # (metal-cpp) See if application needs this exposed or if it can be
+        # wrapped in a entrypoint..
 )
-
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ${Vulkan_LIBRARIES}
@@ -198,7 +199,6 @@ file(COPY shaders/compiled/2d_shader/2d_shader_vert.spv DESTINATION ${CMAKE_BINA
 file(COPY shaders/compiled/2d_shader/2d_shader_frag.spv DESTINATION ${CMAKE_BINARY_DIR})
 
 # For testing only..
-file(COPY test/blank_.png DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY test/test.png DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY test/test2.png DESTINATION ${CMAKE_BINARY_DIR})
 

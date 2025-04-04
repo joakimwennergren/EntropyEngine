@@ -1,7 +1,65 @@
 #include <gtest/gtest.h>
 
-#include "vulkan/descriptorpools/idescriptorpool.h"
+// Renderers
+#include "renderers/vulkan_renderer.h"
+
+// sync
+#include "vulkan/synchronization/synchronizer.h"
+
+// CameraManager
+#include "cameras/camera_manager.h"
+#include "cameras/icamera_manger.h"
+
+// TextureManager
+#include "assets/iasset_manager.h"
+#include "assets/asset_manager.h"
+
+// ECS
+#include "ecs/components/2d_quad.h"
+#include "ecs/components/dimension.h"
+#include "ecs/components/position.h"
+#include "ecs/components/sprite.h"
+#include "ecs/components/texture.h"
+#include "ecs/iworld.h"
+#include "ecs/world.h"
+
+// Pipelines
+#include "vulkan/pipelines/twod_pipeline.h"
+
+// RenderPass
+#include "vulkan/renderpasses/renderpass.h"
+
+// SwapChain
+#include "vulkan/swapchains/iswapchain.h"
+#include "vulkan/swapchains/swapchain.h"
+
+// Surfaces
+#include "vulkan/surfaces/surface.h"
+
+// Textures
+#include "vulkan/textures/depthbuffer_texture.h"
+#include "vulkan/textures/swapchain_texture.h"
+#include "vulkan/textures/texture.h"
+
+// Shader
+#include "vulkan/shaders/shader.h"
+
+// PipelineCache
+#include "vulkan/pipelinecaches/ipipeline_cache.h"
+#include "vulkan/pipelinecaches/pipeline_cache.h"
+
+// DescriptorSet
+#include "vulkan/descriptorsets/descriptorset.h"
+
+// DescriptorSetLayout
+#include "vulkan/descriptorsetlayouts/descriptorset_layout.h"
+
+// DescriptorPools
 #include "vulkan/descriptorpools/descriptorpool.h"
+#include "vulkan/descriptorpools/idescriptorpool.h"
+
+// CommandBuffer
+#include "vulkan/commandbuffers/commandbuffer.h"
 
 // CommandPool
 #include "vulkan/commandpools/commandpool.h"
@@ -34,6 +92,7 @@
 
 #include "config.h"
 
+
 using namespace Entropy::Graphics::Vulkan;
 
 class Dut : public ::testing::Test {
@@ -47,10 +106,14 @@ protected:
         sl->RegisterService(std::make_shared<::Memory::Allocator>());
         sl->RegisterService(std::make_shared<::CommandPools::CommandPool>());
         sl->RegisterService(std::make_shared<::DescriptorPools::DescriptorPool>());
+        sl->RegisterService(std::make_shared<::Caches::PipelineCache>());
+        sl->RegisterService(std::make_shared<::SwapChains::SwapChain>());
     }
 
     void TearDown() override {
         ServiceLocator *sl = ServiceLocator::GetInstance();
+        sl->UnregisterService<::SwapChains::ISwapChain>();
+        sl->UnregisterService<::Caches::IPipelineCache>();
         sl->UnregisterService<::DescriptorPools::IDescriptorPool>();
         sl->UnregisterService<::CommandPools::ICommandPool>();
         sl->UnregisterService<::Memory::IAllocator>();
@@ -88,4 +151,131 @@ TEST_F(Dut, CreateCommandPool) {
 TEST_F(Dut, CreateDescriptorPool) {
     auto descriptor_pool = ::DescriptorPools::DescriptorPool();
     ASSERT_TRUE(descriptor_pool.Get() != nullptr);
+}
+
+TEST_F(Dut, CreatePipelineCache) {
+    auto pipeline_cache = ::Caches::PipelineCache();
+    ASSERT_TRUE(pipeline_cache.Get() != nullptr);
+}
+
+TEST_F(Dut, CreateIndexBuffer) {
+    const std::vector<uint32_t> data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    auto index_buffer = IndexBuffer(data);
+    ASSERT_TRUE(index_buffer.GetVulkanBuffer() != nullptr);
+}
+
+TEST_F(Dut, CreateStagingBuffer) {
+    const uint8_t uint8_data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    auto staging_buffer = StagingBuffer(sizeof(uint8_data), uint8_data,
+                                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    ASSERT_TRUE(staging_buffer.GetVulkanBuffer() != nullptr);
+}
+
+TEST_F(Dut, CreateVertexBuffer) {
+    const std::vector<Data::ThreeDAnimVertex> vertices = {{{-1.0f, -1.0f, 0.0f},
+                                                     {1.0f, 1.0f, 1.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f},
+                                                     {0.0f, 0.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f}},
+                                                    {{-1.0f, -1.0f, 0.0f},
+                                                     {1.0f, 1.0f, 1.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f},
+                                                     {0.0f, 0.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f}},
+                                                    {{-1.0f, -1.0f, 0.0f},
+                                                     {1.0f, 1.0f, 1.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f},
+                                                     {0.0f, 0.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f}},
+                                                    {{-1.0f, -1.0f, 0.0f},
+                                                     {1.0f, 1.0f, 1.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f},
+                                                     {0.0f, 0.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f},
+                                                     {1.0f, 0.0f, 0.0f, 1.0f}}};
+    auto vertex_buffer = VertexBuffer(vertices);
+    ASSERT_TRUE(vertex_buffer.GetVulkanBuffer() != nullptr);
+}
+
+TEST_F(Dut, CreateStorageBuffer) {
+    auto storage_buffer = StorageBuffer(100);
+    ASSERT_TRUE(storage_buffer.GetVulkanBuffer() != nullptr);
+}
+
+TEST_F(Dut, CreateUniformBuffer) {
+    auto uniform_buffer = UniformBuffer(100);
+    ASSERT_TRUE(uniform_buffer.GetVulkanBuffer() != nullptr);
+}
+
+TEST_F(Dut, CreateCommandBuffer) {
+    auto command_buf = CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    ASSERT_TRUE(command_buf.Get() != nullptr);
+}
+
+TEST_F(Dut, CreateMaxImageSamplersDescriptorSets) {
+    VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
+    instanceLayoutBinding.binding = 0;
+    instanceLayoutBinding.descriptorType =
+        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    instanceLayoutBinding.descriptorCount = 1;
+    instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    instanceLayoutBinding.pImmutableSamplers = nullptr;
+    const std::vector bindings = {instanceLayoutBinding};
+    const std::vector<VkDescriptorBindingFlags> bindingFlags = {};
+
+    auto descriptor_set_layout =
+        std::make_shared<DescriptorSetLayout>(bindings, bindingFlags);
+
+    std::vector<std::shared_ptr<DescriptorSet>> descriptor_sets;
+    for (uint32_t i = 0; i < MAX_DESCRIPTOR_SETS; i++) {
+        descriptor_sets.push_back(
+            std::make_shared<DescriptorSet>(descriptor_set_layout));
+    }
+    ASSERT_TRUE(descriptor_sets.size() == MAX_DESCRIPTOR_SETS);
+}
+
+TEST_F(Dut, CreateShader) {
+    auto shader = Shaders::Shader("2d_shader_vert.spv", "2d_shader_frag.spv");
+    ASSERT_TRUE(shader.GetVertShaderModule() != nullptr);
+}
+
+TEST_F(Dut, CreateTexture) {
+    auto texture = Textures::Texture("test.png");
+    ASSERT_TRUE(texture.GetImageView() != nullptr);
+}
+
+TEST_F(Dut, CreateBlankTexture) {
+    auto texture = Textures::Texture(1,1);
+    ASSERT_TRUE(texture.GetImageView() != nullptr);
+}
+
+TEST_F(Dut, CreateDepthBufferTexture) {
+    auto depth_texture = Textures::DepthBufferTexture(640, 640);
+    ASSERT_TRUE(depth_texture.GetImageView() != nullptr);
+}
+
+TEST_F(Dut, CreateSwapChainTexture) {
+    auto swapchain_texture = Textures::SwapChainTexture(640, 640);
+    ASSERT_TRUE(swapchain_texture.GetImageView() != nullptr);
+}
+
+TEST_F(Dut, CreateRenderPass) {
+    auto render_pass = RenderPasses::RenderPass();
+    render_pass.RecreateDepthBuffer(640, 640);
+    render_pass.CreateFrameBuffers(640, 640);
+    ASSERT_TRUE(render_pass.Get() != nullptr);
+}
+
+TEST_F(Dut, CreateSynchronizer) {
+    auto sync = Synchronization::Synchronizer(3);
+    ASSERT_TRUE(sync.GetImageSemaphores().size() == 3);
+}
+
+TEST_F(Dut, CreateTwoDPipeline) {
+    auto render_pass = std::make_shared<RenderPasses::RenderPass>();
+    auto two_d_pipeline = Pipelines::TwoDPipeline(render_pass);
+    ASSERT_TRUE(two_d_pipeline.GetPipeline() != nullptr);
 }
