@@ -34,7 +34,7 @@ Surface::Surface(CA::MetalLayer *layer) {
     VK_CHECK(vkCreateMetalSurfaceEXT(instance_->Get(), &createInfo, nullptr, &surface_));
 }
 #else
-Surface::Surface(const VkSurfaceKHR surface) {
+Surface::Surface(VkSurfaceKHR surface) {
     const ServiceLocator *sl = ServiceLocator::GetInstance();
     instance_ = sl->getService<IVulkanInstance>();
     surface_ = surface;
