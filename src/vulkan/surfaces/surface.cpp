@@ -10,15 +10,13 @@
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::Instances;
 
-#if ENTROPY_PLATFORM == MACOS || PLATFORM == LINUX
-
+#if ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
 Surface::Surface(GLFWwindow *window) {
   const ServiceLocator *sl = ServiceLocator::GetInstance();
   instance_ = sl->getService<IVulkanInstance>();
   VK_CHECK(
       glfwCreateWindowSurface(instance_->Get(), window, nullptr, &surface_));
 }
-
 #elif ENTROPY_PLATFORM == IOS
 Surface::Surface(CA::MetalLayer *layer) {
 
@@ -34,7 +32,7 @@ Surface::Surface(CA::MetalLayer *layer) {
     VK_CHECK(vkCreateMetalSurfaceEXT(instance_->Get(), &createInfo, nullptr, &surface_));
 }
 #else
-Surface::Surface(const VkSurfaceKHR surface) {
+Surface::Surface(VkSurfaceKHR surface) {
     const ServiceLocator *sl = ServiceLocator::GetInstance();
     instance_ = sl->getService<IVulkanInstance>();
     surface_ = surface;
