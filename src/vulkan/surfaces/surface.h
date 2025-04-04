@@ -66,11 +66,14 @@ namespace Entropy::Graphics::Vulkan::Surfaces {
  */
 class Surface {
 public:
-    explicit Surface(VkSurfaceKHR surface);
-#if ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX || ENTROPY_PLATFORM == WINDOWS
+#if ENTROPY_PLATFORM == MACOS
+    explicit Surface(GLFWwindow *window);
+#elif ENTROPY_PLATFORM == LINUX
     explicit Surface(GLFWwindow *window);
 #elif ENTROPY_PLATFORM == IOS
     explicit Surface(CA::MetalLayer *layer);
+#else
+    explicit Surface(VkSurfaceKHR surface);
 #endif
   ~Surface();
   [[nodiscard]] VkSurfaceKHR Get() const { return surface_; };

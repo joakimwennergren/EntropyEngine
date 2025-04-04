@@ -64,6 +64,7 @@ elseif(APPLE)
         message(FATAL_ERROR "-- MacOS undefined build")
     endif()
 elseif(UNIX AND NOT APPLE)
+    message("-- Linux Build")
     find_package(Vulkan REQUIRED)
     FetchContent_Declare(glfw3
             GIT_REPOSITORY https://github.com/glfw/glfw.git
