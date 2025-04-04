@@ -195,6 +195,18 @@ MonoDomain *domain;
 MonoAssembly *assembly;
 MonoImage *image;
 
+extern "C" Texture* Texture_Create(MonoString* path) {
+    // Your texture creation logic
+    std::cout << "Texture created with path: " << mono_string_to_utf8(path) << std::endl;
+    return new Texture(mono_string_to_utf8(path));
+}
+
+extern "C" void Texture_Destroy(const Texture* tex) {
+    // Your texture destruction logic
+    delete tex;
+    std::cout << "Texture destroyed." << std::endl;
+}
+
 int main() {
 
       InitializeQuill();
@@ -221,8 +233,8 @@ int main() {
     domain = mono_jit_init ("test");
 
     // Bind the Texture class to C#
-    //mono_add_internal_call("Entropy.Texture::Internal_Create", (void*)Entropy::Graphics::Vulkan::Textures::Texture_Create);
-    //mono_add_internal_call("Entropy.Texture::Internal_Destroy", (void*)Entropy::Graphics::Vulkan::Textures::Texture_Destroy);
+    mono_add_internal_call("Entropy.Texture::Internal_Create", (void*)Texture_Create);
+    mono_add_internal_call("Entropy.Texture::Internal_Destroy", (void*)Texture_Destroy);
 
     // Load the GameScript assembly
     assembly = mono_domain_assembly_open(domain, "GameScripts.dll");
@@ -243,7 +255,7 @@ int main() {
     if (start) mono_runtime_invoke(start, obj, nullptr, nullptr);
     if (update) mono_runtime_invoke(update, obj, nullptr, nullptr);
 
-  //Test();
+  Test();
 
   mono_jit_cleanup(domain);
 

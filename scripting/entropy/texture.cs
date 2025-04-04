@@ -1,30 +1,31 @@
 using System;
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
-class Texture
+namespace Entropy
 {
-
-    // Declare the external C++ functions
-    [DllImport("libentropy", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr MyClass_create();
-
-    [DllImport("libentropy", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void MyClass_sayHello(IntPtr obj);
-
-    [DllImport("libentropy", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void MyClass_destroy(IntPtr obj);
-
-
-    public Texture(string path)
+    class Texture
     {
-        // Call the internal method to create the texture
-        //Internal_Create(path);
-        MyClass_create();
-    }
-    
-    ~Texture()
-    {
-        // Call the internal method to destroy the texture
-        //Internal_Destroy();
+
+        private IntPtr nativePtr;
+
+        // The method that will be called from native code
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public static extern IntPtr Internal_Create(string path);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public static extern void Internal_Destroy(IntPtr ptr);
+
+        public Texture(string path)
+        {
+            // Call the internal method to create the texture
+            nativePtr = Internal_Create(path);
+            //MyClass_create();
+        }
+
+        ~Texture()
+        {
+            // Call the internal method to destroy the texture
+            Internal_Destroy(nativePtr);
+        }
     }
 }

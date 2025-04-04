@@ -35,12 +35,6 @@ private:
   void Create(int width, int height);
   void CreateTextureSampler();
 };
-
-extern "C" {
-  Texture* Texture_Create(char * path);
-  void Texture_Destroy(Texture* tex);     
-}
-
 } // namespace Entropy::Graphics::Vulkan::Textures
 
 #endif // ENTROPY_VULKAN_TEXTURE_H

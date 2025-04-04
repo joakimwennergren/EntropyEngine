@@ -3,7 +3,7 @@ using System;
 
 public class EntityScript : EntropyScript {
     public override void Start() {
-         Texture texture = new Texture("testhahah.png");
+         var texture = new Texture("test.png");
          Console.WriteLine("Hello World2!");
     }
 

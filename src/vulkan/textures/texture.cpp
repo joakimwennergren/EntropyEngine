@@ -167,17 +167,5 @@ namespace Entropy::Graphics::Vulkan::Textures
     VK_CHECK(vkCreateSampler(logicalDevice_->Get(), &samplerInfo, nullptr,
                             &textureSampler_));
     }
-
-    Texture* Texture_Create(char * path) {
-        std::cout << "Creating texture from path: " << path << std::endl;
-        return new Texture("test.png");
-    }
-
-    void Texture_Destroy(Texture* tex) {
-        std::cout << "Destroying texture" << std::endl;
-        if (tex) {
-            delete tex;
-        }       
-    }
 }
 

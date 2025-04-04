@@ -21,10 +21,4 @@
 #ifndef ENTROPY_SCRIPTING_SCRIPTING_H
 #define ENTROPY_SCRIPTING_SCRIPTING_H
 
-#ifdef _WIN32
-    #define EXPORT __declspec(dllexport)
-#else
-    #define EXPORT
-#endif
-
 #endif // ENTROPY_SCRIPTING_SCRIPTING_H

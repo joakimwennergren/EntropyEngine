@@ -14,7 +14,7 @@ include(cmake/entropy.cmake)
 project(Entropy VERSION 1.0.0 LANGUAGES CXX)
 
 # Define an option to choose between executable or library
-option(BUILD_ENTROPY_AS_EXECUTABLE "Build Entropy as executable" OFF)
+option(BUILD_ENTROPY_AS_EXECUTABLE "Build Entropy as executable" ON)
 option(ENTROPY_LIBRARY_TYPE SHARED)
 
 set(CMAKE_CXX_STANDARD 17)
