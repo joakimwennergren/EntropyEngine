@@ -69,7 +69,7 @@ void SwapChain::Build(const std::shared_ptr<Surfaces::Surface> surface,
   }
   createInfo.preTransform = capabilities.currentTransform;
 
-#if PLATFORM == WINDOWS
+#if ENTROPY_PLATFORM == WINDOWS
   createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 #else
   createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;

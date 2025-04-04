@@ -269,6 +269,7 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
 void VulkanRenderer::UpdateInstance(const flecs::entity e) {
   const auto position = e.get_ref<ECS::Components::Position>()->pos;
   const auto scale = e.get_ref<ECS::Components::Dimension>()->scale;
+    const auto textureIndex = e.get_ref<ECS::Components::Texture>()->index;
 
   const auto translate = glm::translate(glm::mat4(1.0f), position);
   const auto scaling = glm::scale(glm::mat4(1.0f), scale);
@@ -281,7 +282,7 @@ void VulkanRenderer::UpdateInstance(const flecs::entity e) {
 
   auto *object = static_cast<InstanceData *>(objectData);
   object[objectIndex_].model = (translate * scaling * rotation);
-  object[objectIndex_].textureIndex = 0;
+  object[objectIndex_].textureIndex = textureIndex;
 
   vmaUnmapMemory(allocator_->Get(), instanceData_->GetVmaAllocation());
 }

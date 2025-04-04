@@ -1,5 +1,7 @@
 #include "asset_manager.h"
 
+#include <iostream>
+
 using namespace Entropy::Assets;
 using namespace Entropy::Graphics::Vulkan::Textures;
 
@@ -34,8 +36,7 @@ int32_t AssetManager::LoadTextureAsync(const std::string& path) {
     // Store the shared_future
     textureFutures_[path] = std::move(future);
     textureIndex_++;
-
-    return -1;
+    return textureIndex_;
 }
 
 std::shared_ptr<Texture> AssetManager::GetTextureAsync(const std::string& path) {

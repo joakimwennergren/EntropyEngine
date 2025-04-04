@@ -10,6 +10,7 @@
 cmake_minimum_required(VERSION 3.28.3)
 
 include(FetchContent)
+include(cmake/entropy.cmake)
 project(Entropy VERSION 1.0.0 LANGUAGES CXX)
 
 # Define an option to choose between executable or library
@@ -19,21 +20,88 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Detect platform
-set(ENTROPY_PLATFORM MACOS)
+set(ENTROPY_VERSION_MAJOR 1)
+set(ENTROPY_VERSION_MINOR 0)
+set(ENTROPY_VERSION_PATCH 0)
+set(ENTROPY_VERSION_STRING "1.0.0")
 
-find_package(Vulkan REQUIRED)
+if(IOS)
+    if(${CMAKE_OSX_SYSROOT} MATCHES "iphonesimulator")
+        set(ENTROPY_PLATFORM IOS_SIMULATOR)
+        if (${CMAKE_OSX_ARCHITECTURES} MATCHES "arm64")
+            message("-- iOS Build for simulator arm64")
+            set(ENTROPY_ARCH ARM64)
+        elseif(${CMAKE_OSX_ARCHITECTURES} MATCHES "x86_64")
+            message("-- iOS Build for simulator x86_64")
+            set(ENTROPY_ARCH X86_64)
+        endif()
+    elseif(${CMAKE_OSX_SYSROOT} MATCHES "iphoneos")
+        message("-- iOS Build for iphone")
+        set(ENTROPY_PLATFORM IOS)
+    else()
+        message(FATAL_ERROR"-- iOS undefined build")
+    endif()
+elseif(APPLE)
+    find_package(Vulkan REQUIRED)
+    FetchContent_Declare(glfw3
+            GIT_REPOSITORY https://github.com/glfw/glfw.git
+            GIT_TAG master
+    )
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
+    set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(glfw3)
+    set(MONO_INCLUDE_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0")
+    set(MONO_LIBRARY_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/lib")
+    set(ENTROPY_PLATFORM MACOS)
+    if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+        message("-- MacOS Build for x86_64")
+        set(ENTROPY_ARCH X86_64)
+    elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64")
+        message("-- MacOS Build for arm64")
+        set(ENTROPY_ARCH ARM64)
+    else()
+        message(FATAL_ERROR "-- MacOS undefined build")
+    endif()
+elseif(UNIX AND NOT APPLE)
+    find_package(Vulkan REQUIRED)
+    FetchContent_Declare(glfw3
+            GIT_REPOSITORY https://github.com/glfw/glfw.git
+            GIT_TAG master
+    )
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
+    set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(glfw3)
+    set(MONO_INCLUDE_DIR_PATH "/usr/include/mono-2.0")
+    set(MONO_LIBRARY_DIR_PATH "/usr/lib/mono")
+    set(ENTROPY_PLATFORM LINUX)
+elseif(ANDROID)
+    if(${ANDROID_ABI} STREQUAL "x86_64")
+        message("-- Android Build for x86_64")
+    elseif(${ANDROID_ABI} STREQUAL "x86")
+        message("-- Android Build for x86")
+    elseif(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+        message("-- Android Build for armeabi-v7a")
+    elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
+        message("-- Android Build for arm64-v8a")
+    else()
+        message(FATAL_ERROR "-- Android undefined build")
+    endif()
+else()
+    message(FATAL_ERROR "-- Undefined build")
+endif()
 
 # Locate the Mono headers
 find_path(MONO_INCLUDE_DIR
         NAMES mono/jit/jit.h
-        PATHS "/usr/include/mono-2.0"
+        PATHS ${MONO_INCLUDE_DIR_PATH}
 )
 
 # Locate the Mono library
 find_library(MONO_LIBRARY
         NAMES mono-2.0
-        PATHS "/usr/lib/mono"
+        PATHS ${MONO_LIBRARY_DIR_PATH}
 )
 
 FetchContent_Declare(quill
@@ -63,15 +131,6 @@ set(VMA_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
 set(VMA_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(vma)
 
-FetchContent_Declare(glfw3
-    GIT_REPOSITORY https://github.com/glfw/glfw.git
-    GIT_TAG master
-)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
-set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(glfw3)
-
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_LIST_DIR)
@@ -86,7 +145,7 @@ else()
 endif()
 
 if(BUILD_ENTROPY_AS_EXECUTABLE)
-    add_executable(${PROJECT_NAME} ${SOURCES})
+    add_executable(${PROJECT_NAME} ${SOURCES} ${PROJECT_SOURCE_DIR}/test/main.cpp)
 else()
     add_library(${PROJECT_NAME} STATIC ${SOURCES})
 endif()

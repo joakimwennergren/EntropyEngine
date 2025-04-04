@@ -39,7 +39,7 @@ private:
 
   std::unordered_map<std::string, std::shared_future<std::shared_ptr<Graphics::Vulkan::Textures::Texture>>> textureFutures_;
   std::unordered_map<std::string, std::shared_ptr<Graphics::Vulkan::Textures::Texture>> textures_;
-  int32_t textureIndex_ = 0;
+  int32_t textureIndex_ = -1;
   std::mutex mutex_;
 };
 
