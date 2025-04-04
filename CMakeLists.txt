@@ -53,6 +53,8 @@ elseif(APPLE)
     FetchContent_MakeAvailable(glfw3)
     set(MONO_INCLUDE_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0")
     set(MONO_LIBRARY_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/lib")
+    set(MONO_LIBRARY_ETC_PATH "/opt/homebrew/Cellar/mono/6.14.0/etc")
+    set(MONO_LIBRARY_CONFIG "/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config")
     set(ENTROPY_PLATFORM MACOS)
     if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
         message("-- MacOS Build for x86_64")
@@ -76,6 +78,8 @@ elseif(UNIX AND NOT APPLE)
     FetchContent_MakeAvailable(glfw3)
     set(MONO_INCLUDE_DIR_PATH "/usr/include/mono-2.0")
     set(MONO_LIBRARY_DIR_PATH "/usr/lib/mono")
+    set(MONO_LIBRARY_ETC_PATH "/etc/mono")
+    set(MONO_LIBRARY_CONFIG "/etc/mono/config")
     set(ENTROPY_PLATFORM LINUX)
 elseif(ANDROID)
     if(${ANDROID_ABI} STREQUAL "x86_64")
@@ -133,6 +137,7 @@ set(VMA_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(vma)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE CS_SOURCES ${PROJECT_SOURCE_DIR}/wrappers/*.cs)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_LIST_DIR)
 
@@ -145,11 +150,32 @@ else()
     )
 endif()
 
+# Path to C# source file
+set(CS_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GameScripts.dll)
+
+find_program(CSC_EXECUTABLE NAMES csc mcs REQUIRED)
+
+# Custom command to build the DLL
+add_custom_command(
+        OUTPUT ${CS_OUTPUT}
+        COMMAND ${CSC_EXECUTABLE} /target:library /out:${CS_OUTPUT} ${CS_SOURCES}
+        DEPENDS ${CS_SOURCES}
+        COMMENT "Compiling GameScripts.dll"
+)
+
+# Define a custom target for C# scripts
+add_custom_target(GameScripts ALL
+        DEPENDS ${CS_OUTPUT}
+)
+
 if(BUILD_ENTROPY_AS_EXECUTABLE)
     add_executable(${PROJECT_NAME} ${SOURCES} ${PROJECT_SOURCE_DIR}/test/main.cpp)
 else()
     add_library(${PROJECT_NAME} ${ENTROPY_LIBRARY_TYPE} ${SOURCES})
 endif()
+
+# Make your main target (Entropy) depend on GameScripts
+add_dependencies(${PROJECT_NAME} GameScripts)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
         ${vma_SOURCE_DIR}/include
@@ -201,6 +227,7 @@ file(COPY shaders/compiled/2d_shader/2d_shader_frag.spv DESTINATION ${CMAKE_BINA
 # For testing only..
 file(COPY test/test.png DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY test/test2.png DESTINATION ${CMAKE_BINARY_DIR})
+
 
 # Build config file
 configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/config.h @ONLY)

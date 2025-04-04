@@ -1,4 +1,5 @@
 #include <GLFW/glfw3.h>
+#include <iostream>
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
@@ -215,19 +216,12 @@ int main() {
     const auto camera_manager = sl->getService<ICameraManager>();
     camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
 
-    // Set Mono library directories
-    //mono_set_dirs("path/to/mono/lib", "path/to/mono/etc");
-
-    // Initialize the Mono runtime
-    //domain = mono_jit_init("game_domain");
-    /*
-
-    mono_set_dirs("/usr/lib", "/etc/mono");
-    mono_config_parse ("/etc/mono/config");
+    mono_set_dirs(MONO_LIBRARY_DIR_PATH, MONO_LIBRARY_ETC_PATH);
+    mono_config_parse (MONO_LIBRARY_CONFIG);
     domain = mono_jit_init ("test");
 
     // Load the GameScript assembly
-    assembly = mono_domain_assembly_open(domain, "../GameScript.dll");
+    assembly = mono_domain_assembly_open(domain, "GameScripts.dll");
     if (!assembly) {
         std::cout  << "Failed to load GameScript.dll!" << std::endl;
     }
@@ -256,11 +250,9 @@ int main() {
     // Invoke the method on the created object
     MonoObject *result = mono_runtime_invoke(method, object, nullptr, nullptr);
 
-    */
-
   Test();
 
-    //mono_jit_cleanup(domain);
+    mono_jit_cleanup(domain);
 
   // Unregister services
   sl->UnregisterService<ICameraManager>();
