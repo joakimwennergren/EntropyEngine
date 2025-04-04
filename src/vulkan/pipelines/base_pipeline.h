@@ -55,7 +55,7 @@ protected:
   std::shared_ptr<SwapChains::ISwapChain> swapChain_;
   std::shared_ptr<RenderPasses::RenderPass> renderPass_;
   std::shared_ptr<DescriptorPools::IDescriptorPool> descriptorPool_;
-  std::shared_ptr<IPipelineCache> pipelineCache_;
+  std::shared_ptr<Caches::IPipelineCache> pipelineCache_;
   std::vector<std::shared_ptr<DescriptorSetLayout>> descriptorSetLayouts_;
 };
 } // namespace Entropy::Graphics::Vulkan::Pipelines

@@ -15,6 +15,7 @@ project(Entropy VERSION 1.0.0 LANGUAGES CXX)
 
 # Define an option to choose between executable or library
 option(BUILD_ENTROPY_AS_EXECUTABLE "Build Entropy as executable" ON)
+option(ENTROPY_LIBRARY_TYPE SHARED)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -23,7 +24,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(ENTROPY_VERSION_MAJOR 1)
 set(ENTROPY_VERSION_MINOR 0)
 set(ENTROPY_VERSION_PATCH 0)
-set(ENTROPY_VERSION_STRING "1.0.0")
 
 if(IOS)
     if(${CMAKE_OSX_SYSROOT} MATCHES "iphonesimulator")
@@ -53,6 +53,8 @@ elseif(APPLE)
     FetchContent_MakeAvailable(glfw3)
     set(MONO_INCLUDE_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0")
     set(MONO_LIBRARY_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/lib")
+    set(MONO_LIBRARY_ETC_PATH "/opt/homebrew/Cellar/mono/6.14.0/etc")
+    set(MONO_LIBRARY_CONFIG "/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config")
     set(ENTROPY_PLATFORM MACOS)
     if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
         message("-- MacOS Build for x86_64")
@@ -75,7 +77,9 @@ elseif(UNIX AND NOT APPLE)
     set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(glfw3)
     set(MONO_INCLUDE_DIR_PATH "/usr/include/mono-2.0")
-    set(MONO_LIBRARY_DIR_PATH "/usr/lib/mono")
+    set(MONO_LIBRARY_DIR_PATH "/usr/lib")
+    set(MONO_LIBRARY_ETC_PATH "/etc/mono")
+    set(MONO_LIBRARY_CONFIG "/etc/mono/config")
     set(ENTROPY_PLATFORM LINUX)
 elseif(ANDROID)
     if(${ANDROID_ABI} STREQUAL "x86_64")
@@ -133,6 +137,10 @@ set(VMA_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(vma)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB CS_SOURCES_ENTROPY ${PROJECT_SOURCE_DIR}/scripting/entropy/*.cs)
+file(GLOB CS_SOURCES ${PROJECT_SOURCE_DIR}/scripting/*.cs)
+
+message("CS SOURCES: ${CS_SOURCES}")
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_LIST_DIR)
 
@@ -145,31 +153,53 @@ else()
     )
 endif()
 
+# Path to C# source file
+set(CS_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GameScripts.dll)
+
+find_program(CSC_EXECUTABLE NAMES csc mcs REQUIRED)
+
+# Custom command to build the DLL
+add_custom_command(
+        OUTPUT ${CS_OUTPUT}
+        COMMAND ${CSC_EXECUTABLE} /target:library /out:${CS_OUTPUT} ${CS_SOURCES_ENTROPY} ${CS_SOURCES}
+        DEPENDS ${CS_SOURCES_ENTROPY} ${CS_SOURCES}
+        COMMENT "Compiling GameScripts.dll"
+)
+
+# Define a custom target for C# scripts
+add_custom_target(GameScripts ALL
+        DEPENDS ${CS_OUTPUT}
+)
+
 if(BUILD_ENTROPY_AS_EXECUTABLE)
     add_executable(${PROJECT_NAME} ${SOURCES} ${PROJECT_SOURCE_DIR}/test/main.cpp)
 else()
-    add_library(${PROJECT_NAME} STATIC ${SOURCES})
+    add_library(${PROJECT_NAME} ${ENTROPY_LIBRARY_TYPE} ${SOURCES})
 endif()
 
-target_include_directories(${PROJECT_NAME} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+# Make your main target (Entropy) depend on GameScripts
+add_dependencies(${PROJECT_NAME} GameScripts)
+
+target_include_directories(${PROJECT_NAME} INTERFACE
+        ${vma_SOURCE_DIR}/include
+        ${quill_SOURCE_DIR}/include
+        ${glfw3_SOURCE_DIR}/include
+        ${flecs_SOURCE_DIR}/include
+        ${glm_SOURCE_DIR}
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${MONO_INCLUDE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${Vulkan_INCLUDE_DIRS}
-        ${MONO_INCLUDE_DIR}
-
-${CMAKE_BINARY_DIR}/glm
-${CMAKE_BINARY_DIR}/quill/include
-${CMAKE_BINARY_DIR}/flecs/include
-${CMAKE_BINARY_DIR}/vma/include
-${CMAKE_BINARY_DIR}/glfw3/include
-
-        ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/src # this is the shit
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/metal-cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        #${CMAKE_CURRENT_SOURCE_DIR}/include/metal-cpp
+        # (metal-cpp) See if application needs this exposed or if it can be
+        # wrapped in a entrypoint..
 )
-
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ${Vulkan_LIBRARIES}
@@ -198,9 +228,9 @@ file(COPY shaders/compiled/2d_shader/2d_shader_vert.spv DESTINATION ${CMAKE_BINA
 file(COPY shaders/compiled/2d_shader/2d_shader_frag.spv DESTINATION ${CMAKE_BINARY_DIR})
 
 # For testing only..
-file(COPY test/blank_.png DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY test/test.png DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY test/test2.png DESTINATION ${CMAKE_BINARY_DIR})
+
 
 # Build config file
 configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/config.h @ONLY)

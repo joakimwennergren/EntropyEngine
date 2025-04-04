@@ -19,8 +19,7 @@ SwapChain::SwapChain() {
 }
 
 SwapChain::~SwapChain() {
-    std::cout << "Destroying swapchain" << std::endl;
-  vkDestroySwapchainKHR(logicalDevice_->Get(), swapChain_, nullptr);
+    vkDestroySwapchainKHR(logicalDevice_->Get(), swapChain_, nullptr);
 }
 
 void SwapChain::Build(const std::shared_ptr<Surfaces::Surface> surface,
@@ -69,7 +68,7 @@ void SwapChain::Build(const std::shared_ptr<Surfaces::Surface> surface,
   }
   createInfo.preTransform = capabilities.currentTransform;
 
-#if ENTROPY_PLATFORM == WINDOWS
+#if ENTROPY_PLATFORM == WINDOWS || ENTROPY_PLATFORM == LINUX
   createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 #else
   createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;

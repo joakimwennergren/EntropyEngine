@@ -18,7 +18,7 @@ BasePipeline<T>::BasePipeline(const std::shared_ptr<RenderPass> &renderPass)
   logicalDevice_ = sl->getService<ILogicalDevice>();
   swapChain_ = sl->getService<ISwapChain>();
   descriptorPool_ = sl->getService<IDescriptorPool>();
-  pipelineCache_ = sl->getService<IPipelineCache>();
+  pipelineCache_ = sl->getService<Caches::IPipelineCache>();
   renderPass_ = renderPass;
 }
 

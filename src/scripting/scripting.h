@@ -18,29 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_VULKAN_IALLOCATOR_H
-#define ENTROPY_VULKAN_IALLOCATOR_H
+#ifndef ENTROPY_SCRIPTING_SCRIPTING_H
+#define ENTROPY_SCRIPTING_SCRIPTING_H
 
-#include <vk_mem_alloc.h>
-#include "servicelocators/servicelocator.h"
-
-namespace Entropy::Graphics::Vulkan::Memory {
-/**
- * @class IAllocator
- * @brief Abstract interface for a memory allocator service.
- *
- * The IAllocator class provides an interface for a Vulkan Memory Allocator
- * (VmaAllocator) to be implemented by derived classes. It extends the IService
- * interface, indicating that it is part of a broader service system.
- *
- * This interface ensures that any allocator implementation provides access
- * to a VmaAllocator object via the Get() method.
- */
-class IAllocator : public IService {
-public:
-  ~IAllocator() override = default;
-  virtual VmaAllocator Get() = 0;
-};
-} // namespace Entropy::Graphics::Vulkan::Memory
-
-#endif // ENTROPY_VULKAN_IALLOCATOR_H
+#endif // ENTROPY_SCRIPTING_SCRIPTING_H

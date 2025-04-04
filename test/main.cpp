@@ -1,11 +1,103 @@
-#include <iostream>
 #include <GLFW/glfw3.h>
-#include "../include/entropy_test.h"
-#include <cameras/orthographic_camera.h>
-#include <renderers/vulkan_renderer.h>
+#include <iostream>
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
+
+// Renderers
+#include "renderers/vulkan_renderer.h"
+
+// sync
+#include "vulkan/synchronization/synchronizer.h"
+
+// Cameras
+#include "cameras/orthographic_camera.h"
+
+// CameraManager
+#include "cameras/camera_manager.h"
+#include "cameras/icamera_manger.h"
+
+// TextureManager
+#include "assets/iasset_manager.h"
+#include "assets/asset_manager.h"
+
+// ECS
+#include "ecs/components/2d_quad.h"
+#include "ecs/components/dimension.h"
+#include "ecs/components/position.h"
+#include "ecs/components/sprite.h"
+#include "ecs/components/texture.h"
+#include "ecs/iworld.h"
+#include "ecs/world.h"
+
+// Pipelines
+#include "vulkan/pipelines/twod_pipeline.h"
+
+// RenderPass
+#include "vulkan/renderpasses/renderpass.h"
+
+// SwapChain
+#include "vulkan/swapchains/iswapchain.h"
+#include "vulkan/swapchains/swapchain.h"
+
+// Surfaces
+#include "vulkan/surfaces/surface.h"
+
+// Textures
+#include "vulkan/textures/depthbuffer_texture.h"
+#include "vulkan/textures/swapchain_texture.h"
+#include "vulkan/textures/texture.h"
+
+// Shader
+#include "vulkan/shaders/shader.h"
+
+// PipelineCache
+#include "vulkan/pipelinecaches/ipipeline_cache.h"
+#include "vulkan/pipelinecaches/pipeline_cache.h"
+
+// DescriptorSet
+#include "vulkan/descriptorsets/descriptorset.h"
+
+// DescriptorSetLayout
+#include "vulkan/descriptorsetlayouts/descriptorset_layout.h"
+
+// DescriptorPools
+#include "vulkan/descriptorpools/descriptorpool.h"
+#include "vulkan/descriptorpools/idescriptorpool.h"
+
+// CommandBuffer
+#include "vulkan/commandbuffers/commandbuffer.h"
+
+// CommandPool
+#include "vulkan/commandpools/commandpool.h"
+#include "vulkan/commandpools/icommandpool.h"
+
+// Buffers
+#include "vulkan/buffers/base_buffer.h"
+#include "vulkan/buffers/index_buffer.h"
+#include "vulkan/buffers/staging_buffer.h"
+#include "vulkan/buffers/storage_buffer.h"
+#include "vulkan/buffers/uniform_buffer.h"
+#include "vulkan/buffers/vertex_buffer.h"
+
+// Memory Allocator
+#include "vulkan/memory/allocator.h"
+#include "vulkan/memory/iallocator.h"
+
+// Vulkan Devices
+#include "vulkan/devices/ilogical_device.h"
+#include "vulkan/devices/iphysical_device.h"
+#include "vulkan/devices/logical_device.h"
+#include "vulkan/devices/physical_device.h"
+
+// Vulkan Instance
+#include "vulkan/instances/ivk_instance.h"
+#include "vulkan/instances/vk_instance.h"
+
+#include "loggers/logger.h"
+#include "servicelocators/servicelocator.h"
+
+#include "config.h"
 
 using namespace Entropy::Graphics::Vulkan::Instances;
 using namespace Entropy::Graphics::Vulkan::Devices;
@@ -103,9 +195,21 @@ MonoDomain *domain;
 MonoAssembly *assembly;
 MonoImage *image;
 
+extern "C" Texture* Texture_Create(MonoString* path) {
+    // Your texture creation logic
+    std::cout << "Texture created with path: " << mono_string_to_utf8(path) << std::endl;
+    return new Texture(mono_string_to_utf8(path));
+}
+
+extern "C" void Texture_Destroy(const Texture* tex) {
+    // Your texture destruction logic
+    delete tex;
+    std::cout << "Texture destroyed." << std::endl;
+}
+
 int main() {
-  // Initialize quill, logging library
-  InitializeQuill();
+
+      InitializeQuill();
 
   // Register vulkan services
   ServiceLocator *sl = ServiceLocator::GetInstance();
@@ -121,109 +225,19 @@ int main() {
   sl->RegisterService(std::make_shared<AssetManager>());
   sl->RegisterService(std::make_shared<CameraManager>());
 
-  /*
+    const auto camera_manager = sl->getService<ICameraManager>();
+    camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
 
-  const auto vk_instance = sl->getService<IVulkanInstance>();
-  const auto physical_device = sl->getService<IPhysicalDevice>();
-  const auto logical_device = sl->getService<ILogicalDevice>();
-  const auto allocator = sl->getService<IAllocator>();
-  const auto command_pool = sl->getService<ICommandPool>();
-  const auto descriptor_pool = sl->getService<IDescriptorPool>();
-  const auto pipeline_cache = sl->getService<IPipelineCache>();
-
-  const std::vector<uint32_t> data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-  auto index_buffer = IndexBuffer(data);
-
-  const uint8_t uint8_data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-  auto staging_buffer = StagingBuffer(sizeof(uint8_data), uint8_data,
-                                      VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-
-  const std::vector<ThreeDAnimVertex> vertices = {{{-1.0f, -1.0f, 0.0f},
-                                                   {1.0f, 1.0f, 1.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f},
-                                                   {0.0f, 0.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f}},
-                                                  {{-1.0f, -1.0f, 0.0f},
-                                                   {1.0f, 1.0f, 1.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f},
-                                                   {0.0f, 0.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f}},
-                                                  {{-1.0f, -1.0f, 0.0f},
-                                                   {1.0f, 1.0f, 1.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f},
-                                                   {0.0f, 0.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f}},
-                                                  {{-1.0f, -1.0f, 0.0f},
-                                                   {1.0f, 1.0f, 1.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f},
-                                                   {0.0f, 0.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f},
-                                                   {1.0f, 0.0f, 0.0f, 1.0f}}};
-  auto vertex_buffer = VertexBuffer(vertices);
-
-  auto storage_buffer = StorageBuffer(100);
-  auto uniform_buffer = UniformBuffer(100);
-
-  auto command_buf = CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-
-  VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
-  instanceLayoutBinding.binding = 0;
-  instanceLayoutBinding.descriptorType =
-      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  instanceLayoutBinding.descriptorCount = 1;
-  instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-  instanceLayoutBinding.pImmutableSamplers = nullptr;
-  const std::vector bindings = {instanceLayoutBinding};
-  const std::vector<VkDescriptorBindingFlags> bindingFlags = {};
-
-  auto descriptor_set_layout =
-      std::make_shared<DescriptorSetLayout>(bindings, bindingFlags);
-
-  std::vector<std::shared_ptr<DescriptorSet>> descriptor_sets;
-  for (uint32_t i = 0; i < MAX_DESCRIPTOR_SETS - (10); i++) {
-    descriptor_sets.push_back(
-        std::make_shared<DescriptorSet>(descriptor_set_layout));
-  }
-
-  auto shader = Shader("2d_shader_vert.spv", "2d_shader_frag.spv");
-
-  auto texture = Texture("test.png");
-  auto depth_texture = DepthBufferTexture(640, 640);
-  auto swapchain_texture = SwapChainTexture(640, 640);
-
-  const auto texture_manager = sl->getService<ITextureManager>();
-  auto tex_e = texture_manager->LoadTexture("test.png");
-  texture_manager->ReleaseTexture(tex_e);
-
-  auto render_pass = std::make_shared<RenderPass>();
-  render_pass->RecreateDepthBuffer(640, 640);
-  render_pass->CreateFrameBuffers(640, 640);
-
-  auto two_d_pipeline = TwoDPipeline(render_pass);
-
-  auto sync = Synchronizer(3);
-
-   */
-
-  const auto camera_manager = sl->getService<ICameraManager>();
-  camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
-
-    // Set Mono library directories
-    //mono_set_dirs("path/to/mono/lib", "path/to/mono/etc");
-
-    // Initialize the Mono runtime
-    //domain = mono_jit_init("game_domain");
-    /*
-
-    mono_set_dirs("/usr/lib", "/etc/mono");
-    mono_config_parse ("/etc/mono/config");
+    mono_set_dirs(MONO_LIBRARY_DIR_PATH, MONO_LIBRARY_ETC_PATH);
+    mono_config_parse (MONO_LIBRARY_CONFIG);
     domain = mono_jit_init ("test");
 
+    // Bind the Texture class to C#
+    mono_add_internal_call("Entropy.Texture::Internal_Create", (void*)Texture_Create);
+    mono_add_internal_call("Entropy.Texture::Internal_Destroy", (void*)Texture_Destroy);
+
     // Load the GameScript assembly
-    assembly = mono_domain_assembly_open(domain, "../GameScript.dll");
+    assembly = mono_domain_assembly_open(domain, "GameScripts.dll");
     if (!assembly) {
         std::cout  << "Failed to load GameScript.dll!" << std::endl;
     }
@@ -231,32 +245,19 @@ int main() {
     // Get the Mono image from the assembly
     image = mono_assembly_get_image(assembly);
 
-    // Get the class from the assembly (namespace and class name)
-    MonoClass *klass = mono_class_from_name(image, "", "GameScript");
-    if (!klass) {
-        std::cerr << "Failed to find class GameScript!" << std::endl;
-        //return;
-    }
+    MonoClass* klass = mono_class_from_name(image, "", "EntityScript");
+    MonoObject* obj = mono_object_new(domain, klass);
+    mono_runtime_object_init(obj);
 
-    // Get the method to invoke (method name and signature)
-    MonoMethod *method = mono_class_get_method_from_name(klass, "Start", 0);  // No parameters
-    if (!method) {
-        std::cerr << "Failed to find method Start!" << std::endl;
-        //return;
-    }
+    MonoMethod* start = mono_class_get_method_from_name(klass, "Start", 0);
+    MonoMethod* update = mono_class_get_method_from_name(klass, "Update", 0);
 
-    // Create an instance of the class
-    MonoObject *object = mono_object_new(domain, klass);
-    mono_runtime_object_init(object);
-
-    // Invoke the method on the created object
-    MonoObject *result = mono_runtime_invoke(method, object, nullptr, nullptr);
-
-    */
+    if (start) mono_runtime_invoke(start, obj, nullptr, nullptr);
+    if (update) mono_runtime_invoke(update, obj, nullptr, nullptr);
 
   Test();
 
-    //mono_jit_cleanup(domain);
+  mono_jit_cleanup(domain);
 
   // Unregister services
   sl->UnregisterService<ICameraManager>();
@@ -270,6 +271,8 @@ int main() {
   sl->UnregisterService<ILogicalDevice>();
   sl->UnregisterService<IPhysicalDevice>();
   sl->UnregisterService<IVulkanInstance>();
+
+
 
   return EXIT_SUCCESS;
 }

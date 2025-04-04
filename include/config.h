@@ -6,9 +6,6 @@
 #define ENTROPY_VERSION_MINOR 0
 #define ENTROPY_VERSION_PATCH 0
 
-// Combined version as a string
-#define ENTROPY_VERSION_STRING 1.0.0
-
 // Combined version as a single integer (e.g., 10003)
 #define ENTROPY_VERSION_NUMBER ((PROJECT_VERSION_MAJOR * 10000) + (PROJECT_VERSION_MINOR * 100) + PROJECT_VERSION_PATCH)
 
@@ -31,6 +28,11 @@
 #define MAX_INSTANCE_COUNT (1000)
 #define MAX_DESCRIPTOR_SETS (1000)
 #define TEXTURE_ARRAY_SIZE (100)
+
+#define MONO_INCLUDE_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0"
+#define MONO_LIBRARY_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/lib"
+#define MONO_LIBRARY_ETC_PATH "/opt/homebrew/Cellar/mono/6.14.0/etc"
+#define MONO_LIBRARY_CONFIG   "/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config"
 
 #if ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
     #define COLOR_FORMAT VK_FORMAT_B8G8R8A8_UNORM

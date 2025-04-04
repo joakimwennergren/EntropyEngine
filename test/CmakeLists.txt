@@ -15,15 +15,14 @@ FetchContent_Declare(
         URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
 )
 FetchContent_MakeAvailable(googletest)
-
 set(BUILD_ENTROPY_AS_EXECUTABLE OFF CACHE BOOL "" FORCE)
+set(ENTROPY_LIBRARY_TYPE SHARED CACHE BOOL "" FORCE)
 add_subdirectory(.. Entropy)
-
 
 # Glob source files
 file(GLOB_RECURSE TEST_SOURCES ${PROJECT_SOURCE_DIR}/unit/*.cpp)
 
 add_executable(${PROJECT_NAME} ${TEST_SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${ENTROPY_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE gtest gtest_main glfw Entropy glm quill GPUOpen::VulkanMemoryAllocator flecs::flecs_static)
+target_include_directories(${PROJECT_NAME} PRIVATE ${ENTROPY_INCLUDE_DIRS} ${googletest_SOURCE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE gtest gtest_main Entropy)
