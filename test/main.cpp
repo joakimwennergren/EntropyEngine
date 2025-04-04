@@ -220,6 +220,10 @@ int main() {
     mono_config_parse (MONO_LIBRARY_CONFIG);
     domain = mono_jit_init ("test");
 
+    // Bind the Texture class to C#
+    //mono_add_internal_call("Entropy.Texture::Internal_Create", (void*)Entropy::Graphics::Vulkan::Textures::Texture_Create);
+    //mono_add_internal_call("Entropy.Texture::Internal_Destroy", (void*)Entropy::Graphics::Vulkan::Textures::Texture_Destroy);
+
     // Load the GameScript assembly
     assembly = mono_domain_assembly_open(domain, "GameScripts.dll");
     if (!assembly) {
@@ -229,30 +233,19 @@ int main() {
     // Get the Mono image from the assembly
     image = mono_assembly_get_image(assembly);
 
-    // Get the class from the assembly (namespace and class name)
-    MonoClass *klass = mono_class_from_name(image, "", "GameScript");
-    if (!klass) {
-        std::cerr << "Failed to find class GameScript!" << std::endl;
-        //return;
-    }
+    MonoClass* klass = mono_class_from_name(image, "", "EntityScript");
+    MonoObject* obj = mono_object_new(domain, klass);
+    mono_runtime_object_init(obj);
 
-    // Get the method to invoke (method name and signature)
-    MonoMethod *method = mono_class_get_method_from_name(klass, "Start", 0);  // No parameters
-    if (!method) {
-        std::cerr << "Failed to find method Start!" << std::endl;
-        //return;
-    }
+    MonoMethod* start = mono_class_get_method_from_name(klass, "Start", 0);
+    MonoMethod* update = mono_class_get_method_from_name(klass, "Update", 0);
 
-    // Create an instance of the class
-    MonoObject *object = mono_object_new(domain, klass);
-    mono_runtime_object_init(object);
+    if (start) mono_runtime_invoke(start, obj, nullptr, nullptr);
+    if (update) mono_runtime_invoke(update, obj, nullptr, nullptr);
 
-    // Invoke the method on the created object
-    MonoObject *result = mono_runtime_invoke(method, object, nullptr, nullptr);
+  //Test();
 
-  Test();
-
-    mono_jit_cleanup(domain);
+  mono_jit_cleanup(domain);
 
   // Unregister services
   sl->UnregisterService<ICameraManager>();
@@ -266,6 +259,8 @@ int main() {
   sl->UnregisterService<ILogicalDevice>();
   sl->UnregisterService<IPhysicalDevice>();
   sl->UnregisterService<IVulkanInstance>();
+
+
 
   return EXIT_SUCCESS;
 }

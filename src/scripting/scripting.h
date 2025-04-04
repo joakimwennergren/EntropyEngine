@@ -18,29 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_VULKAN_TEXTURE_H
-#define ENTROPY_VULKAN_TEXTURE_H
+#ifndef ENTROPY_SCRIPTING_SCRIPTING_H
+#define ENTROPY_SCRIPTING_SCRIPTING_H
 
-#include "base_texture.h"
+#ifdef _WIN32
+    #define EXPORT __declspec(dllexport)
+#else
+    #define EXPORT
+#endif
 
-namespace Entropy::Graphics::Vulkan::Textures {
-class Texture final : public BaseTexture {
-public:
-  explicit Texture(int32_t width, int32_t height);
-  explicit Texture(const std::string &path);
-  // Texture(const FT_Bitmap &bitmap);
-  int32_t textureIndex{};
-  std::string texturePath{};
-private:
-  void Create(int width, int height);
-  void CreateTextureSampler();
-};
-
-extern "C" {
-  Texture* Texture_Create(char * path);
-  void Texture_Destroy(Texture* tex);     
-}
-
-} // namespace Entropy::Graphics::Vulkan::Textures
-
-#endif // ENTROPY_VULKAN_TEXTURE_H
+#endif // ENTROPY_SCRIPTING_SCRIPTING_H

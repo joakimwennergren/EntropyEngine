@@ -14,7 +14,7 @@ include(cmake/entropy.cmake)
 project(Entropy VERSION 1.0.0 LANGUAGES CXX)
 
 # Define an option to choose between executable or library
-option(BUILD_ENTROPY_AS_EXECUTABLE "Build Entropy as executable" ON)
+option(BUILD_ENTROPY_AS_EXECUTABLE "Build Entropy as executable" OFF)
 option(ENTROPY_LIBRARY_TYPE SHARED)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -77,7 +77,7 @@ elseif(UNIX AND NOT APPLE)
     set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(glfw3)
     set(MONO_INCLUDE_DIR_PATH "/usr/include/mono-2.0")
-    set(MONO_LIBRARY_DIR_PATH "/usr/lib/mono")
+    set(MONO_LIBRARY_DIR_PATH "/usr/lib")
     set(MONO_LIBRARY_ETC_PATH "/etc/mono")
     set(MONO_LIBRARY_CONFIG "/etc/mono/config")
     set(ENTROPY_PLATFORM LINUX)
@@ -137,7 +137,10 @@ set(VMA_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(vma)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-file(GLOB_RECURSE CS_SOURCES ${PROJECT_SOURCE_DIR}/wrappers/*.cs)
+file(GLOB CS_SOURCES_ENTROPY ${PROJECT_SOURCE_DIR}/scripting/entropy/*.cs)
+file(GLOB CS_SOURCES ${PROJECT_SOURCE_DIR}/scripting/*.cs)
+
+message("CS SOURCES: ${CS_SOURCES}")
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_LIST_DIR)
 
@@ -158,8 +161,8 @@ find_program(CSC_EXECUTABLE NAMES csc mcs REQUIRED)
 # Custom command to build the DLL
 add_custom_command(
         OUTPUT ${CS_OUTPUT}
-        COMMAND ${CSC_EXECUTABLE} /target:library /out:${CS_OUTPUT} ${CS_SOURCES}
-        DEPENDS ${CS_SOURCES}
+        COMMAND ${CSC_EXECUTABLE} /target:library /out:${CS_OUTPUT} ${CS_SOURCES_ENTROPY} ${CS_SOURCES}
+        DEPENDS ${CS_SOURCES_ENTROPY} ${CS_SOURCES}
         COMMENT "Compiling GameScripts.dll"
 )
 
