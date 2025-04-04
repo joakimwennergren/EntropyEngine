@@ -1,5 +1,5 @@
 #include <iostream>
-#include <../cmake-build-debug/glfw3/include/GLFW/glfw3.h>
+#include <GLFW/glfw3.h>
 #include "../include/entropy_test.h"
 #include <cameras/orthographic_camera.h>
 #include <renderers/vulkan_renderer.h>

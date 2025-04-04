@@ -71,7 +71,7 @@ public:
 #elif ENTROPY_PLATFORM == IOS
     explicit Surface(CA::MetalLayer *layer);
 #else
-    explicit Surface(VkSurfaceKHR surface);
+    Surface(VkSurfaceKHR surface);
 #endif
   ~Surface();
   [[nodiscard]] VkSurfaceKHR Get() const { return surface_; };
