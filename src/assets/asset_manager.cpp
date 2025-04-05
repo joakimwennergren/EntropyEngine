@@ -1,7 +1,5 @@
 #include "asset_manager.h"
 
-#include <iostream>
-
 using namespace Entropy::Assets;
 using namespace Entropy::Graphics::Vulkan::Textures;
 
@@ -37,9 +35,8 @@ int32_t AssetManager::LoadTextureAsync(const std::string& path) {
   }
 
   // Start async loading using shared_future
-  std::shared_future<std::shared_ptr<Texture>> future = std::async(std::launch::async, [path] {
-      return std::make_shared<Texture>(path);
-  });
+  std::shared_future<std::shared_ptr<Texture>> future = std::async(
+      std::launch::async, [path] { return std::make_shared<Texture>(path); });
 
   // Store the shared_future
   textureIndex_++;
@@ -53,10 +50,10 @@ std::shared_ptr<Texture> AssetManager::GetTextureAsync(
 
   // Check if texture is already loaded
 
-  if (const auto it = textures_.find(GetTextureKeyById(textureId)); it != textures_.end()) {
+  if (const auto it = textures_.find(GetTextureKeyById(textureId));
+      it != textures_.end()) {
     return it->second.second;
   }
-
 
   for (const auto& [key, value] : textureFutures_) {
     if (value.first == textureId) {
@@ -66,27 +63,11 @@ std::shared_ptr<Texture> AssetManager::GetTextureAsync(
         textureFutures_.erase(key);  // Remove from future map
         return asset;
       }
-                         }
-
-      return nullptr;
     }
 
-
-// Check if it's still loading
-  /*
-if (const auto fit = textureFutures_.find(key); fit != textureFutures_.end()) {
-    if (auto asset = fit->second.second
-                       .get()) {  // Ensure the asset is valid (not nullptr)
-      std::cout << "Loaded texture: " << key << std::endl;
-    textures_[key] = std::make_pair(textureId, asset);
-    textureFutures_.erase(fit);  // Remove from future map
-    return asset;
+    return nullptr;
   }
-  // Handle the case where the asset is nullptr
-  std::cerr << "Error: Loaded texture is null." << std::endl;
-  return nullptr;
-}
-*/
+
   return nullptr;
 }
 
@@ -100,5 +81,5 @@ std::string AssetManager::GetTextureKeyById(int32_t textureId) {
       return key;
     }
   }
-  return {}; // or throw / return std::optional
+  return {};  // or throw / return std::optional
 }

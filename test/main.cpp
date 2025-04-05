@@ -110,6 +110,7 @@ flecs::entity CreateSprite(const std::string& path,
   const ServiceLocator* sl = ServiceLocator::GetInstance();
   const auto textureId =
       sl->getService<IAssetManager>()->LoadAsync<Texture>(path);
+
   return sl->getService<IWorld>()
       ->Get()
       ->entity()
@@ -193,14 +194,21 @@ extern "C" void Entity_AddDimension(flecs::entity* entity, CPosition dim) {
 }
 
 extern "C" void Entity_AddTexture(const flecs::entity* entity,
-                                  const int32_t textureId) {
+                                  MonoString* path) {
   if (entity == nullptr) {
     std::cout << "Entity is null." << std::endl;
     return;
   }
+
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto texture = sl->getService<IAssetManager>()->Get<Texture>(textureId);
-  entity->set<Components::Texture>({texture->texturePath, textureId, true});
+  const auto textureId = sl->getService<IAssetManager>()->LoadAsync<Texture>(
+      mono_string_to_utf8(path));
+
+  std::cout << "Texture created async with path: " << mono_string_to_utf8(path)
+            << std::endl;
+
+  entity->set<Components::Texture>(
+      {mono_string_to_utf8(path), textureId, true});
 }
 
 int main() {
@@ -244,7 +252,7 @@ int main() {
   mono_add_internal_call("Entropy.ECS.NativeBindings::Entity_AddDimension",
                          (void*)Entity_AddDimension);
   mono_add_internal_call("Entropy.ECS.NativeBindings::Entity_AddTexture",
-                       (void*)Entity_AddTexture);
+                         (void*)Entity_AddTexture);
 
   // Bind the Entity class to C#
   mono_add_internal_call("Entropy.ECS.Entity::Entity_Create",

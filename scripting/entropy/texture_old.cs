@@ -7,10 +7,10 @@ namespace Entropy
     {
         // The method that will be called from native code
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern IntPtr Texture_Create(string path);
+        public static extern int Texture_Create(string path);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern void Texture_Destroy(IntPtr ptr);
+        public static extern void Texture_Destroy(int ptr);
 
         public Texture(string path)
         {
