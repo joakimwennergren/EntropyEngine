@@ -139,7 +139,7 @@ extern "C" int32_t Texture_Create(MonoString* path) {
 extern "C" void Texture_Destroy(const int32_t textureId) {
   // Your texture destruction logic
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  sl->getService<IAssetManager>()->Unload<Texture>("test.png");
+  sl->getService<IAssetManager>()->Unload<Texture>(textureId);
 }
 
 extern "C" flecs::entity* Entity_Create() {
@@ -192,6 +192,17 @@ extern "C" void Entity_AddDimension(flecs::entity* entity, CPosition dim) {
   entity->set<Components::Dimension>({glm::vec3{dim.x, dim.y, dim.z}});
 }
 
+extern "C" void Entity_AddTexture(const flecs::entity* entity,
+                                  const int32_t textureId) {
+  if (entity == nullptr) {
+    std::cout << "Entity is null." << std::endl;
+    return;
+  }
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
+  const auto texture = sl->getService<IAssetManager>()->Get<Texture>(textureId);
+  entity->set<Components::Texture>({texture->texturePath, textureId, true});
+}
+
 int main() {
 
   InitializeQuill();
@@ -220,9 +231,9 @@ int main() {
   domain = mono_jit_init("test");
 
   // Bind the Texture class to C#
-  mono_add_internal_call("Entropy.Texture::Internal_Create",
+  mono_add_internal_call("Entropy.Texture::Texture_Create",
                          (void*)Texture_Create);
-  mono_add_internal_call("Entropy.Texture::Internal_Destroy",
+  mono_add_internal_call("Entropy.Texture::Texture_Destroy",
                          (void*)Texture_Destroy);
 
   // Bind components to C#
@@ -232,6 +243,8 @@ int main() {
                          (void*)Entity_Add2DQuad);
   mono_add_internal_call("Entropy.ECS.NativeBindings::Entity_AddDimension",
                          (void*)Entity_AddDimension);
+  mono_add_internal_call("Entropy.ECS.NativeBindings::Entity_AddTexture",
+                       (void*)Entity_AddTexture);
 
   // Bind the Entity class to C#
   mono_add_internal_call("Entropy.ECS.Entity::Entity_Create",
@@ -292,21 +305,14 @@ int main() {
   const auto renderer = new VulkanRenderer(static_cast<uint32_t>(640 * xscale),
                                            static_cast<uint32_t>(640 * yscale));
 
-  /*
-  CreateSprite("test.png", glm::vec3{500, 500, 0.0f},
-               glm::vec3{200, 200, 0.0f});
-  CreateSprite("test2.png", glm::vec3{200, 200, 0.0f},
-               glm::vec3{200, 200, 0.0f});
-               */
-
   glfwSetWindowUserPointer(window, renderer);
   glfwSetFramebufferSizeCallback(window, OnFramebufferResize);
 
   while (!glfwWindowShouldClose(window)) {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-    renderer->Render(static_cast<uint32_t>(width * xscale),
-                     static_cast<uint32_t>(height * yscale));
+    renderer->Render(static_cast<uint32_t>(width),
+                     static_cast<uint32_t>(height));
     glfwPollEvents();
   }
   // Cleanup

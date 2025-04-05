@@ -25,7 +25,7 @@ layout (set = 0, binding = 1) uniform UBOData {
 
 void main()
 {
-    outColor = texture(textures[textureIndex], UV);
+    outColor = texture(textures[textureIndex], UV) * vec4(1.0, 1.0, 1.0, 1.0);
     /*
     switch (instanceBuffer.objects[PushConstants.instanceIndex].type) {
 

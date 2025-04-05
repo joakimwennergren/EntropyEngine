@@ -150,12 +150,19 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
         if (e.has<ECS::Components::Texture>()) {
           const auto texture =
               assetManager_->GetAsync<Graphics::Vulkan::Textures::Texture>(
-                  e.get_ref<ECS::Components::Texture>()->path);
+                  e.get_ref<ECS::Components::Texture>()->index);
+
           if (texture) {
             imageInfos[objectIndex_].imageLayout =
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             imageInfos[objectIndex_].imageView = texture->GetImageView()->Get();
             imageInfos[objectIndex_].sampler = texture->GetSampler();
+          } else {
+            imageInfos[objectIndex_].imageLayout =
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            imageInfos[objectIndex_].imageView =
+                blankTexture_->GetImageView()->Get();
+            imageInfos[objectIndex_].sampler = blankTexture_->GetSampler();
           }
         } else {
           imageInfos[objectIndex_].imageLayout =
@@ -166,8 +173,8 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
         }
 
         UpdateInstance(e);
-
         objectIndex_++;
+
       });
 
   for (uint32_t i = objectIndex_; i < TEXTURE_ARRAY_SIZE; i++) {
@@ -268,10 +275,6 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
 
 void VulkanRenderer::UpdateInstance(const flecs::entity e) {
 
-  if (objectIndex_ >= MAX_INSTANCE_COUNT) {
-    return;
-  }
-
   const auto translate = glm::translate(
       glm::mat4(1.0f), e.has<ECS::Components::Position>()
                            ? e.get_ref<ECS::Components::Position>()->pos
@@ -287,12 +290,12 @@ void VulkanRenderer::UpdateInstance(const flecs::entity e) {
   vmaMapMemory(allocator_->Get(), instanceData_->GetVmaAllocation(),
                &objectData);
 
+
   auto* object = static_cast<InstanceData*>(objectData);
   object[objectIndex_].model = (translate * scaling * rotation);
   object[objectIndex_].textureIndex =
       e.has<ECS::Components::Texture>()
           ? e.get_ref<ECS::Components::Texture>()->index
           : 0;
-
   vmaUnmapMemory(allocator_->Get(), instanceData_->GetVmaAllocation());
 }

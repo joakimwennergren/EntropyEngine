@@ -1,24 +1,25 @@
 #include "asset_manager.h"
 
-#include <cstdint>
 #include <iostream>
 
 using namespace Entropy::Assets;
 using namespace Entropy::Graphics::Vulkan::Textures;
 
 int32_t AssetManager::LoadTexture(const std::string& path) {
-  auto it = textures_.find(textureIndex_);
-  if (it != textures_.end()) {
-    return it->first;
+
+  if (const auto it = textures_.find(path); it != textures_.end()) {
+    return it->second.first;
   }
-  std::shared_ptr<Texture> asset = std::make_shared<Texture>(path);
-  textures_[textureIndex_] = asset;
-  return textureIndex_++;
+
+  auto asset = std::make_shared<Texture>(path);
+  textureIndex_++;
+  textures_[path] = std::make_pair(textureIndex_, asset);
+  return textureIndex_;
 }
 
 std::shared_ptr<Texture> AssetManager::GetTexture(const int32_t textureId) {
-  auto it = textures_.find(textureId);
-  return (it != textures_.end()) ? it->second : nullptr;
+  const auto it = textures_.find(GetTextureKeyById(textureId));
+  return it != textures_.end() ? it->second.second : nullptr;
 }
 
 int32_t AssetManager::LoadTextureAsync(const std::string& path) {
@@ -26,23 +27,23 @@ int32_t AssetManager::LoadTextureAsync(const std::string& path) {
 
   // Check if texture is already loaded
   if (const auto it = textures_.find(path); it != textures_.end()) {
-    return it->second->textureIndex;
+    return it->second.first;
   }
 
   // Check if it's already loading
   if (const auto fit = textureFutures_.find(path);
       fit != textureFutures_.end()) {
-    return {};
+    return -1;
   }
 
   // Start async loading using shared_future
-  std::shared_future future = std::async(std::launch::async, [path]() {
-    return std::make_shared<Graphics::Vulkan::Textures::Texture>(path);
+  std::shared_future<std::shared_ptr<Texture>> future = std::async(std::launch::async, [path] {
+      return std::make_shared<Texture>(path);
   });
 
   // Store the shared_future
-  textureFutures_[path] = std::move(future);
   textureIndex_++;
+  textureFutures_[path] = std::make_pair(textureIndex_, future);
   return textureIndex_;
 }
 
@@ -51,22 +52,53 @@ std::shared_ptr<Texture> AssetManager::GetTextureAsync(
   std::lock_guard lock(mutex_);
 
   // Check if texture is already loaded
-  if (const auto it = textures_.find(textureId); it != textures_.end()) {
-    return it->second;
+
+  if (const auto it = textures_.find(GetTextureKeyById(textureId)); it != textures_.end()) {
+    return it->second.second;
   }
 
-  // Check if it's still loading
-  if (const auto fit = textureFutures_.find(textureId);
-      fit != textureFutures_.end()) {
-    auto asset = fit->second.get();  // Safe to call multiple times
-    textures_[textureId] = asset;    // Store in the loaded map
-    textureFutures_.erase(fit);      // Remove from future map
+
+  for (const auto& [key, value] : textureFutures_) {
+    if (value.first == textureId) {
+      if (auto asset = value.second.get()) {
+        // Ensure the asset is valid (not nullptr)
+        textures_[key] = std::make_pair(textureId, asset);
+        textureFutures_.erase(key);  // Remove from future map
+        return asset;
+      }
+                         }
+
+      return nullptr;
+    }
+
+
+// Check if it's still loading
+  /*
+if (const auto fit = textureFutures_.find(key); fit != textureFutures_.end()) {
+    if (auto asset = fit->second.second
+                       .get()) {  // Ensure the asset is valid (not nullptr)
+      std::cout << "Loaded texture: " << key << std::endl;
+    textures_[key] = std::make_pair(textureId, asset);
+    textureFutures_.erase(fit);  // Remove from future map
     return asset;
   }
-
-  return nullptr;  // Asset not found
+  // Handle the case where the asset is nullptr
+  std::cerr << "Error: Loaded texture is null." << std::endl;
+  return nullptr;
+}
+*/
+  return nullptr;
 }
 
 void AssetManager::UnloadTexture(const int32_t textureId) {
-  textures_.erase(textureId);
+  textures_.erase(GetTextureKeyById(textureId));
+}
+
+std::string AssetManager::GetTextureKeyById(int32_t textureId) {
+  for (const auto& [key, value] : textures_) {
+    if (value.first == textureId) {
+      return key;
+    }
+  }
+  return {}; // or throw / return std::optional
 }

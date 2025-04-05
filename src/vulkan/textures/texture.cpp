@@ -65,6 +65,7 @@ Texture::Texture(const int32_t width, const int32_t height) {
 
 Texture::Texture(const std::string& path) {
   assert(!path.empty());
+  texturePath = path;
   int texWidth, texHeight, texChannels;
   stbi_set_flip_vertically_on_load(true);
 

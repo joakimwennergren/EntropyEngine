@@ -137,7 +137,8 @@ set(VMA_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(vma)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-set(CS_SOURCES_ENTROPY 
+set(CS_SOURCES_ENTROPY
+        ${PROJECT_SOURCE_DIR}/scripting/entropy/texture.cs
     ${PROJECT_SOURCE_DIR}/scripting/entropy/component.cs
     ${PROJECT_SOURCE_DIR}/scripting/entropy/entity.cs
     ${PROJECT_SOURCE_DIR}/scripting/entropy/entropy_script.cs

@@ -14,6 +14,9 @@ namespace Entropy.ECS
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public static extern void Entity_Add2DQuad(IntPtr entity);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public static extern void Entity_AddTexture(IntPtr entity, int textureId);
     }
 
     public interface IComponent
@@ -58,6 +61,22 @@ namespace Entropy.ECS
         public void AddTo(IntPtr entity)
         {
             NativeBindings.Entity_Add2DQuad(entity);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Texture : IComponent
+    {
+        public int textureId;
+
+        public Texture(int id)
+        {
+            this.textureId = id;
+        }
+
+        public void AddTo(IntPtr entity)
+        {
+            NativeBindings.Entity_AddTexture(entity, textureId);
         }
     }
 }

@@ -5,26 +5,23 @@ namespace Entropy
 {
     class Texture
     {
-        private IntPtr nativePtr;
-
         // The method that will be called from native code
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern IntPtr Internal_Create(string path);
+        public static extern IntPtr Texture_Create(string path);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern void Internal_Destroy(IntPtr ptr);
+        public static extern void Texture_Destroy(IntPtr ptr);
 
         public Texture(string path)
         {
-            // Call the internal method to create the texture
-            nativePtr = Internal_Create(path);
-            //MyClass_create();
+            textureId = Texture_Create(path);
         }
 
         ~Texture()
         {
-            // Call the internal method to destroy the texture
-            Internal_Destroy(nativePtr);
+            Texture_Destroy(textureId);
         }
+
+        public int textureId;
     }
 }
