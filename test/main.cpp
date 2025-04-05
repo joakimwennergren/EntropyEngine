@@ -236,7 +236,10 @@ int main() {
 
   mono_set_dirs(MONO_LIBRARY_DIR_PATH, MONO_LIBRARY_ETC_PATH);
   mono_config_parse(MONO_LIBRARY_CONFIG);
-  domain = mono_jit_init("test");
+
+  mono_set_assemblies_path(".");
+  //domain = mono_jit_init("test");
+  domain = mono_jit_init_version("test", "v4.0.30319");
 
   // Bind the Texture class to C#
   mono_add_internal_call("Entropy.Texture::Texture_Create",

@@ -157,9 +157,9 @@ endif()
 
 # Path to C# source file
 set(CS_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GameScripts.dll)
+set(CS_AOT_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GameScripts_AOT.dll)
 
 find_program(CSC_EXECUTABLE NAMES csc mcs REQUIRED)
-
 
 # Custom command to build the DLL
 add_custom_command(
@@ -169,9 +169,21 @@ add_custom_command(
         COMMENT "Compiling GameScripts.dll"
 )
 
+# Custom command to build the DLL
+add_custom_command(
+        OUTPUT ${CS_AOT_OUTPUT}
+        COMMAND mono --aot=full ${CS_OUTPUT}
+        DEPENDS ${CS_OUTPUT}
+        COMMENT "Compiling GameScripts_AOT.dll"
+)
+
 # Define a custom target for C# scripts
 add_custom_target(GameScripts ALL
         DEPENDS ${CS_OUTPUT}
+)
+
+add_custom_target(GameScriptsAOT ALL
+        DEPENDS ${CS_AOT_OUTPUT}
 )
 
 if(BUILD_ENTROPY_AS_EXECUTABLE)
@@ -182,6 +194,7 @@ endif()
 
 # Make your main target (Entropy) depend on GameScripts
 add_dependencies(${PROJECT_NAME} GameScripts)
+add_dependencies(${PROJECT_NAME} GameScriptsAOT)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
         ${vma_SOURCE_DIR}/include
