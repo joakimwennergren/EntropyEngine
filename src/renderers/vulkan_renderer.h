@@ -21,33 +21,33 @@
 #ifndef ENTROPY_VULKAN_BATCH_RENDERER_H
 #define ENTROPY_VULKAN_BATCH_RENDERER_H
 
+#include "assets/iasset_manager.h"
+#include "cameras/icamera_manger.h"
+#include "config.h"
+#include "ecs/components/sprite.h"
+#include "ecs/iworld.h"
+#include "vulkan/buffers/index_buffer.h"
+#include "vulkan/buffers/storage_buffer.h"
+#include "vulkan/buffers/uniform_buffer.h"
+#include "vulkan/buffers/vertex_buffer.h"
+#include "vulkan/commandbuffers/commandbuffer.h"
 #include "vulkan/data/vertex.h"
 #include "vulkan/devices/ilogical_device.h"
-#include "cameras/icamera_manger.h"
 #include "vulkan/memory/iallocator.h"
 #include "vulkan/pipelines/twod_pipeline.h"
 #include "vulkan/renderpasses/renderpass.h"
-#include "vulkan/commandbuffers/commandbuffer.h"
 #include "vulkan/swapchains/iswapchain.h"
 #include "vulkan/synchronization/synchronizer.h"
-#include "ecs/components/sprite.h"
-#include "ecs/iworld.h"
-#include "assets/iasset_manager.h"
 #include "vulkan/textures/texture.h"
-#include "vulkan/buffers/uniform_buffer.h"
-#include "vulkan/buffers/storage_buffer.h"
-#include "vulkan/buffers/vertex_buffer.h"
-#include "vulkan/buffers/index_buffer.h"
-#include "config.h"
 
 namespace Entropy::Vulkan::Renderers {
 class VulkanRenderer {
-public:
+ public:
   VulkanRenderer(uint32_t width, uint32_t height);
   void Render(uint32_t width, uint32_t height);
   void Resize(uint32_t width, uint32_t height);
 
-private:
+ private:
   VkDescriptorImageInfo imageInfos[TEXTURE_ARRAY_SIZE]{};
 
   uint32_t currentFrame_{};
@@ -83,5 +83,5 @@ private:
 
   void UpdateInstance(flecs::entity e);
 };
-} // namespace Entropy::Vulkan::Renderers
-#endif // ENTROPY_VULKAN_BATCH_RENDERER_H
+}  // namespace Entropy::Vulkan::Renderers
+#endif  // ENTROPY_VULKAN_BATCH_RENDERER_H

@@ -5,7 +5,6 @@ namespace Entropy
 {
     class Texture
     {
-
         private IntPtr nativePtr;
 
         // The method that will be called from native code

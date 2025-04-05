@@ -2,12 +2,14 @@
 #define ENTROPY_CONFIG_H
 
 // Version information
-#define ENTROPY_VERSION_MAJOR 1
-#define ENTROPY_VERSION_MINOR 0
-#define ENTROPY_VERSION_PATCH 0
+#define ENTROPY_VERSION_MAJOR @ENTROPY_VERSION_MAJOR @
+#define ENTROPY_VERSION_MINOR @ENTROPY_VERSION_MINOR @
+#define ENTROPY_VERSION_PATCH @ENTROPY_VERSION_PATCH @
 
 // Combined version as a single integer (e.g., 10003)
-#define ENTROPY_VERSION_NUMBER ((PROJECT_VERSION_MAJOR * 10000) + (PROJECT_VERSION_MINOR * 100) + PROJECT_VERSION_PATCH)
+#define ENTROPY_VERSION_NUMBER                                       \
+  ((PROJECT_VERSION_MAJOR * 10000) + (PROJECT_VERSION_MINOR * 100) + \
+   PROJECT_VERSION_PATCH)
 
 #define ARM64 (1)
 #define X86_64 (2)
@@ -19,8 +21,8 @@
 #define IOS_SIMULATOR (5)
 #define ANDROID (6)
 
-#define ENTROPY_PLATFORM MACOS
-#define ENTROPY_ARCH ARM64
+#define ENTROPY_PLATFORM LINUX
+#define ENTROPY_ARCH 
 
 #define USE_VALIDATION_LAYERS 1
 
@@ -29,15 +31,16 @@
 #define MAX_DESCRIPTOR_SETS (1000)
 #define TEXTURE_ARRAY_SIZE (100)
 
-#define MONO_INCLUDE_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0"
-#define MONO_LIBRARY_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/lib"
-#define MONO_LIBRARY_ETC_PATH "/opt/homebrew/Cellar/mono/6.14.0/etc"
-#define MONO_LIBRARY_CONFIG   "/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config"
+#define ENTROPY_ENABLE_SCRIPTING 1
+#define MONO_INCLUDE_DIR_PATH "/usr/include/mono-2.0"
+#define MONO_LIBRARY_DIR_PATH "/usr/lib"
+#define MONO_LIBRARY_ETC_PATH "/etc/mono"
+#define MONO_LIBRARY_CONFIG "/etc/mono/config"
 
 #if ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
-    #define COLOR_FORMAT VK_FORMAT_B8G8R8A8_UNORM
+#define COLOR_FORMAT VK_FORMAT_B8G8R8A8_UNORM
 #else
-    #define COLOR_FORMAT VK_FORMAT_R8G8B8A8_UNORM
+#define COLOR_FORMAT VK_FORMAT_R8G8B8A8_UNORM
 #endif
 
-#endif // ENTROPY_CONFIG_H
+#endif  // ENTROPY_CONFIG_H

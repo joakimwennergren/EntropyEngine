@@ -137,10 +137,12 @@ set(VMA_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(vma)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-file(GLOB CS_SOURCES_ENTROPY ${PROJECT_SOURCE_DIR}/scripting/entropy/*.cs)
+set(CS_SOURCES_ENTROPY 
+    ${PROJECT_SOURCE_DIR}/scripting/entropy/component.cs
+    ${PROJECT_SOURCE_DIR}/scripting/entropy/entity.cs
+    ${PROJECT_SOURCE_DIR}/scripting/entropy/entropy_script.cs
+)
 file(GLOB CS_SOURCES ${PROJECT_SOURCE_DIR}/scripting/*.cs)
-
-message("CS SOURCES: ${CS_SOURCES}")
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_LIST_DIR)
 
@@ -157,6 +159,7 @@ endif()
 set(CS_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GameScripts.dll)
 
 find_program(CSC_EXECUTABLE NAMES csc mcs REQUIRED)
+
 
 # Custom command to build the DLL
 add_custom_command(
