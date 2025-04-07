@@ -157,7 +157,7 @@ template <class T> void BasePipeline<T>::Build() {
 
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-  pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts_.size();
+  pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts_.size());
   pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
   pipelineLayoutInfo.pPushConstantRanges = &push_constant;
   pipelineLayoutInfo.pushConstantRangeCount = 1;

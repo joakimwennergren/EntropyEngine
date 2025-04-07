@@ -69,7 +69,6 @@ public:
     return VK_FALSE;
   }
 
-  std::vector<const char *> layers = {"VK_LAYER_KHRONOS_validation"};
   VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
 };
 } // namespace Entropy::Graphics::Vulkan::ValidationLayers

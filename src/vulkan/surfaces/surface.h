@@ -24,33 +24,32 @@
 #include "config.h"
 
 #if ENTROPY_PLATFORM == MACOS
-    #include <vulkan/vulkan.hpp>
-    #include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.hpp>
 
 #elif ENTROPY_PLATFORM == LINUX
-    #include <vulkan/vulkan.hpp>
-    #include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.hpp>
 
 #elif ENTROPY_PLATFORM == WINDOWS
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-    #define GLFW_EXPOSE_NATIVE_WIN32
-    #include <GLFW/glfw3.h>
-    #include <GLFW/glfw3native.h>
-    #include <vulkan/vulkan_win32.h>
-    #undef max
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+#include <vulkan/vulkan_win32.h>
+#undef max
 
 #elif ENTROPY_PLATFORM == IOS
-    #define VK_USE_PLATFORM_METAL_EXT
-    #include <vulkan/vulkan.hpp>
-    #include <MetalKit/MetalKit.hpp>
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_metal.h>
 
 #elif ENTROPY_PLATFORM == ANDROID
-    #include <vulkan/vulkan.hpp>
-    #include <vulkan/vulkan_android.h>
+#include <vulkan/vulkan_android.h>
+#include <vulkan/vulkan.hpp>
 
 #else
-    #include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan.hpp>
 #endif
 
 #include "vulkan/instances/ivk_instance.h"
@@ -65,21 +64,21 @@ namespace Entropy::Graphics::Vulkan::Surfaces {
  * surfaces based on the platform's specific windowing system.
  */
 class Surface {
-public:
+ public:
 #if ENTROPY_PLATFORM == MACOS
-    explicit Surface(GLFWwindow *window);
+  explicit Surface(GLFWwindow* window);
 #elif ENTROPY_PLATFORM == LINUX
-    explicit Surface(GLFWwindow *window);
+  explicit Surface(GLFWwindow* window);
 #elif ENTROPY_PLATFORM == IOS
-    explicit Surface(CA::MetalLayer *layer);
+  explicit Surface(CAMetalLayer* layer);
 #else
-    explicit Surface(VkSurfaceKHR surface);
+  explicit Surface(VkSurfaceKHR surface);
 #endif
   ~Surface();
   [[nodiscard]] VkSurfaceKHR Get() const { return surface_; };
   VkSurfaceKHR surface_ = VK_NULL_HANDLE;
   std::shared_ptr<Instances::IVulkanInstance> instance_;
 };
-} // namespace Entropy::Graphics::Vulkan::Surfaces
+}  // namespace Entropy::Graphics::Vulkan::Surfaces
 
-#endif // ENTROPY_VULKAN_SURFACE_H
+#endif  // ENTROPY_VULKAN_SURFACE_H

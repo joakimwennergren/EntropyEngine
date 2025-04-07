@@ -23,7 +23,6 @@
 
 #include "assets/iasset_manager.h"
 #include "cameras/icamera_manger.h"
-#include "config.h"
 #include "ecs/components/sprite.h"
 #include "ecs/iworld.h"
 #include "vulkan/buffers/index_buffer.h"

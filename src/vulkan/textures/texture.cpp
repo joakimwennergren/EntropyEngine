@@ -71,7 +71,6 @@ Texture::Texture(const std::string& path) {
 
   // Load the image pixels
 #if ENTROPY_PLATFORM == IOS
-  std::cout << GetProjectBasePath() + "/" + path << std::endl;
   stbi_uc* pixels = stbi_load((GetProjectBasePath() + "/" + path).c_str(), &texWidth, &texHeight,
                               &texChannels, STBI_rgb_alpha);
 #else

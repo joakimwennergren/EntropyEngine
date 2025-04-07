@@ -2,7 +2,7 @@
 
 using namespace Entropy::Graphics::Vulkan::ValidationLayers;
 
-ValidationLayer::ValidationLayer() { CheckValidationLayerSupport(layers); }
+ValidationLayer::ValidationLayer() = default;
 
 bool ValidationLayer::CheckValidationLayerSupport(
     const std::vector<const char *> &validationLayers) {

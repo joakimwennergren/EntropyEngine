@@ -33,12 +33,15 @@ if(IOS)
     set(CMAKE_XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE DISABLED)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
-    set(MONO_INCLUDE_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0")
-    set(MONO_LIBRARY_DIR_PATH "/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/bin")
-    set(MONO_LIBRARY_ETC_PATH "/opt/homebrew/Cellar/mono/6.14.0/etc")
-    set(MONO_LIBRARY_CONFIG "/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config")
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+    # Find vulkan
     find_package(Vulkan REQUIRED COMPONENTS MoltenVK)
+
+    # Find mono libraries
+    #set(MONO_INCLUDE_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0")
+    #set(MONO_LIBRARY_DIR_PATH "/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/bin")
+    #set(MONO_LIBRARY_ETC_PATH "/opt/homebrew/Cellar/mono/6.14.0/etc")
+    #set(MONO_LIBRARY_CONFIG "/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config")
     # Locate the Mono headers
     #find_path(MONO_INCLUDE_DIR
     #        NAMES mono/jit/jit.h
@@ -49,9 +52,10 @@ if(IOS)
     #        NAMES arm64-darwin-mono-sgen
     #        PATHS "/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/bin"
     #)
+
+    # Libraries to link with
     set(ENTROPY_LINK_LIBS
             Vulkan::MoltenVK
-            #${XAMARIN_IOS_FRAMEWORK}
             flecs::flecs_static
             GPUOpen::VulkanMemoryAllocator
             glm::glm
@@ -270,16 +274,13 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${MONO_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${Vulkan_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/metal-cpp
-        # (metal-cpp) See if application needs this exposed or if it can be
-        # wrapped in a entrypoint..
 )
-
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     ${ENTROPY_LINK_LIBS}
@@ -305,6 +306,5 @@ file(COPY shaders/compiled/2d_shader/2d_shader_frag.spv DESTINATION ${CMAKE_BINA
 file(COPY test/test.png DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY test/test2.png DESTINATION ${CMAKE_BINARY_DIR})
 
-
 # Build config file
-configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/config.h @ONLY)
+configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)

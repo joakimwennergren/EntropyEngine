@@ -87,6 +87,8 @@ void VulkanRenderer::Resize(const uint32_t width, const uint32_t height) {
 
 void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
 
+  std::cout << "RENDERING" << std::endl;
+
   const auto currentFence = synchronizer_->GetFences()[currentFrame_];
 
   VK_CHECK(vkWaitForFences(logicalDevice_->Get(), 1, &currentFence, VK_TRUE,
@@ -159,7 +161,7 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
             imageInfos[objectIndex_].sampler = texture->GetSampler();
           } else {
             imageInfos[objectIndex_].imageLayout =
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             imageInfos[objectIndex_].imageView =
                 blankTexture_->GetImageView()->Get();
             imageInfos[objectIndex_].sampler = blankTexture_->GetSampler();
@@ -174,7 +176,6 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
 
         UpdateInstance(e);
         objectIndex_++;
-
       });
 
   for (uint32_t i = objectIndex_; i < TEXTURE_ARRAY_SIZE; i++) {
@@ -194,10 +195,6 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
 
   vkUpdateDescriptorSets(logicalDevice_->Get(), 1, &descriptorWrite, 0,
                          nullptr);
-
-  if (indices.empty() || vertices.empty()) {
-    return;
-  }
 
   PushConstant constants{};
   constants.instanceIndex = objectIndex_;
@@ -289,7 +286,6 @@ void VulkanRenderer::UpdateInstance(const flecs::entity e) {
   void* objectData;
   vmaMapMemory(allocator_->Get(), instanceData_->GetVmaAllocation(),
                &objectData);
-
 
   auto* object = static_cast<InstanceData*>(objectData);
   object[objectIndex_].model = (translate * scaling * rotation);

@@ -1,6 +1,7 @@
 #include "vk_instance.h"
-#include "vulkan/utilities/helpers.h"
+#include <iostream>
 #include "config.h"
+#include "vulkan/utilities/helpers.h"
 
 using namespace Entropy::Graphics::Vulkan::Instances;
 using namespace Entropy::Graphics::Vulkan::ValidationLayers;
@@ -18,7 +19,7 @@ VulkanInstance::VulkanInstance() {
   createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   createInfo.pApplicationInfo = &appInfo;
 
-#if ENTROPY_PLATFORM == MACOS
+#if ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == IOS
   createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
@@ -29,8 +30,9 @@ VulkanInstance::VulkanInstance() {
   vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount,
                                          extensionProps.data());
 
-  std::vector<const char *> extensions;
-  for (const auto &extension : extensionProps) {
+  std::vector<const char*> extensions;
+  extensions.reserve(extensionProps.size());
+  for (const auto& extension : extensionProps) {
     extensions.push_back(extension.extensionName);
   }
   extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
@@ -42,7 +44,7 @@ VulkanInstance::VulkanInstance() {
   createInfo.ppEnabledExtensionNames = extensions.data();
 #endif
 
-#if ENTROPY_PLATFORM ==LINUX
+#if ENTROPY_PLATFORM == LINUX
   createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
   createInfo.ppEnabledExtensionNames = extensions.data();
 #endif
@@ -61,29 +63,37 @@ VulkanInstance::VulkanInstance() {
 #endif
 
 #if USE_VALIDATION_LAYERS == 1
-  createInfo.enabledLayerCount =
-      static_cast<uint32_t>(validationLayer_.layers.size());
-  createInfo.ppEnabledLayerNames = validationLayer_.layers.data();
+  const std::vector layers = {"VK_LAYER_KHRONOS_validation"};
+  if (ValidationLayer::CheckValidationLayerSupport(layers)) {
+    createInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
+    createInfo.ppEnabledLayerNames = layers.data();
+  } else {
+    LOG_INFO(logger_, "Validation layers requested but not available!");
+  }
 #endif
 
   VK_CHECK(vkCreateInstance(&createInfo, nullptr, &instance_));
 
 #if USE_VALIDATION_LAYERS == 1
-  VkDebugUtilsMessengerCreateInfoEXT dbgCreateInfo{};
-  dbgCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-  dbgCreateInfo.messageSeverity =
-      VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-      VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-      VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-  dbgCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                              VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                              VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-  dbgCreateInfo.pfnUserCallback = ValidationLayer::debugCallback;
-  dbgCreateInfo.pUserData = nullptr;
+  if (ValidationLayer::CheckValidationLayerSupport(layers)) {
+    VkDebugUtilsMessengerCreateInfoEXT dbgCreateInfo{};
+    dbgCreateInfo.sType =
+        VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    dbgCreateInfo.messageSeverity =
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    dbgCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                                VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                                VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    dbgCreateInfo.pfnUserCallback = ValidationLayer::debugCallback;
+    dbgCreateInfo.pUserData = nullptr;
 
-  VK_CHECK(ValidationLayer::CreateDebugUtilsMessengerEXT(
-      instance_, &dbgCreateInfo, nullptr, &validationLayer_.debugMessenger));
-  #endif
+    VK_CHECK(ValidationLayer::CreateDebugUtilsMessengerEXT(
+        instance_, &dbgCreateInfo, nullptr, &validationLayer_.debugMessenger));
+  }
+
+#endif
 }
 
 VulkanInstance::~VulkanInstance() {
