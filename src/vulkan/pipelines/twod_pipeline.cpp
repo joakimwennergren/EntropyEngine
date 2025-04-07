@@ -1,7 +1,7 @@
 #include "twod_pipeline.h"
 #include "config.h"
 
-#if PLATFORM == IOS
+#if ENTROPY_PLATFORM == IOS
 #include <CoreFoundation/CoreFoundation.h>
 
 static std::string GetProjectBasePath() {
@@ -63,7 +63,7 @@ descriptorSetLayouts_.push_back(
     std::make_shared<DescriptorSetLayout>(bindings2, bindingFlags1));
     */
 
-  #if PLATFORM == IOS
+  #if ENTROPY_PLATFORM == IOS
   shader_ = std::make_shared<Shaders::Shader>(GetProjectBasePath() + "/2d_shader_vert.spv",
                                               GetProjectBasePath() + "/2d_shader_frag.spv");
   #else

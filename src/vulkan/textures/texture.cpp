@@ -10,7 +10,7 @@
 #include "vulkan/buffers/staging_buffer.h"
 #include "vulkan/utilities/helpers.h"
 
-#if PLATFORM == IOS
+#if ENTROPY_PLATFORM == IOS
 #include <CoreFoundation/CoreFoundation.h>
 
 static std::string GetProjectBasePath() {
@@ -70,8 +70,14 @@ Texture::Texture(const std::string& path) {
   stbi_set_flip_vertically_on_load(true);
 
   // Load the image pixels
-  stbi_uc* pixels = stbi_load((path).c_str(), &texWidth, &texHeight,
+#if ENTROPY_PLATFORM == IOS
+  std::cout << GetProjectBasePath() + "/" + path << std::endl;
+  stbi_uc* pixels = stbi_load((GetProjectBasePath() + "/" + path).c_str(), &texWidth, &texHeight,
                               &texChannels, STBI_rgb_alpha);
+#else
+  stbi_uc* pixels = stbi_load((path).c_str(), &texWidth, &texHeight,
+                            &texChannels, STBI_rgb_alpha);
+#endif
 
   const VkDeviceSize imageSize = texWidth * texHeight * 4;
   assert(pixels != nullptr);
