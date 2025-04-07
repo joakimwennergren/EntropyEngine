@@ -88,15 +88,6 @@ elseif(APPLE AND NOT IOS)
     set(MONO_LIBRARY_ETC_PATH "/opt/homebrew/Cellar/mono/6.14.0/etc")
     set(MONO_LIBRARY_CONFIG "/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config")
     set(ENTROPY_PLATFORM MACOS)
-    set(ENTROPY_LINK_LIBS
-            ${Vulkan_LIBRARIES}
-            ${MONO_LIBRARY}
-            flecs::flecs_static
-            GPUOpen::VulkanMemoryAllocator
-            glfw
-            glm::glm
-            quill
-    )
     # Locate the Mono headers
     find_path(MONO_INCLUDE_DIR
             NAMES mono/jit/jit.h
@@ -108,7 +99,15 @@ elseif(APPLE AND NOT IOS)
             NAMES mono-2.0
             PATHS ${MONO_LIBRARY_DIR_PATH}
     )
-
+    set(ENTROPY_LINK_LIBS
+            ${Vulkan_LIBRARIES}
+            ${MONO_LIBRARY}
+            flecs::flecs_static
+            GPUOpen::VulkanMemoryAllocator
+            glfw
+            glm::glm
+            quill
+    )
 if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
         message("-- MacOS Build for x86_64")
         set(ENTROPY_ARCH X86_64)
@@ -134,6 +133,15 @@ elseif(UNIX AND NOT APPLE)
     set(MONO_LIBRARY_ETC_PATH "/etc/mono")
     set(MONO_LIBRARY_CONFIG "/etc/mono/config")
     set(ENTROPY_PLATFORM LINUX)
+    find_path(MONO_INCLUDE_DIR
+            NAMES mono/jit/jit.h
+            PATHS ${MONO_INCLUDE_DIR_PATH}
+    )
+    # Locate the Mono library
+    find_library(MONO_LIBRARY
+            NAMES mono-2.0
+            PATHS ${MONO_LIBRARY_DIR_PATH}
+    )
     set(ENTROPY_LINK_LIBS
             ${Vulkan_LIBRARIES}
             ${MONO_LIBRARY}
