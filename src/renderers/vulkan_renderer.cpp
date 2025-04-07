@@ -1,12 +1,12 @@
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/glm.hpp>
-#include <iostream>
 #include "vulkan_renderer.h"
-#include "vulkan/data/data.h"
-#include "ecs/components/dimension.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 #include "ecs/components/2d_quad.h"
-#include "ecs/components/texture.h"
+#include "ecs/components/dimension.h"
 #include "ecs/components/position.h"
+#include "ecs/components/texture.h"
+#include "vulkan/data/data.h"
 
 using namespace Entropy::Vulkan::Renderers;
 using namespace Entropy::Graphics::Vulkan::Memory;
@@ -21,7 +21,7 @@ using namespace Entropy::Cameras;
 using namespace Entropy::Assets;
 
 VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   world_ = sl->getService<ECS::IWorld>();
   allocator_ = sl->getService<IAllocator>();
   logicalDevice_ = sl->getService<ILogicalDevice>();
@@ -44,40 +44,38 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
   UBO_ = std::make_unique<UniformBuffer>(sizeof(UBOData));
   instanceData_ = std::make_unique<StorageBuffer>(MAX_INSTANCE_COUNT *
                                                   sizeof(InstanceData));
-  blankTexture_ =
-      std::make_unique<Graphics::Vulkan::Textures::Texture>(1, 1);
+  blankTexture_ = std::make_unique<Graphics::Vulkan::Textures::Texture>(1, 1);
 
-    std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+  std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
-    VkDescriptorBufferInfo uboInfo{};
-    uboInfo.buffer = UBO_->GetVulkanBuffer();
-    uboInfo.offset = 0;
-    uboInfo.range = sizeof(UBOData);
+  VkDescriptorBufferInfo uboInfo{};
+  uboInfo.buffer = UBO_->GetVulkanBuffer();
+  uboInfo.offset = 0;
+  uboInfo.range = sizeof(UBOData);
 
-    VkDescriptorBufferInfo instanceInfo;
-    instanceInfo.buffer = instanceData_->GetVulkanBuffer();
-    instanceInfo.offset = 0;
-    instanceInfo.range = sizeof(InstanceData) * MAX_INSTANCE_COUNT;
+  VkDescriptorBufferInfo instanceInfo;
+  instanceInfo.buffer = instanceData_->GetVulkanBuffer();
+  instanceInfo.offset = 0;
+  instanceInfo.range = sizeof(InstanceData) * MAX_INSTANCE_COUNT;
 
-    descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrites[0].dstSet = two_d_pipeline_->descriptorSet;
-    descriptorWrites[0].dstBinding = 1;
-    descriptorWrites[0].dstArrayElement = 0;
-    descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    descriptorWrites[0].descriptorCount = 1;
-    descriptorWrites[0].pBufferInfo = &uboInfo;
+  descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  descriptorWrites[0].dstSet = two_d_pipeline_->descriptorSet;
+  descriptorWrites[0].dstBinding = 1;
+  descriptorWrites[0].dstArrayElement = 0;
+  descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  descriptorWrites[0].descriptorCount = 1;
+  descriptorWrites[0].pBufferInfo = &uboInfo;
 
-    descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrites[1].dstSet = two_d_pipeline_->descriptorSet;
-    descriptorWrites[1].dstBinding = 0;
-    descriptorWrites[1].dstArrayElement = 0;
-    descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    descriptorWrites[1].descriptorCount = 1;
-    descriptorWrites[1].pBufferInfo = &instanceInfo;
+  descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  descriptorWrites[1].dstSet = two_d_pipeline_->descriptorSet;
+  descriptorWrites[1].dstBinding = 0;
+  descriptorWrites[1].dstArrayElement = 0;
+  descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+  descriptorWrites[1].descriptorCount = 1;
+  descriptorWrites[1].pBufferInfo = &instanceInfo;
 
-    vkUpdateDescriptorSets(logicalDevice_->Get(), descriptorWrites.size(),
-                           descriptorWrites.data(), 0, nullptr);
-
+  vkUpdateDescriptorSets(logicalDevice_->Get(), descriptorWrites.size(),
+                         descriptorWrites.data(), 0, nullptr);
 }
 
 void VulkanRenderer::Resize(const uint32_t width, const uint32_t height) {
@@ -145,33 +143,38 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
 
   world_->Get()->each<ECS::Components::TwoDQuad>(
       [&](const flecs::entity e, const ECS::Components::TwoDQuad& quad) {
-
         vertices.insert(vertices.end(), quad.vertices.begin(),
-                       quad.vertices.end());
-        indices.insert(indices.end(), quad.indices.begin(),
-                      quad.indices.end());
+                        quad.vertices.end());
+        indices.insert(indices.end(), quad.indices.begin(), quad.indices.end());
 
-
-        const auto texture = assetManager_->GetAsync<Graphics::Vulkan::Textures::Texture>(
-            e.get_ref<ECS::Components::Texture>()->path);
+        if (e.has<ECS::Components::Texture>()) {
+          const auto texture =
+              assetManager_->GetAsync<Graphics::Vulkan::Textures::Texture>(
+                  e.get_ref<ECS::Components::Texture>()->index);
 
           if (texture) {
-              imageInfos[objectIndex_].imageLayout =
+            imageInfos[objectIndex_].imageLayout =
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfos[objectIndex_].imageView =
-                texture->GetImageView()->Get();
-                imageInfos[objectIndex_].sampler = texture->GetSampler();
+            imageInfos[objectIndex_].imageView = texture->GetImageView()->Get();
+            imageInfos[objectIndex_].sampler = texture->GetSampler();
           } else {
-              imageInfos[objectIndex_].imageLayout =
-              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-              imageInfos[objectIndex_].imageView =
-              blankTexture_->GetImageView()->Get();
-              imageInfos[objectIndex_].sampler = blankTexture_->GetSampler();
+            imageInfos[objectIndex_].imageLayout =
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            imageInfos[objectIndex_].imageView =
+                blankTexture_->GetImageView()->Get();
+            imageInfos[objectIndex_].sampler = blankTexture_->GetSampler();
           }
+        } else {
+          imageInfos[objectIndex_].imageLayout =
+              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+          imageInfos[objectIndex_].imageView =
+              blankTexture_->GetImageView()->Get();
+          imageInfos[objectIndex_].sampler = blankTexture_->GetSampler();
+        }
 
         UpdateInstance(e);
-
         objectIndex_++;
+
       });
 
   for (uint32_t i = objectIndex_; i < TEXTURE_ARRAY_SIZE; i++) {
@@ -187,10 +190,14 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
   descriptorWrite.dstArrayElement = 0;
   descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
   descriptorWrite.descriptorCount = TEXTURE_ARRAY_SIZE;
-  descriptorWrite.pImageInfo = imageInfos; // Pass the array
+  descriptorWrite.pImageInfo = imageInfos;  // Pass the array
 
   vkUpdateDescriptorSets(logicalDevice_->Get(), 1, &descriptorWrite, 0,
                          nullptr);
+
+  if (indices.empty() || vertices.empty()) {
+    return;
+  }
 
   PushConstant constants{};
   constants.instanceIndex = objectIndex_;
@@ -267,22 +274,28 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
 }
 
 void VulkanRenderer::UpdateInstance(const flecs::entity e) {
-  const auto position = e.get_ref<ECS::Components::Position>()->pos;
-  const auto scale = e.get_ref<ECS::Components::Dimension>()->scale;
-    const auto textureIndex = e.get_ref<ECS::Components::Texture>()->index;
 
-  const auto translate = glm::translate(glm::mat4(1.0f), position);
-  const auto scaling = glm::scale(glm::mat4(1.0f), scale);
-  const auto rotation =
-      glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+  const auto translate = glm::translate(
+      glm::mat4(1.0f), e.has<ECS::Components::Position>()
+                           ? e.get_ref<ECS::Components::Position>()->pos
+                           : glm::vec3(0.0f));
+  const auto scaling = glm::scale(
+      glm::mat4(1.0f), e.has<ECS::Components::Dimension>()
+                           ? e.get_ref<ECS::Components::Dimension>()->scale
+                           : glm::vec3(1.0f));
+  const auto rotation = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f),
+                                    glm::vec3(0.0f, 0.0f, 1.0f));
 
-  void *objectData;
+  void* objectData;
   vmaMapMemory(allocator_->Get(), instanceData_->GetVmaAllocation(),
                &objectData);
 
-  auto *object = static_cast<InstanceData *>(objectData);
-  object[objectIndex_].model = (translate * scaling * rotation);
-  object[objectIndex_].textureIndex = textureIndex;
 
+  auto* object = static_cast<InstanceData*>(objectData);
+  object[objectIndex_].model = (translate * scaling * rotation);
+  object[objectIndex_].textureIndex =
+      e.has<ECS::Components::Texture>()
+          ? e.get_ref<ECS::Components::Texture>()->index
+          : 0;
   vmaUnmapMemory(allocator_->Get(), instanceData_->GetVmaAllocation());
 }

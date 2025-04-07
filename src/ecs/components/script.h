@@ -22,15 +22,16 @@
 #define ENTROPY_ECS_COMPONENT_SCRIPT_H
 
 #include <mono/jit/jit.h>
+#include <string>
 
 namespace Entropy::ECS::Components {
 
-struct Script{
-    std::string class_name;
-    MonoObject* object = nullptr;
-    MonoMethod* startMethod = nullptr;
-    MonoMethod* updateMethod = nullptr;
+struct Script {
+  std::string class_name;
+  MonoObject* object = nullptr;
+  MonoMethod* startMethod = nullptr;
+  MonoMethod* updateMethod = nullptr;
 };
-}
+}  // namespace Entropy::ECS::Components
 
-#endif // ENTROPY_ECS_COMPONENT_SCRIPT_H
+#endif  // ENTROPY_ECS_COMPONENT_SCRIPT_H
