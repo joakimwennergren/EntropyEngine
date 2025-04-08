@@ -28,8 +28,7 @@
 namespace Entropy::Graphics::Vulkan::Data {
 
 struct TwoDVertex {
-  glm::vec3 position;
-  glm::vec4 color;
+  glm::vec3 pos;
   glm::vec2 uv;
 
   static VkVertexInputBindingDescription getBindingDescription() {
@@ -40,24 +39,19 @@ struct TwoDVertex {
     return bindingDescription;
   }
 
-  static std::array<VkVertexInputAttributeDescription, 3>
+  static std::array<VkVertexInputAttributeDescription, 2>
   getAttributeDescriptions() {
-    std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
+    std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
 
     attributeDescriptions[0].binding = 0;
     attributeDescriptions[0].location = 0;
     attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescriptions[0].offset = offsetof(TwoDVertex, position);
+    attributeDescriptions[0].offset = offsetof(TwoDVertex, pos);
 
     attributeDescriptions[1].binding = 0;
     attributeDescriptions[1].location = 1;
-    attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-    attributeDescriptions[1].offset = offsetof(TwoDVertex, color);
-
-    attributeDescriptions[2].binding = 0;
-    attributeDescriptions[2].location = 2;
-    attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-    attributeDescriptions[2].offset = offsetof(TwoDVertex, uv);
+    attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
+    attributeDescriptions[1].offset = offsetof(TwoDVertex, uv);
 
     return attributeDescriptions;
   }
@@ -117,6 +111,6 @@ struct ThreeDAnimVertex {
     return attributeDescriptions;
   }
 };
-} // namespace Entropy::Graphics::Vulkan::Data
+}  // namespace Entropy::Graphics::Vulkan::Data
 
-#endif // ENTROPY_VULKAN_VERTEX_H
+#endif  // ENTROPY_VULKAN_VERTEX_H

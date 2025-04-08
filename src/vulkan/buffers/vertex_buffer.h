@@ -48,8 +48,8 @@ namespace Entropy::Graphics::Vulkan::Buffers {
  */
 template <class T> class VertexBuffer final : public BaseBuffer {
 public:
-  explicit VertexBuffer();
-  explicit VertexBuffer(const std::vector<T> &vertices);
+  explicit VertexBuffer(VkDeviceSize size);
+  void Update(std::vector<T> vertices);
 };
 } // namespace Entropy::Graphics::Vulkan::Buffers
 

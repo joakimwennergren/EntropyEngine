@@ -23,7 +23,6 @@
 
 #include "assets/iasset_manager.h"
 #include "cameras/icamera_manger.h"
-#include "ecs/components/sprite.h"
 #include "ecs/iworld.h"
 #include "vulkan/buffers/index_buffer.h"
 #include "vulkan/buffers/storage_buffer.h"
@@ -38,6 +37,7 @@
 #include "vulkan/swapchains/iswapchain.h"
 #include "vulkan/synchronization/synchronizer.h"
 #include "vulkan/textures/texture.h"
+#include "vulkan/textures/textureatlas.h"
 
 namespace Entropy::Vulkan::Renderers {
 class VulkanRenderer {
@@ -61,6 +61,7 @@ class VulkanRenderer {
   std::shared_ptr<VertexBuffer<Graphics::Vulkan::Data::TwoDVertex>>
       vertexDataBuffer_;
   std::shared_ptr<IndexBuffer<uint32_t>> indexDataBuffer_;
+
   std::vector<Graphics::Vulkan::Data::TwoDVertex> vertices;
   std::vector<uint32_t> indices;
 
@@ -79,6 +80,9 @@ class VulkanRenderer {
   std::shared_ptr<Assets::IAssetManager> assetManager_;
 
   std::unique_ptr<Graphics::Vulkan::Textures::Texture> blankTexture_;
+
+  //TODO testing
+  std::unique_ptr<Graphics::Vulkan::Textures::TextureAtlas> textureAtlas_;
 
   void UpdateInstance(flecs::entity e);
 };

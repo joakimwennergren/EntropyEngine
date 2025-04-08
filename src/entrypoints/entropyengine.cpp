@@ -71,6 +71,7 @@ using namespace Entropy::Cameras;
 #include <vulkan/textures/texture.h>
 #include <glm/glm.hpp>
 
+#if ENTROPY_PLATFROM == IOS
 flecs::entity CreateSprite(const std::string& path,
                            const glm::vec3 pos = glm::vec3(0.0f),
                            const glm::vec3 dim = glm::vec3(500.0f)) {
@@ -88,26 +89,26 @@ flecs::entity CreateSprite(const std::string& path,
       .set<Components::TwoDQuad>({})
       .set<Components::Texture>({path, textureId, true});
 }
-
 EntropyEngine::EntropyEngine(void* layer, uint32_t width, uint32_t height) {
   InitializeQuill();
   SetupServices();
   const auto sl = ServiceLocator::GetInstance();
   sl->getService<ISwapChain>()->Build(
-      std::make_shared<Surface>((CAMetalLayer*)layer),
+      std::make_shared<Surface>((__bridge CAMetalLayer*)layer),
       VkExtent2D{width, height}, nullptr);
   const auto camera_manager = sl->getService<ICameraManager>();
   camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
   renderer = new VulkanRenderer(width, height);
   CreateSprite("test.png");
 }
+#endif
 
-/*
+#if ENTROPY_PLATFROM == MACOS || ENTROPY_PLATFROM == LINUX
 EntropyEngine::EntropyEngine() {
   InitializeQuill();
   SetupServices();
 }
-  */
+#endif
 
 EntropyEngine::~EntropyEngine() {
   delete renderer;

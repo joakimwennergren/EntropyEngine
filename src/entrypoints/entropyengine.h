@@ -25,13 +25,19 @@
 #include <vulkan/vulkan_metal.h>
 
 #include "renderers/vulkan_renderer.h"
+#include "vulkan/vulkan_core.h"
 
 namespace Entropy::EntryPoints {
 
 class EntropyEngine {
 
  public:
+#if ENTROPY_PLATFROM == IOS
   EntropyEngine(void* layer, uint32_t width, uint32_t height);
+#endif
+#if ENTROPY_PLATFROM == MACOS || ENTROPY_PLATFROM == LINUX
+  EntropyEngine(uint32_t width, uint32_t height);
+#endif
   ~EntropyEngine();
 
   Vulkan::Renderers::VulkanRenderer* renderer;

@@ -38,6 +38,7 @@
 #include "vulkan/textures/depthbuffer_texture.h"
 #include "vulkan/textures/swapchain_texture.h"
 #include "vulkan/textures/texture.h"
+#include "vulkan/textures/textureatlas.h"
 
 // PipelineCache
 #include "vulkan/pipelinecaches/ipipeline_cache.h"

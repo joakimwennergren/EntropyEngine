@@ -1,6 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-
 #include "texture.h"
 #include <vulkan/vulkan.h>
 #include <iostream>
@@ -30,6 +27,7 @@ static std::string GetProjectBasePath() {
 #endif
 
 namespace Entropy::Graphics::Vulkan::Textures {
+
 // Custom write callback to store PNG data in a stbi_uc* buffer
 void write_callback(void* context, void* data, int size) {
   // Cast context to a stbi_uc pointer to store data
@@ -63,6 +61,13 @@ Texture::Texture(const int32_t width, const int32_t height) {
   Create(width, height);
 }
 
+Texture::Texture(const std::vector<uint8_t> &data, const int width, const int height) {
+  const VkDeviceSize imageSize = width * height * 4;
+  stagingBuffer_ = std::make_unique<StagingBuffer>(
+      imageSize, data.data(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+  Create(width, height);
+}
+
 Texture::Texture(const std::string& path) {
   assert(!path.empty());
   texturePath = path;
@@ -71,11 +76,12 @@ Texture::Texture(const std::string& path) {
 
   // Load the image pixels
 #if ENTROPY_PLATFORM == IOS
-  stbi_uc* pixels = stbi_load((GetProjectBasePath() + "/" + path).c_str(), &texWidth, &texHeight,
-                              &texChannels, STBI_rgb_alpha);
+  stbi_uc* pixels =
+      stbi_load((GetProjectBasePath() + "/" + path).c_str(), &texWidth,
+                &texHeight, &texChannels, STBI_rgb_alpha);
 #else
   stbi_uc* pixels = stbi_load((path).c_str(), &texWidth, &texHeight,
-                            &texChannels, STBI_rgb_alpha);
+                              &texChannels, STBI_rgb_alpha);
 #endif
 
   const VkDeviceSize imageSize = texWidth * texHeight * 4;

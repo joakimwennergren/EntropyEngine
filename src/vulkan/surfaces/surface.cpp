@@ -1,8 +1,6 @@
 #include "surface.h"
 
 #include <vulkan/devices/ilogical_device.h>
-#include <iostream>
-
 #include "servicelocators/servicelocator.h"
 #include "vulkan/instances/vk_instance.h"
 #include "vulkan/utilities/helpers.h"

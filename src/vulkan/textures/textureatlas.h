@@ -18,21 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_ECS_COMPONENT_TWOD_QUAD_H
-#define ENTROPY_ECS_COMPONENT_TWOD_QUAD_H
+#ifndef ENTROPY_VULKAN_TEXTURE_ATLAS_H
+#define ENTROPY_VULKAN_TEXTURE_ATLAS_H
 
-#include <glm/glm.hpp>
-#include "vulkan/data/vertex.h"
+#include "texture.h"
 
-namespace Entropy::ECS::Components {
-struct TwoDQuad {
-  std::vector<Graphics::Vulkan::Data::TwoDVertex> vertices = {
-    {{-1.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},
-    {{1.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
-    {{1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-    {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f}}};
-  std::vector<uint32_t> indices = {0, 1, 2, 2, 3, 0};
+namespace Entropy::Graphics::Vulkan::Textures {
+class TextureAtlas final {
+ public:
+  struct TextureRegion {
+   float uMin, vMin, uMax, vMax;
+   int width, height;
+  };
+  explicit TextureAtlas();
+  bool CreateAtlas(const std::vector<std::string>& imagePaths);
+  std::shared_ptr<Texture> texture_;
+  std::vector<TextureRegion> textureRegions;
+
 };
-} // namespace Entropy::ECS::Components
+}  // namespace Entropy::Graphics::Vulkan::Textures
 
-#endif // ENTROPY_ECS_COMPONENT_TWOD_QUAD_H
+#endif  // ENTROPY_VULKAN_TEXTURE_H

@@ -44,16 +44,16 @@ class BaseBuffer {
 public:
   ~BaseBuffer();
   [[nodiscard]] VkBuffer GetVulkanBuffer() const { return buffer_; };
-  [[nodiscard]] void *GetMappedMemory() const { return mappedMemory_; };
-  VmaAllocation GetVmaAllocation() const { return allocation_; };
+  [[nodiscard]] void *GetMappedMemory() const { return allocationInfo_.pMappedData; };
+  [[nodiscard]] VmaAllocation GetVmaAllocation() const { return allocation_; };
 
 protected:
-  void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage);
+  void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaAllocationCreateFlags flags);
 
   VkBuffer buffer_ = VK_NULL_HANDLE;
   VkDeviceMemory bufferMemory_ = VK_NULL_HANDLE;
   VmaAllocation allocation_ = VK_NULL_HANDLE;
-  void *mappedMemory_ = nullptr;
+  VmaAllocationInfo allocationInfo_{};
   std::shared_ptr<Memory::IAllocator> allocator_;
   std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
 };

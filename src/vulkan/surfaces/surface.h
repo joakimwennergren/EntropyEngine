@@ -24,8 +24,8 @@
 #include "config.h"
 
 #if ENTROPY_PLATFORM == MACOS
-#include <GLFW/glfw3.h>
 #include <vulkan/vulkan.hpp>
+#include <GLFW/glfw3.h>
 
 #elif ENTROPY_PLATFORM == LINUX
 #include <GLFW/glfw3.h>

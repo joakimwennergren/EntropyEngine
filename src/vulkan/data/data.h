@@ -36,8 +36,10 @@ struct InstanceData {
   glm::vec4 borderColor;
   glm::vec4 cornerRadiuses;
   glm::vec2 dimension;
-  int type;
-  int textureIndex;
+  glm::vec2 uvMin;
+  glm::vec2 uvMax;
+  //int type;
+  //int textureIndex;
 };
 
 } // namespace Entropy::Graphics::Vulkan::Data

@@ -2,24 +2,15 @@
 
 namespace Entropy::Graphics::Vulkan::Buffers {
 
-template <class T> IndexBuffer<T>::IndexBuffer() {
-  // const VkDeviceSize bufferSize = sizeof(T) * indices.size();
-  // assert(bufferSize != 0);
-  CreateBuffer(1000, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                         VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-  // vmaMapMemory(allocator_->Get(), allocation_, &mappedMemory_);
-  // memcpy(mappedMemory_, indices.data(), bufferSize);
-  // vmaUnmapMemory(allocator_->Get(), allocation_);
+template <class T> IndexBuffer<T>::IndexBuffer(VkDeviceSize size) {
+  assert(size != 0);
+  CreateBuffer(size, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT |
+VMA_ALLOCATION_CREATE_MAPPED_BIT);
 }
 
-template <class T> IndexBuffer<T>::IndexBuffer(std::vector<T> indices) {
-  const VkDeviceSize bufferSize = sizeof(T) * indices.size();
-  assert(bufferSize != 0);
-  CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
-                               VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-  vmaMapMemory(allocator_->Get(), allocation_, &mappedMemory_);
-  memcpy(mappedMemory_, indices.data(), bufferSize);
-  vmaUnmapMemory(allocator_->Get(), allocation_);
+template <class T>
+void IndexBuffer<T>::Update(std::vector<T> indices) {
+  memcpy(allocationInfo_.pMappedData, indices.data(), indices.size() * sizeof(T));
 }
 
 // Explicit template instantiations

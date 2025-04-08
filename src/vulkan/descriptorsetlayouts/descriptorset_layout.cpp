@@ -14,7 +14,7 @@ DescriptorSetLayout::DescriptorSetLayout(
   VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsInfo = {};
   bindingFlagsInfo.sType =
       VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO;
-  bindingFlagsInfo.bindingCount = bindingFlags.size();
+  bindingFlagsInfo.bindingCount = static_cast<uint32_t>(bindingFlags.size());
   bindingFlagsInfo.pBindingFlags = bindingFlags.data();
 
   VkDescriptorSetLayoutCreateInfo layoutInfo{};

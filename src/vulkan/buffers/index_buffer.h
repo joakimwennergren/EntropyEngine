@@ -43,8 +43,8 @@ namespace Entropy::Graphics::Vulkan::Buffers {
  */
 template <class T> class IndexBuffer final : public BaseBuffer {
 public:
-  explicit IndexBuffer();
-  IndexBuffer(std::vector<T> indices);
+  explicit IndexBuffer(VkDeviceSize size);
+  void Update(std::vector<T> indices);
 };
 } // namespace Entropy::Graphics::Vulkan::Buffers
 

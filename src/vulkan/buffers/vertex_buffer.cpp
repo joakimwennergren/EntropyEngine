@@ -1,25 +1,18 @@
 #include "vertex_buffer.h"
 
 namespace Entropy::Graphics::Vulkan::Buffers {
-template <class T> VertexBuffer<T>::VertexBuffer() {
-  // const VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
-  // assert(bufferSize != 0);
-  CreateBuffer(1000, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-  // vmaMapMemory(allocator_->Get(), allocation_, &mappedMemory_);
-  // memcpy(mappedMemory_, vertices.data(), bufferSize);
-  // vmaUnmapMemory(allocator_->Get(), allocation_);
+
+template <class T>
+VertexBuffer<T>::VertexBuffer(const VkDeviceSize size) {
+  assert(size != 0);
+  CreateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+  VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT |
+VMA_ALLOCATION_CREATE_MAPPED_BIT);
 }
 
 template <class T>
-VertexBuffer<T>::VertexBuffer(const std::vector<T> &vertices) {
-  const VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
-  assert(bufferSize != 0);
-  CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
-                               VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-  vmaMapMemory(allocator_->Get(), allocation_, &mappedMemory_);
-  memcpy(mappedMemory_, vertices.data(), bufferSize);
-  vmaUnmapMemory(allocator_->Get(), allocation_);
+void VertexBuffer<T>::Update(std::vector<T> vertices) {
+  memcpy(allocationInfo_.pMappedData, vertices.data(), vertices.size() * sizeof(T));
 }
 
 // Explicit template instantiations

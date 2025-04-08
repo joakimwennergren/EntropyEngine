@@ -1,7 +1,6 @@
 #include "vulkan_renderer.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
 #include "ecs/components/2d_quad.h"
 #include "ecs/components/dimension.h"
 #include "ecs/components/position.h"
@@ -46,7 +45,20 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
                                                   sizeof(InstanceData));
   blankTexture_ = std::make_unique<Graphics::Vulkan::Textures::Texture>(1, 1);
 
-  std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+  // @TODO TESTING ATLAS
+  const std::vector<std::string> textures = {
+      "test.png",
+      "test2.png",
+  };
+  textureAtlas_ = std::make_unique<Graphics::Vulkan::Textures::TextureAtlas>();
+  textureAtlas_->CreateAtlas(textures);
+
+  vertexDataBuffer_ = std::make_shared<VertexBuffer<TwoDVertex>>(
+      MAX_INSTANCE_COUNT * sizeof(TwoDVertex));
+  indexDataBuffer_ =
+      std::make_shared<IndexBuffer<uint32_t>>(MAX_INSTANCE_COUNT);
+
+  std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
 
   VkDescriptorBufferInfo uboInfo{};
   uboInfo.buffer = UBO_->GetVulkanBuffer();
@@ -57,6 +69,11 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
   instanceInfo.buffer = instanceData_->GetVulkanBuffer();
   instanceInfo.offset = 0;
   instanceInfo.range = sizeof(InstanceData) * MAX_INSTANCE_COUNT;
+
+  VkDescriptorImageInfo imageInfo;
+  imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  imageInfo.imageView = textureAtlas_->texture_->GetImageView()->Get();
+  imageInfo.sampler = textureAtlas_->texture_->GetSampler();
 
   descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
   descriptorWrites[0].dstSet = two_d_pipeline_->descriptorSet;
@@ -74,6 +91,15 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
   descriptorWrites[1].descriptorCount = 1;
   descriptorWrites[1].pBufferInfo = &instanceInfo;
 
+  descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  descriptorWrites[2].dstSet = two_d_pipeline_->descriptorSet;
+  descriptorWrites[2].dstBinding = 2;
+  descriptorWrites[2].dstArrayElement = 0;
+  descriptorWrites[2].descriptorType =
+      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  descriptorWrites[2].descriptorCount = 1;
+  descriptorWrites[2].pImageInfo = &imageInfo;
+
   vkUpdateDescriptorSets(logicalDevice_->Get(), descriptorWrites.size(),
                          descriptorWrites.data(), 0, nullptr);
 }
@@ -86,9 +112,6 @@ void VulkanRenderer::Resize(const uint32_t width, const uint32_t height) {
 }
 
 void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
-
-  std::cout << "RENDERING" << std::endl;
-
   const auto currentFence = synchronizer_->GetFences()[currentFrame_];
 
   VK_CHECK(vkWaitForFences(logicalDevice_->Get(), 1, &currentFence, VK_TRUE,
@@ -149,6 +172,8 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
                         quad.vertices.end());
         indices.insert(indices.end(), quad.indices.begin(), quad.indices.end());
 
+        /*
+
         if (e.has<ECS::Components::Texture>()) {
           const auto texture =
               assetManager_->GetAsync<Graphics::Vulkan::Textures::Texture>(
@@ -173,11 +198,13 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
               blankTexture_->GetImageView()->Get();
           imageInfos[objectIndex_].sampler = blankTexture_->GetSampler();
         }
+        */
 
         UpdateInstance(e);
         objectIndex_++;
       });
 
+  /*
   for (uint32_t i = objectIndex_; i < TEXTURE_ARRAY_SIZE; i++) {
     imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     imageInfos[i].imageView = blankTexture_->GetImageView()->Get();
@@ -196,6 +223,8 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
   vkUpdateDescriptorSets(logicalDevice_->Get(), 1, &descriptorWrite, 0,
                          nullptr);
 
+                         */
+
   PushConstant constants{};
   constants.instanceIndex = objectIndex_;
 
@@ -204,8 +233,8 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
                      two_d_pipeline_->GetPipelineLayout(), VK_SHADER_STAGE_ALL,
                      0, sizeof(PushConstant), &constants);
 
-  vertexDataBuffer_ = std::make_shared<VertexBuffer<TwoDVertex>>(vertices);
-  indexDataBuffer_ = std::make_shared<IndexBuffer<uint32_t>>(indices);
+  vertexDataBuffer_->Update(vertices);
+  indexDataBuffer_->Update(indices);
 
   // Bind vertex & index buffers
   const VkBuffer vertexBuffers[] = {vertexDataBuffer_->GetVulkanBuffer()};
@@ -283,6 +312,18 @@ void VulkanRenderer::UpdateInstance(const flecs::entity e) {
   const auto rotation = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f),
                                     glm::vec3(0.0f, 0.0f, 1.0f));
 
+  auto* object = static_cast<InstanceData*>(instanceData_->GetMappedMemory());
+  object[objectIndex_].model = (translate * scaling * rotation);
+  object[objectIndex_].uvMin = glm::vec2(textureAtlas_->textureRegions[0].uMin,
+                                         textureAtlas_->textureRegions[0].vMin);
+  object[objectIndex_].uvMax = glm::vec2(textureAtlas_->textureRegions[0].uMax,
+                                         textureAtlas_->textureRegions[0].vMax);
+  //object[objectIndex_].textureIndex =
+  //    e.has<ECS::Components::Texture>()
+  //        ? e.get_ref<ECS::Components::Texture>()->index
+  //        : 0;
+
+  /*
   void* objectData;
   vmaMapMemory(allocator_->Get(), instanceData_->GetVmaAllocation(),
                &objectData);
@@ -294,4 +335,5 @@ void VulkanRenderer::UpdateInstance(const flecs::entity e) {
           ? e.get_ref<ECS::Components::Texture>()->index
           : 0;
   vmaUnmapMemory(allocator_->Get(), instanceData_->GetVmaAllocation());
+  */
 }

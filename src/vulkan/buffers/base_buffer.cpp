@@ -11,7 +11,8 @@ BaseBuffer::~BaseBuffer() {
 }
 
 void BaseBuffer::CreateBuffer(const VkDeviceSize size,
-                              const VkBufferUsageFlags usage) {
+                              const VkBufferUsageFlags usage,
+                              const VmaAllocationCreateFlags flags) {
   const ServiceLocator *sl = ServiceLocator::GetInstance();
   allocator_ = sl->getService<Memory::IAllocator>();
   logicalDevice_ = sl->getService<Devices::ILogicalDevice>();
@@ -23,11 +24,13 @@ void BaseBuffer::CreateBuffer(const VkDeviceSize size,
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
   bufferInfo.size = size;
   bufferInfo.usage = usage;
+  bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
   VmaAllocationCreateInfo allocInfo = {};
   allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
-  allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT;
+  allocInfo.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT |
+                    VMA_ALLOCATION_CREATE_MAPPED_BIT;
 
   VK_CHECK(vmaCreateBuffer(allocator_->Get(), &bufferInfo, &allocInfo, &buffer_,
-                           &allocation_, nullptr));
+                           &allocation_, &allocationInfo_));
 }
