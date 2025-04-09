@@ -39,15 +39,15 @@ struct TwoDVertex {
     bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
     bindingDescriptions[1].binding = 1;
-    bindingDescriptions[1].stride = sizeof(InstanceData);
+    bindingDescriptions[1].stride = sizeof(InstanceDataTwoD);
     bindingDescriptions[1].inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
 
     return bindingDescriptions;
   }
 
-  static std::array<VkVertexInputAttributeDescription, 6>
+  static std::array<VkVertexInputAttributeDescription, 7>
   getAttributeDescriptions() {
-    std::array<VkVertexInputAttributeDescription, 6> attributeDescriptions{};
+    std::array<VkVertexInputAttributeDescription, 7> attributeDescriptions{};
 
     attributeDescriptions[0].binding = 0;
     attributeDescriptions[0].location = 0;
@@ -61,24 +61,28 @@ struct TwoDVertex {
 
     attributeDescriptions[2].binding = 1;
     attributeDescriptions[2].location = 2;
-    attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
     attributeDescriptions[2].offset = 0;
 
     attributeDescriptions[3].binding = 1;
     attributeDescriptions[3].location = 3;
-    attributeDescriptions[3].format =  VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescriptions[3].offset = sizeof(float) * 3;
+    attributeDescriptions[3].format =  VK_FORMAT_R32G32_SFLOAT;
+    attributeDescriptions[3].offset = sizeof(float) * 2;
 
     attributeDescriptions[4].binding = 1;
     attributeDescriptions[4].location = 4;
-    attributeDescriptions[4].format = VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescriptions[4].offset = sizeof(float) * 6;
+    attributeDescriptions[4].format = VK_FORMAT_R32_SFLOAT;
+    attributeDescriptions[4].offset = sizeof(float) * 4;
 
     attributeDescriptions[5].binding = 1;
     attributeDescriptions[5].location = 5;
     attributeDescriptions[5].format = VK_FORMAT_R32_SINT;
-    attributeDescriptions[5].offset = sizeof(float) * 9;
+    attributeDescriptions[5].offset = sizeof(int32_t) * 5;
 
+    attributeDescriptions[6].binding = 1;
+    attributeDescriptions[6].location = 6;
+    attributeDescriptions[6].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+    attributeDescriptions[6].offset = sizeof(float) * 6;
 
     return attributeDescriptions;
   }

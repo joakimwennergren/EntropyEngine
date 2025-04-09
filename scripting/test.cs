@@ -21,8 +21,8 @@ public class EntityScript : EntropyScript
           sprite2_ = new Entity();
           sprite2_.AddComponent(new Sprite(
             "test.png",
-            new Dimension(100.0f, 100.0f),
-            new Position(300.0f, 300.0f)
+            new Dimension(500.0f, 500.0f),
+            new Position(400.0f, 400.0f)
           ));
 
      }

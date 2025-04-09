@@ -21,10 +21,10 @@ void OrthographicCamera::Pan(const float deltaX, const float deltaY) {
 
 void OrthographicCamera::SetPerspective(const uint32_t width,
                                         const uint32_t height,
-                                        const float znear, const float zfar) {
+                                        const float z_near, const float z_far) {
   projection =
       glm::ortho(cameraPosition.x,
                  static_cast<float>(width) / zoomFactor + cameraPosition.x,
                  static_cast<float>(height) / zoomFactor + cameraPosition.y,
-                 cameraPosition.y, znear, zfar);
+                 cameraPosition.y, z_near, z_far);
 }

@@ -55,14 +55,14 @@ class VulkanRenderer {
   std::unique_ptr<VertexBuffer<Graphics::Vulkan::Data::TwoDVertex>>
       vertexDataBuffer_;
 
-  std::unique_ptr<VertexBuffer<Graphics::Vulkan::Data::InstanceData>>
+  std::unique_ptr<VertexBuffer<Graphics::Vulkan::Data::InstanceDataTwoD>>
     instanceDataBuffer_;
 
   std::unique_ptr<IndexBuffer<uint32_t>> indexDataBuffer_;
 
   std::vector<Graphics::Vulkan::Data::TwoDVertex> vertices;
   std::vector<uint32_t> indices;
-  std::vector<Graphics::Vulkan::Data::InstanceData> instanceData_;
+  std::vector<Graphics::Vulkan::Data::InstanceDataTwoD> instanceData_;
 
   std::unique_ptr<Graphics::Vulkan::Synchronization::Synchronizer>
       synchronizer_;

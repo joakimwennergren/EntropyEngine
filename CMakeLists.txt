@@ -1,12 +1,3 @@
-# ______       _                                            _
-# |  ____|     | |                                          (_)
-# | |__   _ __ | |_ _ __ ___  _ __  _   _    ___ _ __   __ _ _ _ __   ___
-# |  __| | '_ \| __| '__/ _ \| '_ \| | | |  / _ \ '_ \ / _` | | '_ \ / _ \
-# | |____| | | | |_| | | (_) | |_) | |_| | |  __/ | | | (_| | | | | |  __/
-# |______|_| |_|\__|_|  \___/| .__/ \__, |  \___|_| |_|\__, |_|_| |_|\___|
-# | |     __/ |              __/ |
-# |_|    |___/              |___/               v 1.0.0
-
 cmake_minimum_required(VERSION 3.28.3)
 
 include(FetchContent)
@@ -237,8 +228,16 @@ if(NOT IOS)
 endif()
 
 if(BUILD_ENTROPY_AS_EXECUTABLE)
-    file(COPY shaders/compiled/2dshader/2dshader_vert.spv DESTINATION ${CMAKE_BINARY_DIR})
-    file(COPY shaders/compiled/2dshader/2dshader_frag.spv DESTINATION ${CMAKE_BINARY_DIR})
+    file(CREATE_LINK
+            "${CMAKE_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_vert.spv"
+            "${CMAKE_BINARY_DIR}/2dshader_vert.spv"
+            SYMBOLIC
+    )
+    file(CREATE_LINK
+            "${CMAKE_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_frag.spv"
+            "${CMAKE_BINARY_DIR}/2dshader_frag.spv"
+            SYMBOLIC
+    )
     file(COPY test/test.png DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 

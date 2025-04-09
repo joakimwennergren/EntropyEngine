@@ -47,8 +47,8 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
   vertexDataBuffer_ = std::make_unique<VertexBuffer<TwoDVertex>>(
       MAX_INSTANCE_COUNT * sizeof(TwoDVertex));
 
-  instanceDataBuffer_ = std::make_unique<VertexBuffer<InstanceData>>(
-      MAX_INSTANCE_COUNT * sizeof(InstanceData));
+  instanceDataBuffer_ = std::make_unique<VertexBuffer<InstanceDataTwoD>>(
+      MAX_INSTANCE_COUNT * sizeof(InstanceDataTwoD));
 
   indexDataBuffer_ =
       std::make_unique<IndexBuffer<uint32_t>>(MAX_INSTANCE_COUNT);
@@ -165,10 +165,12 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
 
         const auto scale = e.has<ECS::Components::Dimension>()
                                ? e.get_ref<ECS::Components::Dimension>()->scale
-                               : glm::vec3(0.0f);
+                               : glm::vec2(0.0f);
 
+        const auto region = assetManager_->textureAtlas.textureRegions[0];
+        glm::vec4 atlasUV = glm::vec4(region.uMin, region.vMin, region.uMax, region.vMax);
         instanceData_.push_back(
-            InstanceData{position, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3(100.0f, 100.0f, 0.0f), 0});
+            InstanceDataTwoD{position, scale, 0, 0, atlasUV});
         objectIndex_++;
       });
 

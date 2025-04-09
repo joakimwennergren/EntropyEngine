@@ -82,7 +82,6 @@ EntropyEngine::EntropyEngine(void* layer, uint32_t width, uint32_t height) {
   const auto camera_manager = sl->getService<ICameraManager>();
   camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
   renderer = new VulkanRenderer(width, height);
-  std::cout << "INIT ENTROPY FOR IOS" << std::endl;
 }
 
 #elif ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX

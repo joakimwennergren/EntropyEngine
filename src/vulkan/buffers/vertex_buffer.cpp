@@ -17,6 +17,7 @@ void VertexBuffer<T>::Update(std::vector<T> vertices) {
 
 // Explicit template instantiations
 template class VertexBuffer<Data::TwoDVertex>;
+template class VertexBuffer<Data::InstanceDataTwoD>;
+
 template class VertexBuffer<Data::ThreeDAnimVertex>;
-template class VertexBuffer<Data::InstanceData>;
 } // namespace Entropy::Graphics::Vulkan::Buffers

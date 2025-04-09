@@ -25,7 +25,7 @@
 
 namespace Entropy::ECS::Components {
 struct Dimension {
-  glm::vec3 scale;
+  glm::vec2 scale;
 };
 }
 
