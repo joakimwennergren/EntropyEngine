@@ -26,3 +26,6 @@ add_executable(${PROJECT_NAME} ${TEST_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${ENTROPY_INCLUDE_DIRS} ${googletest_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE gtest gtest_main Entropy)
+
+file(COPY ../shaders/compiled/2dshader/2dshader_vert.spv DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ../shaders/compiled/2dshader/2dshader_frag.spv DESTINATION ${CMAKE_BINARY_DIR})

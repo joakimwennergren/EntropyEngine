@@ -28,8 +28,8 @@
 #include <GLFW/glfw3.h>
 
 #elif ENTROPY_PLATFORM == LINUX
-#include <GLFW/glfw3.h>
 #include <vulkan/vulkan.hpp>
+#include <GLFW/glfw3.h>
 
 #elif ENTROPY_PLATFORM == WINDOWS
 #define WIN32_LEAN_AND_MEAN

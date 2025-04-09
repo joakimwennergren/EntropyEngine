@@ -236,7 +236,11 @@ if(NOT IOS)
     add_dependencies(${PROJECT_NAME} GameScripts)
 endif()
 
-message("TEST" ${glfw3_SOURCE_DIR}/include)
+if(BUILD_ENTROPY_AS_EXECUTABLE)
+    file(COPY shaders/compiled/2dshader/2dshader_vert.spv DESTINATION ${CMAKE_BINARY_DIR})
+    file(COPY shaders/compiled/2dshader/2dshader_frag.spv DESTINATION ${CMAKE_BINARY_DIR})
+    file(COPY test/test.png DESTINATION ${CMAKE_BINARY_DIR})
+endif()
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     ${vma_SOURCE_DIR}/include
@@ -272,13 +276,6 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     -Wdeprecated-declarations
     -Wno-deprecated-declarations
 )
-
-# file(COPY shaders/compiled/2dshader/2dshader_vert.spv DESTINATION ${CMAKE_BINARY_DIR})
-# file(COPY shaders/compiled/2dshader/2dshader_frag.spv DESTINATION ${CMAKE_BINARY_DIR})
-
-# For testing only..
-# file(COPY test/test.png DESTINATION ${CMAKE_BINARY_DIR})
-# file(COPY test/test2.png DESTINATION ${CMAKE_BINARY_DIR})
 
 # Build config file
 configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/config.h @ONLY)

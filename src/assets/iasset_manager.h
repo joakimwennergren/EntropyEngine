@@ -21,14 +21,20 @@
 #ifndef ENTROPY_ASSETS_IASSET_MANAGER_H
 #define ENTROPY_ASSETS_IASSET_MANAGER_H
 
-#include <cstdint>
 #include "servicelocators/servicelocator.h"
 #include "vulkan/textures/texture.h"
+#include "vulkan/textures/textureatlas.h"
 
 namespace Entropy::Assets {
 class IAssetManager : public IService {
  public:
   ~IAssetManager() override = default;
+
+  int32_t LoadToAtlas(const std::string& path) {
+    textureAtlas_textures_.push_back(path);
+    textureAtlas.CreateAtlas(textureAtlas_textures_);
+    return textureIndex_++;
+  }
 
   template <typename T>
   int32_t Load(const std::string& path) {
@@ -54,6 +60,10 @@ class IAssetManager : public IService {
   std::shared_ptr<T> GetAsync(const int32_t textureId) {
     return GetAsyncImpl<T>(textureId);
   }
+
+  Graphics::Vulkan::Textures::TextureAtlas textureAtlas;
+  std::vector<std::string> textureAtlas_textures_;
+  int32_t textureIndex_ = -1;
 
  protected:
   virtual int32_t LoadTexture(const std::string& path) = 0;

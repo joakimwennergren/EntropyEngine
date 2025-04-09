@@ -24,6 +24,7 @@
 #include <array>
 #include <glm/glm.hpp>
 #include <vulkan/vulkan.hpp>
+#include "data.h"
 
 namespace Entropy::Graphics::Vulkan::Data {
 
@@ -31,17 +32,22 @@ struct TwoDVertex {
   glm::vec3 pos;
   glm::vec2 uv;
 
-  static VkVertexInputBindingDescription getBindingDescription() {
-    VkVertexInputBindingDescription bindingDescription{};
-    bindingDescription.binding = 0;
-    bindingDescription.stride = sizeof(TwoDVertex);
-    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-    return bindingDescription;
+  static std::array<VkVertexInputBindingDescription,2> getBindingDescriptions() {
+    std::array<VkVertexInputBindingDescription,2> bindingDescriptions{};
+    bindingDescriptions[0].binding = 0;
+    bindingDescriptions[0].stride = sizeof(TwoDVertex);
+    bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+    bindingDescriptions[1].binding = 1;
+    bindingDescriptions[1].stride = sizeof(InstanceData);
+    bindingDescriptions[1].inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
+
+    return bindingDescriptions;
   }
 
-  static std::array<VkVertexInputAttributeDescription, 2>
+  static std::array<VkVertexInputAttributeDescription, 6>
   getAttributeDescriptions() {
-    std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+    std::array<VkVertexInputAttributeDescription, 6> attributeDescriptions{};
 
     attributeDescriptions[0].binding = 0;
     attributeDescriptions[0].location = 0;
@@ -52,6 +58,27 @@ struct TwoDVertex {
     attributeDescriptions[1].location = 1;
     attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
     attributeDescriptions[1].offset = offsetof(TwoDVertex, uv);
+
+    attributeDescriptions[2].binding = 1;
+    attributeDescriptions[2].location = 2;
+    attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[2].offset = 0;
+
+    attributeDescriptions[3].binding = 1;
+    attributeDescriptions[3].location = 3;
+    attributeDescriptions[3].format =  VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[3].offset = sizeof(float) * 3;
+
+    attributeDescriptions[4].binding = 1;
+    attributeDescriptions[4].location = 4;
+    attributeDescriptions[4].format = VK_FORMAT_R32_SFLOAT;
+    attributeDescriptions[4].offset = sizeof(float) * 6;
+
+    attributeDescriptions[5].binding = 1;
+    attributeDescriptions[5].location = 5;
+    attributeDescriptions[5].format = VK_FORMAT_R32_SINT;
+    attributeDescriptions[5].offset = sizeof(float) * 7;
+
 
     return attributeDescriptions;
   }
@@ -65,13 +92,13 @@ struct ThreeDAnimVertex {
   glm::vec4 joint;
   glm::vec4 weight;
 
-  static VkVertexInputBindingDescription getBindingDescription() {
-    VkVertexInputBindingDescription bindingDescription{};
-    bindingDescription.binding = 0;
-    bindingDescription.stride = sizeof(ThreeDAnimVertex);
-    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+  static std::array<VkVertexInputBindingDescription,1> getBindingDescriptions() {
+    std::array<VkVertexInputBindingDescription,1> bindingDescriptions{};
+    bindingDescriptions[0].binding = 0;
+    bindingDescriptions[0].stride = sizeof(ThreeDAnimVertex);
+    bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-    return bindingDescription;
+    return bindingDescriptions;
   }
 
   static std::array<VkVertexInputAttributeDescription, 6>

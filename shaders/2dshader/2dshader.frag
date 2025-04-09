@@ -37,27 +37,12 @@ layout(std140, set = 0, binding = 0) readonly buffer InstanceBuffer{
 
 */
 
-struct InstanceData{
-    mat4 model;
-    vec4 bgColor;
-    vec4 borderColor;
-    vec4 cornerRadiuses;
-    vec2 dimension;
-    vec2 uvMin;
-    vec2 uvMax;
-};
-
-//all object matrices
-layout(std140, set = 0, binding = 0) readonly buffer InstanceBuffer{
-    InstanceData objects[];
-} instanceBuffer;
-
 layout(location = 0) out vec4 outColor;
 
 void main()
 {
-    vec2 atlasUV = mix(instanceBuffer.objects[0].uvMin, instanceBuffer.objects[0].uvMax, inUV);
-    outColor = texture(atlas, atlasUV);
+    //vec2 atlasUV = mix(instanceBuffer.objects[0].uvMin, instanceBuffer.objects[0].uvMax, inUV);
+    outColor = vec4(0.0, 1.0, 1.0, 1.0);
     //outColor = vec4(1.0, 0.0, 1.0, 1.0); //texture(textures[textureIndex], UV) * vec4(1.0, 1.0, 1.0, 1.0);
     /*
     switch (instanceBuffer.objects[PushConstants.instanceIndex].type) {

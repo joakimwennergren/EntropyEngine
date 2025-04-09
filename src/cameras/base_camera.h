@@ -31,7 +31,7 @@ namespace Entropy::Cameras {
     virtual void SetPerspective(uint32_t width, uint32_t height, float znear, float zfar) = 0;
     glm::vec3 cameraPosition{};
     float zoomFactor = 1.0f;
-    glm::mat4 perspective;
+    glm::mat4 projection;
     glm::mat4 view;
   };
 } // namespace Entropy::Cameras

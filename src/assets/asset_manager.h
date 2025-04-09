@@ -32,7 +32,6 @@ class AssetManager final : public ServiceBase<IAssetManager> {
 
 private:
   std::string GetTextureKeyById(int32_t textureId);
-  int32_t textureIndex_ = -1;
   std::mutex mutex_;
 };
 

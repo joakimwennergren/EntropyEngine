@@ -34,8 +34,8 @@ TextureAtlas::TextureAtlas() {}
 
 bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
 
+  stbi_set_flip_vertically_on_load(true);
   std::vector<stbrp_rect> rects;
-  textureRegions.reserve(imagePaths.size());
 
   // Load images and store their dimensions
   std::vector<unsigned char*> images(imagePaths.size());
@@ -48,8 +48,12 @@ bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
   // Load images and calculate the total area
   for (int32_t i = 0; i < imagePaths.size(); ++i) {
     int w, h, c;
-    images[i] = stbi_load((GetProjectBasePath() + imagePaths[i]).c_str(), &w, &h,
-                          &c, 4);  // Force RGBA
+#if ENTROPY_PLATFORM == IOS
+    images[i] = stbi_load((GetProjectBasePath() + "/" + imagePaths[i]).c_str(),
+                          &w, &h, &c, 4);  // Force RGBA
+#else
+    images[i] = stbi_load(imagePaths[i].c_str(), &w, &h, &c, 4);  // Force RGBA
+#endif
     if (!images[i]) {
       std::cerr << "Failed to load image: " << imagePaths[i] << "\n";
       return false;
@@ -115,7 +119,6 @@ bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
   std::vector<unsigned char> atlas(atlasWidth * atlasHeight * 4,
                                    0);  // 4 channels (RGBA)
 
-  uint32_t i = 0;
   // Copy images into the atlas
   for (auto& rect : rects) {
     if (!rect.was_packed)
@@ -130,15 +133,16 @@ bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
     }
 
     // Store UV coordinates in textureRegions
-    textureRegions[i] = {
+    textureRegions.push_back({
         x / (float)atlasWidth,         // min U (left)
         y / (float)atlasHeight,        // min V (bottom)
         (x + w) / (float)atlasWidth,   // max U (right)
         (y + h) / (float)atlasHeight,  // max V (top)
         w,
         h  // width and height of the texture in pixels
-    };
-    i++;
+    });
+
+    stbi_image_free((void*)img);
   }
 
   texture_ = std::make_shared<Texture>(atlas, atlasWidth, atlasHeight);

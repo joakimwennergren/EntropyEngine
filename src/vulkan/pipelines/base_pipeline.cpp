@@ -64,18 +64,17 @@ void BasePipeline<T>::Build() {
   //                             : VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
   inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-  auto bindingDescriptionVertex = T::getBindingDescription();
-  auto attributeDescriptionsVertex = T::getAttributeDescriptions();
+  auto bindingDescriptions = T::getBindingDescriptions();
+  auto attributeDescriptions = T::getAttributeDescriptions();
 
   VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
   vertexInputInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  vertexInputInfo.vertexBindingDescriptionCount = 1;
+  vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
   vertexInputInfo.vertexAttributeDescriptionCount =
-      static_cast<uint32_t>(attributeDescriptionsVertex.size());
-  vertexInputInfo.pVertexBindingDescriptions = &bindingDescriptionVertex;
-  vertexInputInfo.pVertexAttributeDescriptions =
-      attributeDescriptionsVertex.data();
+      static_cast<uint32_t>(attributeDescriptions.size());
+  vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+  vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
   std::vector<VkPipelineVertexInputStateCreateInfo> vertexInputStates(1);
   vertexInputStates[0] = vertexInputInfo;
@@ -147,10 +146,10 @@ void BasePipeline<T>::Build() {
   colorBlending.blendConstants[2] = 0.0f;
   colorBlending.blendConstants[3] = 0.0f;
 
-  VkPushConstantRange push_constant;
-  push_constant.offset = 0;
-  push_constant.size = sizeof(PushConstant);
-  push_constant.stageFlags = VK_SHADER_STAGE_ALL;
+  // VkPushConstantRange push_constant;
+  // push_constant.offset = 0;
+  // push_constant.size = sizeof(PushConstant);
+  // push_constant.stageFlags = VK_SHADER_STAGE_ALL;
 
   std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
   for (auto& descriptorSetLayout : descriptorSetLayouts_) {
@@ -162,8 +161,8 @@ void BasePipeline<T>::Build() {
   pipelineLayoutInfo.setLayoutCount =
       static_cast<uint32_t>(descriptorSetLayouts_.size());
   pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-  pipelineLayoutInfo.pPushConstantRanges = &push_constant;
-  pipelineLayoutInfo.pushConstantRangeCount = 1;
+  // pipelineLayoutInfo.pPushConstantRanges = &push_constant;
+  // pipelineLayoutInfo.pushConstantRangeCount = 1;
 
   VK_CHECK(vkCreatePipelineLayout(logicalDevice_->Get(), &pipelineLayoutInfo,
                                   nullptr, &pipelineLayout_));

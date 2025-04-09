@@ -26,13 +26,6 @@ TwoDPipeline::TwoDPipeline(
     const std::shared_ptr<RenderPasses::RenderPass>& renderPass)
     : BasePipeline(renderPass) {
 
-  VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
-  instanceLayoutBinding.binding = 0;
-  instanceLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-  instanceLayoutBinding.descriptorCount = 1;
-  instanceLayoutBinding.stageFlags = VK_SHADER_STAGE_ALL;
-  instanceLayoutBinding.pImmutableSamplers = nullptr;
-
   VkDescriptorSetLayoutBinding uboLayoutBinding{};
   uboLayoutBinding.binding = 1;
   uboLayoutBinding.descriptorCount = 1;
@@ -48,13 +41,12 @@ TwoDPipeline::TwoDPipeline(
   samplerLayoutBinding.pImmutableSamplers = nullptr;
   samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-  const std::vector bindings = {instanceLayoutBinding, uboLayoutBinding,
+  const std::vector bindings = {uboLayoutBinding,
                                 samplerLayoutBinding};
 
   // const std::vector bindings2 = {samplerLayoutBinding};
 
-  const std::vector<VkDescriptorBindingFlags> bindingFlags0 = {
-      0, 0, VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT};
+  const std::vector<VkDescriptorBindingFlags> bindingFlags0 = {0, 0};
   // const std::vector<VkDescriptorBindingFlags> bindingFlags1 = {};
 
   descriptorSetLayouts_.push_back(

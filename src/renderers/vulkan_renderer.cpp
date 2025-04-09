@@ -7,6 +7,8 @@
 #include "ecs/components/texture.h"
 #include "vulkan/data/data.h"
 
+#include <iostream>
+
 using namespace Entropy::Vulkan::Renderers;
 using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::Graphics::Vulkan::Devices;
@@ -41,39 +43,28 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
   }
 
   UBO_ = std::make_unique<UniformBuffer>(sizeof(UBOData));
-  instanceData_ = std::make_unique<StorageBuffer>(MAX_INSTANCE_COUNT *
-                                                  sizeof(InstanceData));
-  blankTexture_ = std::make_unique<Graphics::Vulkan::Textures::Texture>(1, 1);
 
-  // @TODO TESTING ATLAS
-  const std::vector<std::string> textures = {
-      "test.png",
-      "test2.png",
-  };
-  textureAtlas_ = std::make_unique<Graphics::Vulkan::Textures::TextureAtlas>();
-  textureAtlas_->CreateAtlas(textures);
-
-  vertexDataBuffer_ = std::make_shared<VertexBuffer<TwoDVertex>>(
+  vertexDataBuffer_ = std::make_unique<VertexBuffer<TwoDVertex>>(
       MAX_INSTANCE_COUNT * sizeof(TwoDVertex));
-  indexDataBuffer_ =
-      std::make_shared<IndexBuffer<uint32_t>>(MAX_INSTANCE_COUNT);
 
-  std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
+  instanceDataBuffer_ = std::make_unique<VertexBuffer<InstanceData>>(
+      MAX_INSTANCE_COUNT * sizeof(InstanceData));
+
+  indexDataBuffer_ =
+      std::make_unique<IndexBuffer<uint32_t>>(MAX_INSTANCE_COUNT);
+
+  std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
   VkDescriptorBufferInfo uboInfo{};
   uboInfo.buffer = UBO_->GetVulkanBuffer();
   uboInfo.offset = 0;
   uboInfo.range = sizeof(UBOData);
 
-  VkDescriptorBufferInfo instanceInfo;
-  instanceInfo.buffer = instanceData_->GetVulkanBuffer();
-  instanceInfo.offset = 0;
-  instanceInfo.range = sizeof(InstanceData) * MAX_INSTANCE_COUNT;
-
   VkDescriptorImageInfo imageInfo;
   imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-  imageInfo.imageView = textureAtlas_->texture_->GetImageView()->Get();
-  imageInfo.sampler = textureAtlas_->texture_->GetSampler();
+  imageInfo.imageView =
+      assetManager_->textureAtlas.texture_->GetImageView()->Get();
+  imageInfo.sampler = assetManager_->textureAtlas.texture_->GetSampler();
 
   descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
   descriptorWrites[0].dstSet = two_d_pipeline_->descriptorSet;
@@ -85,20 +76,12 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
 
   descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
   descriptorWrites[1].dstSet = two_d_pipeline_->descriptorSet;
-  descriptorWrites[1].dstBinding = 0;
+  descriptorWrites[1].dstBinding = 2;
   descriptorWrites[1].dstArrayElement = 0;
-  descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-  descriptorWrites[1].descriptorCount = 1;
-  descriptorWrites[1].pBufferInfo = &instanceInfo;
-
-  descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-  descriptorWrites[2].dstSet = two_d_pipeline_->descriptorSet;
-  descriptorWrites[2].dstBinding = 2;
-  descriptorWrites[2].dstArrayElement = 0;
-  descriptorWrites[2].descriptorType =
+  descriptorWrites[1].descriptorType =
       VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  descriptorWrites[2].descriptorCount = 1;
-  descriptorWrites[2].pImageInfo = &imageInfo;
+  descriptorWrites[1].descriptorCount = 1;
+  descriptorWrites[1].pImageInfo = &imageInfo;
 
   vkUpdateDescriptorSets(logicalDevice_->Get(), descriptorWrites.size(),
                          descriptorWrites.data(), 0, nullptr);
@@ -159,90 +142,48 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
       two_d_pipeline_->GetPipelineLayout(), 0, 1, &ds0, 0, nullptr);
 
   // Copy UBO data
-  const UBOData ubo{camera->perspective, camera->view};
+  const UBOData ubo{camera->projection, camera->view};
   memcpy(UBO_->GetMappedMemory(), &ubo, sizeof(ubo));
 
   objectIndex_ = 0;
   indices.clear();
   vertices.clear();
+  instanceData_.clear();
 
   world_->Get()->each<ECS::Components::TwoDQuad>(
       [&](const flecs::entity e, const ECS::Components::TwoDQuad& quad) {
-        vertices.insert(vertices.end(), quad.vertices.begin(),
-                        quad.vertices.end());
-        indices.insert(indices.end(), quad.indices.begin(), quad.indices.end());
+        const auto& quadVertices = quad.vertices;
+        const auto& quadIndices = quad.indices;
 
-        /*
+        vertices.insert(vertices.end(), quadVertices.begin(),
+                        quadVertices.end());
+        indices.insert(indices.end(), quadIndices.begin(), quadIndices.end());
 
-        if (e.has<ECS::Components::Texture>()) {
-          const auto texture =
-              assetManager_->GetAsync<Graphics::Vulkan::Textures::Texture>(
-                  e.get_ref<ECS::Components::Texture>()->index);
+        const auto position = e.has<ECS::Components::Position>()
+                                  ? e.get_ref<ECS::Components::Position>()->pos
+                                  : glm::vec3(0.0f);
 
-          if (texture) {
-            imageInfos[objectIndex_].imageLayout =
-                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfos[objectIndex_].imageView = texture->GetImageView()->Get();
-            imageInfos[objectIndex_].sampler = texture->GetSampler();
-          } else {
-            imageInfos[objectIndex_].imageLayout =
-                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfos[objectIndex_].imageView =
-                blankTexture_->GetImageView()->Get();
-            imageInfos[objectIndex_].sampler = blankTexture_->GetSampler();
-          }
-        } else {
-          imageInfos[objectIndex_].imageLayout =
-              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-          imageInfos[objectIndex_].imageView =
-              blankTexture_->GetImageView()->Get();
-          imageInfos[objectIndex_].sampler = blankTexture_->GetSampler();
-        }
-        */
+        const auto scale = e.has<ECS::Components::Dimension>()
+                               ? e.get_ref<ECS::Components::Dimension>()->scale
+                               : glm::vec3(0.0f);
 
-        UpdateInstance(e);
+        instanceData_.push_back(
+            InstanceData{position, glm::vec3{0.0f, 0.0f, 0.0f}, scale.x, 0});
         objectIndex_++;
       });
 
-  /*
-  for (uint32_t i = objectIndex_; i < TEXTURE_ARRAY_SIZE; i++) {
-    imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfos[i].imageView = blankTexture_->GetImageView()->Get();
-    imageInfos[i].sampler = blankTexture_->GetSampler();
-  }
-
-  VkWriteDescriptorSet descriptorWrite{};
-  descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-  descriptorWrite.dstSet = two_d_pipeline_->descriptorSet;
-  descriptorWrite.dstBinding = 2;
-  descriptorWrite.dstArrayElement = 0;
-  descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  descriptorWrite.descriptorCount = TEXTURE_ARRAY_SIZE;
-  descriptorWrite.pImageInfo = imageInfos;  // Pass the array
-
-  vkUpdateDescriptorSets(logicalDevice_->Get(), 1, &descriptorWrite, 0,
-                         nullptr);
-
-                         */
-
-  PushConstant constants{};
-  constants.instanceIndex = objectIndex_;
-
-  // upload the matrix to the GPU via push constants
-  vkCmdPushConstants(commandBuffers_[currentFrame_]->Get(),
-                     two_d_pipeline_->GetPipelineLayout(), VK_SHADER_STAGE_ALL,
-                     0, sizeof(PushConstant), &constants);
-
   vertexDataBuffer_->Update(vertices);
   indexDataBuffer_->Update(indices);
+  instanceDataBuffer_->Update(instanceData_);
 
-  // Bind vertex & index buffers
-  const VkBuffer vertexBuffers[] = {vertexDataBuffer_->GetVulkanBuffer()};
-  constexpr VkDeviceSize offsets[] = {0};
+  const auto vertexBuffer = vertexDataBuffer_->GetVulkanBuffer();
+  const auto instanceBuffer = instanceDataBuffer_->GetVulkanBuffer();
 
+  constexpr VkDeviceSize offsets[1] = {0};
   vkCmdBindVertexBuffers(commandBuffers_[currentFrame_]->Get(), 0, 1,
-                         vertexBuffers, offsets);
-
+                         &vertexBuffer, offsets);
+  vkCmdBindVertexBuffers(commandBuffers_[currentFrame_]->Get(), 1, 1,
+                         &instanceBuffer, offsets);
   vkCmdBindIndexBuffer(commandBuffers_[currentFrame_]->Get(),
                        indexDataBuffer_->GetVulkanBuffer(), 0,
                        VK_INDEX_TYPE_UINT32);
@@ -255,85 +196,36 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
   RenderPass::End(commandBuffers_[currentFrame_]);
   commandBuffers_[currentFrame_]->EndRecording();
 
-  const auto cmdBuffer = commandBuffers_[currentFrame_]->Get();
-
-  VkSubmitInfo submitInfo{};
-
-  const VkSemaphore signalSemaphores[] = {
-      synchronizer_->GetRenderFinishedSemaphores()[currentFrame_]};
-
-  const VkSemaphore waitSemaphores[] = {
-      synchronizer_->GetImageSemaphores()[currentFrame_]};
-
   constexpr VkPipelineStageFlags waitStages[] = {
       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+  const auto& waitSemaphores = synchronizer_->GetImageSemaphores();
+  const auto& signalSemaphores = synchronizer_->GetRenderFinishedSemaphores();
+  const auto& cmdBuffer = commandBuffers_[currentFrame_]->Get();
+  const auto& swapChain = swapChain_->Get();
 
-  std::vector submittables = {cmdBuffer};
+  VkSubmitInfo submitInfo{};
   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
   submitInfo.waitSemaphoreCount = 1;
-  submitInfo.pWaitSemaphores = waitSemaphores;
+  submitInfo.pWaitSemaphores = &waitSemaphores[currentFrame_];
   submitInfo.pWaitDstStageMask = waitStages;
-  submitInfo.commandBufferCount = submittables.size();
-  submitInfo.pCommandBuffers = submittables.data();
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &cmdBuffer;
   submitInfo.signalSemaphoreCount = 1;
-  submitInfo.pSignalSemaphores = signalSemaphores;
+  submitInfo.pSignalSemaphores = &signalSemaphores[currentFrame_];
 
   // Submit queue
   VK_CHECK(vkQueueSubmit(logicalDevice_->GetGraphicQueue(), 1, &submitInfo,
                          synchronizer_->GetFences()[currentFrame_]));
 
-  // PresentInfo
   VkPresentInfoKHR presentInfo{};
   presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+  presentInfo.pNext = nullptr;
   presentInfo.waitSemaphoreCount = 1;
-  presentInfo.pWaitSemaphores = signalSemaphores;
-
-  // SwapChains
-  const VkSwapchainKHR swapChains[] = {swapChain_->Get()};
+  presentInfo.pWaitSemaphores = &signalSemaphores[currentFrame_];
   presentInfo.swapchainCount = 1;
-  presentInfo.pSwapchains = swapChains;
+  presentInfo.pSwapchains = &swapChain;
   presentInfo.pImageIndices = &imageIndex_;
-
   vkQueuePresentKHR(logicalDevice_->GetGraphicQueue(), &presentInfo);
 
   currentFrame_ = (currentFrame_ + 1) % CONCURRENT_FRAMES_IN_FLIGHT;
-}
-
-void VulkanRenderer::UpdateInstance(const flecs::entity e) {
-
-  const auto translate = glm::translate(
-      glm::mat4(1.0f), e.has<ECS::Components::Position>()
-                           ? e.get_ref<ECS::Components::Position>()->pos
-                           : glm::vec3(0.0f));
-  const auto scaling = glm::scale(
-      glm::mat4(1.0f), e.has<ECS::Components::Dimension>()
-                           ? e.get_ref<ECS::Components::Dimension>()->scale
-                           : glm::vec3(1.0f));
-  const auto rotation = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f),
-                                    glm::vec3(0.0f, 0.0f, 1.0f));
-
-  auto* object = static_cast<InstanceData*>(instanceData_->GetMappedMemory());
-  object[objectIndex_].model = (translate * scaling * rotation);
-  object[objectIndex_].uvMin = glm::vec2(textureAtlas_->textureRegions[0].uMin,
-                                         textureAtlas_->textureRegions[0].vMin);
-  object[objectIndex_].uvMax = glm::vec2(textureAtlas_->textureRegions[0].uMax,
-                                         textureAtlas_->textureRegions[0].vMax);
-  //object[objectIndex_].textureIndex =
-  //    e.has<ECS::Components::Texture>()
-  //        ? e.get_ref<ECS::Components::Texture>()->index
-  //        : 0;
-
-  /*
-  void* objectData;
-  vmaMapMemory(allocator_->Get(), instanceData_->GetVmaAllocation(),
-               &objectData);
-
-  auto* object = static_cast<InstanceData*>(objectData);
-  object[objectIndex_].model = (translate * scaling * rotation);
-  object[objectIndex_].textureIndex =
-      e.has<ECS::Components::Texture>()
-          ? e.get_ref<ECS::Components::Texture>()->index
-          : 0;
-  vmaUnmapMemory(allocator_->Get(), instanceData_->GetVmaAllocation());
-  */
 }

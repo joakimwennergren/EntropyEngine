@@ -26,20 +26,15 @@
 namespace Entropy::Graphics::Vulkan::Data {
 
 struct UBOData {
-  glm::mat4 perspective;
-  glm::mat4 view;
+  glm::mat4 projection;
+  glm::mat4 modelview;
 };
 
 struct InstanceData {
-  glm::mat4 model;
-  glm::vec4 bgColor;
-  glm::vec4 borderColor;
-  glm::vec4 cornerRadiuses;
-  glm::vec2 dimension;
-  glm::vec2 uvMin;
-  glm::vec2 uvMax;
-  //int type;
-  //int textureIndex;
+  glm::vec3 pos;
+  glm::vec3 rot;
+  float scale{ 0.0f }; // @TODO glm::vec3 scale!
+  int32_t textureIndex;
 };
 
 } // namespace Entropy::Graphics::Vulkan::Data

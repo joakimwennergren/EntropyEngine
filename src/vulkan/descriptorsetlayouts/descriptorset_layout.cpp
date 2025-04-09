@@ -21,7 +21,7 @@ DescriptorSetLayout::DescriptorSetLayout(
   layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
   layoutInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
   layoutInfo.pBindings = layoutBindings.data();
-  layoutInfo.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
+  layoutInfo.flags = 0;
   layoutInfo.pNext = &bindingFlagsInfo;
 
   VK_CHECK(vkCreateDescriptorSetLayout(logicalDevice_->Get(), &layoutInfo,
