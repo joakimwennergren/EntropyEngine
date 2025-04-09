@@ -99,9 +99,6 @@ bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
     atlasHeight *= 2;
   }
 
-  std::cout << "Adjusted Atlas Size (Power of 2): " << atlasWidth << "x"
-            << atlasHeight << "\n";
-
   // Setup packing context
   stbrp_context packer;
   std::vector<stbrp_node> nodes(atlasWidth);
