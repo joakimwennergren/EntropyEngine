@@ -108,7 +108,6 @@ bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
   // Pack rectangles
   if (!stbrp_pack_rects(&packer, rects.data(),
                         static_cast<uint32_t>(rects.size()))) {
-    std::cerr << "Texture atlas packing failed!\n";
     return false;
   }
 
