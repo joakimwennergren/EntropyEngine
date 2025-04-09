@@ -33,7 +33,7 @@ struct UBOData {
 struct InstanceData {
   glm::vec3 pos;
   glm::vec3 rot;
-  float scale{ 0.0f }; // @TODO glm::vec3 scale!
+  glm::vec3 scale;
   int32_t textureIndex;
 };
 

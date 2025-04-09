@@ -71,13 +71,13 @@ struct TwoDVertex {
 
     attributeDescriptions[4].binding = 1;
     attributeDescriptions[4].location = 4;
-    attributeDescriptions[4].format = VK_FORMAT_R32_SFLOAT;
+    attributeDescriptions[4].format = VK_FORMAT_R32G32B32_SFLOAT;
     attributeDescriptions[4].offset = sizeof(float) * 6;
 
     attributeDescriptions[5].binding = 1;
     attributeDescriptions[5].location = 5;
     attributeDescriptions[5].format = VK_FORMAT_R32_SINT;
-    attributeDescriptions[5].offset = sizeof(float) * 7;
+    attributeDescriptions[5].offset = sizeof(float) * 9;
 
 
     return attributeDescriptions;

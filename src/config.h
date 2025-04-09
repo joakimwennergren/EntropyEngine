@@ -21,8 +21,8 @@
 #define IOS_SIMULATOR (5)
 #define ANDROID (6)
 
-#define ENTROPY_PLATFORM MACOS
-#define ENTROPY_ARCH ARM64
+#define ENTROPY_PLATFORM LINUX
+#define ENTROPY_ARCH 
 
 #define USE_VALIDATION_LAYERS 1
 
@@ -30,15 +30,15 @@
 #define MAX_INSTANCE_COUNT (1000)
 
 #define ENTROPY_ENABLE_SCRIPTING 1
-#define MONO_INCLUDE_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0"
-#define MONO_LIBRARY_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/lib"
-#define MONO_LIBRARY_ETC_PATH "/opt/homebrew/Cellar/mono/6.14.0/etc"
-#define MONO_LIBRARY_CONFIG "/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config"
+#define MONO_INCLUDE_DIR_PATH "/usr/include/mono-2.0"
+#define MONO_LIBRARY_DIR_PATH "/usr/lib"
+#define MONO_LIBRARY_ETC_PATH "/etc/mono"
+#define MONO_LIBRARY_CONFIG "/etc/mono/config"
 
 #if ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
-    #define COLOR_FORMAT VK_FORMAT_B8G8R8A8_UNORM
+#define COLOR_FORMAT VK_FORMAT_B8G8R8A8_UNORM
 #else
-    #define COLOR_FORMAT VK_FORMAT_R8G8B8A8_UNORM
+#define COLOR_FORMAT VK_FORMAT_R8G8B8A8_UNORM
 #endif
 
 #endif  // ENTROPY_CONFIG_H

@@ -27,40 +27,39 @@
 namespace Entropy::Graphics::Vulkan::ValidationLayers {
 
 class ValidationLayer {
-public:
+ public:
   ValidationLayer();
 
   static bool CheckValidationLayerSupport(
-      const std::vector<const char *> &validationLayers);
+      const std::vector<const char*>& validationLayers);
 
   static VkResult CreateDebugUtilsMessengerEXT(
       VkInstance instance,
-      const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
-      const VkAllocationCallbacks *pAllocator,
-      VkDebugUtilsMessengerEXT *pDebugMessenger);
+      const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+      const VkAllocationCallbacks* pAllocator,
+      VkDebugUtilsMessengerEXT* pDebugMessenger);
 
-  static void
-  DestroyDebugUtilsMessengerEXT(VkInstance instance,
-                                VkDebugUtilsMessengerEXT debugMessenger,
-                                const VkAllocationCallbacks *pAllocator);
+  static void DestroyDebugUtilsMessengerEXT(
+      VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
+      const VkAllocationCallbacks* pAllocator);
 
   static VKAPI_ATTR VkBool32 VKAPI_CALL
   debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                 VkDebugUtilsMessageTypeFlagsEXT messageType,
-                const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-                void *pUserData) {
+                const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+                void* pUserData) {
 
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-      LOG_INFO(logger_, "{}", pCallbackData->pMessage);
+      LOG_ERROR(logger_, "{}", pCallbackData->pMessage);
 
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-      LOG_INFO(logger_, "{}", pCallbackData->pMessage);
+      LOG_WARNING(logger_, "{}", pCallbackData->pMessage);
 
     if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
       LOG_INFO(logger_, "{}", pCallbackData->pMessage);
 
-    if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
-      LOG_INFO(logger_, "{}", pCallbackData->pMessage);
+    // if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
+    //  LOG_INFO(logger_, "{}", pCallbackData->pMessage);
 
     // Unused params
     (void)pUserData;
@@ -71,6 +70,6 @@ public:
 
   VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
 };
-} // namespace Entropy::Graphics::Vulkan::ValidationLayers
+}  // namespace Entropy::Graphics::Vulkan::ValidationLayers
 
-#endif // ENTROPY_VALIDATION_LAYER_H
+#endif  // ENTROPY_VALIDATION_LAYER_H

@@ -168,7 +168,7 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
                                : glm::vec3(0.0f);
 
         instanceData_.push_back(
-            InstanceData{position, glm::vec3{0.0f, 0.0f, 0.0f}, scale.x, 0});
+            InstanceData{position, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3(100.0f, 100.0f, 0.0f), 0});
         objectIndex_++;
       });
 
