@@ -55,7 +55,7 @@ bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
     images[i] = stbi_load(imagePaths[i].c_str(), &w, &h, &c, 4);  // Force RGBA
 #endif
     if (!images[i]) {
-      std::cerr << "Failed to load image: " << imagePaths[i] << "\n";
+      //std::cerr << "Failed to load image: " << imagePaths[i] << "\n";
       return false;
     }
 
