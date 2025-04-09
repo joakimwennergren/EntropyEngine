@@ -185,8 +185,8 @@ extern "C" void Entity_AddTexture(const flecs::entity* entity,
   }
 
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto textureId = sl->getService<IAssetManager>()->LoadToAtlas(
-      mono_string_to_utf8(path));
+  const auto textureId =
+      sl->getService<IAssetManager>()->LoadToAtlas(mono_string_to_utf8(path));
 
   std::cout << "Texture created async with path: " << mono_string_to_utf8(path)
             << std::endl;

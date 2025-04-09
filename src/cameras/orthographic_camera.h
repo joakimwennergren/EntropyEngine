@@ -35,8 +35,8 @@ public:
   OrthographicCamera();
   void Zoom(float delta) override;
   void Pan(float deltaX, float deltaY) override;
-  void SetPerspective(uint32_t width, uint32_t height, float znear,
-                      float zfar) override;
+  void SetPerspective(uint32_t width, uint32_t height, float z_near,
+                      float z_far) override;
 };
 }; // namespace Entropy::Cameras
 

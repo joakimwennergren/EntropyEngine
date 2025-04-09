@@ -70,24 +70,8 @@ using namespace Entropy::Cameras;
 #include <ecs/components/texture.h>
 #include <vulkan/textures/texture.h>
 #include <glm/glm.hpp>
-#include <iostream>
 
 #if ENTROPY_PLATFORM == IOS
-flecs::entity CreateSprite(const std::string& path,
-                           const glm::vec3 pos = glm::vec3(0.0f),
-                           const glm::vec3 dim = glm::vec3(500.0f)) {
-
-  const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto textureId = sl->getService<IAssetManager>()->LoadToAtlas(path);
-
-  return sl->getService<IWorld>()
-      ->Get()
-      ->entity()
-      .set<Components::Position>({pos})
-      .set<Components::Dimension>({dim})
-      .set<Components::TwoDQuad>({})
-      .set<Components::Texture>({path, textureId, true});
-}
 EntropyEngine::EntropyEngine(void* layer, uint32_t width, uint32_t height) {
   InitializeQuill();
   SetupServices();
@@ -97,9 +81,7 @@ EntropyEngine::EntropyEngine(void* layer, uint32_t width, uint32_t height) {
       VkExtent2D{width, height}, nullptr);
   const auto camera_manager = sl->getService<ICameraManager>();
   camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
-  CreateSprite("test.png");
   renderer = new VulkanRenderer(width, height);
-  std::cout << "INIT ENTROPY FOR IOS" << std::endl;
 }
 
 #elif ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX

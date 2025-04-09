@@ -30,11 +30,12 @@ struct UBOData {
   glm::mat4 modelview;
 };
 
-struct InstanceData {
-  glm::vec3 pos;
-  glm::vec3 rot;
-  float scale{ 0.0f }; // @TODO glm::vec3 scale!
+struct InstanceDataTwoD {
+  glm::vec2 pos;
+  glm::vec2 dim;
+  float rot;
   int32_t textureIndex;
+  glm::vec4 atlasCoords;
 };
 
 } // namespace Entropy::Graphics::Vulkan::Data

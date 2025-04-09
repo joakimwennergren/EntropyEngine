@@ -14,15 +14,15 @@ public class EntityScript : EntropyScript
           sprite_ = new Entity();
           sprite_.AddComponent(new Sprite(
             "test.png",
-            new Dimension(100.0f, 100.0f),
+            new Dimension(10.0f, 10.0f),
             new Position(700.0f, 700.0f)
           ));
 
           sprite2_ = new Entity();
           sprite2_.AddComponent(new Sprite(
-            "test2.png",
+            "test.png",
             new Dimension(500.0f, 500.0f),
-            new Position(100.0f, 100.0f)
+            new Position(400.0f, 400.0f)
           ));
 
      }

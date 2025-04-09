@@ -69,10 +69,10 @@ class IAssetManager : public IService {
   virtual int32_t LoadTexture(const std::string& path) = 0;
   virtual int32_t LoadTextureAsync(const std::string& path) = 0;
   virtual std::shared_ptr<Graphics::Vulkan::Textures::Texture> GetTexture(
-      const int32_t textureId) = 0;
+      int32_t textureId) = 0;
   virtual std::shared_ptr<Graphics::Vulkan::Textures::Texture> GetTextureAsync(
-      const int32_t textureId) = 0;
-  virtual void UnloadTexture(const int32_t textureId) = 0;
+      int32_t textureId) = 0;
+  virtual void UnloadTexture(int32_t textureId) = 0;
 
  private:
   template <typename T>
