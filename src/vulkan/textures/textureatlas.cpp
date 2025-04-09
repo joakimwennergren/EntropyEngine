@@ -7,7 +7,7 @@
 #include "stb/stb_image_write.h"
 #include "stb/stb_rect_pack.h"
 
-#include <iostream>
+#include "config.h"
 
 #if ENTROPY_PLATFORM == IOS
 #include <CoreFoundation/CoreFoundation.h>
