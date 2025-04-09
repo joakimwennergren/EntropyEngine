@@ -27,10 +27,10 @@
 namespace Entropy::ECS::Components {
 struct TwoDQuad {
   std::vector<Graphics::Vulkan::Data::TwoDVertex> vertices = {
-    {{-1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-    {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-    {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-    {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}};
+    {{-1.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},
+    {{1.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
+    {{1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
+    {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f}}};
   std::vector<uint32_t> indices = {0, 1, 2, 2, 3, 0};
 };
 } // namespace Entropy::ECS::Components

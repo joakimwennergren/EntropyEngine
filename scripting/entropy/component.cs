@@ -33,6 +33,11 @@ namespace Entropy.ECS
             this.x = x; this.y = y; this.z = z;
         }
 
+        public Position(float x, float y)
+        {
+            this.x = x; this.y = y; this.z = 0.0f;
+        }
+
         public void AddTo(IntPtr entity)
         {
             NativeBindings.Entity_AddPosition(entity, this);
@@ -47,6 +52,11 @@ namespace Entropy.ECS
         public Dimension(float x, float y, float z)
         {
             this.x = x; this.y = y; this.z = z;
+        }
+
+        public Dimension(float x, float y)
+        {
+            this.x = x; this.y = y; this.z = 0.0f;
         }
 
         public void AddTo(IntPtr entity)
@@ -76,6 +86,43 @@ namespace Entropy.ECS
 
         public void AddTo(IntPtr entity)
         {
+            NativeBindings.Entity_AddTexture(entity, path);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Sprite : IComponent
+    {
+        private string path;
+        private Dimension dimension;
+        private Position position;
+
+
+        // Main constructor
+        public Sprite(string path, Dimension dim, Position pos)
+        {
+            this.dimension = dim;
+            this.position = pos;
+            this.path = path;
+        }
+
+        // Overload with default Dimension and Position
+        public Sprite(string path)
+            : this(path, new Dimension(0.0f, 0.0f, 0.0f), new Position(0.0f, 0.0f, 0.0f))
+        {
+        }
+
+        // Overload with default Position only
+        public Sprite(string path, Dimension dim)
+            : this(path, dim, new Position(0.0f, 0.0f, 0.0f))
+        {
+        }
+
+        public void AddTo(IntPtr entity)
+        {
+            NativeBindings.Entity_AddPosition(entity, position);
+            NativeBindings.Entity_AddDimension(entity, dimension);
+            NativeBindings.Entity_Add2DQuad(entity);
             NativeBindings.Entity_AddTexture(entity, path);
         }
     }

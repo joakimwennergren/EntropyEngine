@@ -18,22 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_CAMERAS_BASE_H
-#define ENTROPY_CAMERAS_BASE_H
+#ifndef ENTROPY_VULKAN_TEXTURE_ATLAS_H
+#define ENTROPY_VULKAN_TEXTURE_ATLAS_H
 
-#include <glm/glm.hpp>
+#include "texture.h"
 
-namespace Entropy::Cameras {
-  struct BaseCamera {
-    virtual ~BaseCamera() = default;
-    virtual void Zoom(const float delta) = 0;
-    virtual void Pan(const float deltaX, const float deltaY) = 0;
-    virtual void SetPerspective(uint32_t width, uint32_t height, float znear, float zfar) = 0;
-    glm::vec3 cameraPosition{};
-    float zoomFactor = 1.0f;
-    glm::mat4 projection;
-    glm::mat4 view;
+namespace Entropy::Graphics::Vulkan::Textures {
+class TextureAtlas final {
+ public:
+  struct TextureRegion {
+   float uMin, vMin, uMax, vMax;
+   int width, height;
   };
-} // namespace Entropy::Cameras
+  explicit TextureAtlas();
+  bool CreateAtlas(const std::vector<std::string>& imagePaths);
+  std::shared_ptr<Texture> texture_;
+  std::vector<TextureRegion> textureRegions;
 
-#endif // ENTROPY_CAMERAS_BASE_H
+};
+}  // namespace Entropy::Graphics::Vulkan::Textures
+
+#endif  // ENTROPY_VULKAN_TEXTURE_H

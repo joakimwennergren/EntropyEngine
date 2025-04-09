@@ -23,11 +23,8 @@
 
 #include "assets/iasset_manager.h"
 #include "cameras/icamera_manger.h"
-#include "config.h"
-#include "ecs/components/sprite.h"
 #include "ecs/iworld.h"
 #include "vulkan/buffers/index_buffer.h"
-#include "vulkan/buffers/storage_buffer.h"
 #include "vulkan/buffers/uniform_buffer.h"
 #include "vulkan/buffers/vertex_buffer.h"
 #include "vulkan/commandbuffers/commandbuffer.h"
@@ -38,7 +35,6 @@
 #include "vulkan/renderpasses/renderpass.h"
 #include "vulkan/swapchains/iswapchain.h"
 #include "vulkan/synchronization/synchronizer.h"
-#include "vulkan/textures/texture.h"
 
 namespace Entropy::Vulkan::Renderers {
 class VulkanRenderer {
@@ -48,8 +44,6 @@ class VulkanRenderer {
   void Resize(uint32_t width, uint32_t height);
 
  private:
-  VkDescriptorImageInfo imageInfos[TEXTURE_ARRAY_SIZE]{};
-
   uint32_t currentFrame_{};
   uint32_t imageIndex_{};
   uint32_t objectIndex_{};
@@ -57,31 +51,31 @@ class VulkanRenderer {
   std::vector<std::shared_ptr<CommandBuffer>> commandBuffers_;
 
   std::unique_ptr<UniformBuffer> UBO_;
-  std::unique_ptr<StorageBuffer> instanceData_;
 
-  std::shared_ptr<VertexBuffer<Graphics::Vulkan::Data::TwoDVertex>>
+  std::unique_ptr<VertexBuffer<Graphics::Vulkan::Data::TwoDVertex>>
       vertexDataBuffer_;
-  std::shared_ptr<IndexBuffer<uint32_t>> indexDataBuffer_;
+
+  std::unique_ptr<VertexBuffer<Graphics::Vulkan::Data::InstanceData>>
+    instanceDataBuffer_;
+
+  std::unique_ptr<IndexBuffer<uint32_t>> indexDataBuffer_;
+
   std::vector<Graphics::Vulkan::Data::TwoDVertex> vertices;
   std::vector<uint32_t> indices;
+  std::vector<Graphics::Vulkan::Data::InstanceData> instanceData_;
 
   std::unique_ptr<Graphics::Vulkan::Synchronization::Synchronizer>
       synchronizer_;
 
   std::unique_ptr<Graphics::Vulkan::Pipelines::TwoDPipeline> two_d_pipeline_;
 
-  std::shared_ptr<ECS::IWorld> world_;
   std::shared_ptr<Graphics::Vulkan::RenderPasses::RenderPass> renderPass_;
-
+  std::shared_ptr<ECS::IWorld> world_;
   std::shared_ptr<Graphics::Vulkan::Memory::IAllocator> allocator_;
   std::shared_ptr<Graphics::Vulkan::Devices::ILogicalDevice> logicalDevice_;
   std::shared_ptr<Graphics::Vulkan::SwapChains::ISwapChain> swapChain_;
   std::shared_ptr<Cameras::ICameraManager> cameraManager_;
   std::shared_ptr<Assets::IAssetManager> assetManager_;
-
-  std::unique_ptr<Graphics::Vulkan::Textures::Texture> blankTexture_;
-
-  void UpdateInstance(flecs::entity e);
 };
 }  // namespace Entropy::Vulkan::Renderers
 #endif  // ENTROPY_VULKAN_BATCH_RENDERER_H

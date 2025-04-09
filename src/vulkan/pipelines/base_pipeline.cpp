@@ -12,9 +12,9 @@ using namespace Entropy::Graphics::Vulkan::Data;
 namespace Entropy::Graphics::Vulkan::Pipelines {
 
 template <class T>
-BasePipeline<T>::BasePipeline(const std::shared_ptr<RenderPass> &renderPass)
+BasePipeline<T>::BasePipeline(const std::shared_ptr<RenderPass>& renderPass)
     : descriptorSet(nullptr) {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   logicalDevice_ = sl->getService<ILogicalDevice>();
   swapChain_ = sl->getService<ISwapChain>();
   descriptorPool_ = sl->getService<IDescriptorPool>();
@@ -22,13 +22,15 @@ BasePipeline<T>::BasePipeline(const std::shared_ptr<RenderPass> &renderPass)
   renderPass_ = renderPass;
 }
 
-template <class T> BasePipeline<T>::~BasePipeline() {
+template <class T>
+BasePipeline<T>::~BasePipeline() {
   vkDeviceWaitIdle(logicalDevice_->Get());
   vkDestroyPipeline(logicalDevice_->Get(), pipeline_, nullptr);
   vkDestroyPipelineLayout(logicalDevice_->Get(), pipelineLayout_, nullptr);
 }
 
-template <class T> void BasePipeline<T>::Build() {
+template <class T>
+void BasePipeline<T>::Build() {
   VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
   vertShaderStageInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -62,18 +64,17 @@ template <class T> void BasePipeline<T>::Build() {
   //                             : VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
   inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-  auto bindingDescriptionVertex = T::getBindingDescription();
-  auto attributeDescriptionsVertex = T::getAttributeDescriptions();
+  auto bindingDescriptions = T::getBindingDescriptions();
+  auto attributeDescriptions = T::getAttributeDescriptions();
 
   VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
   vertexInputInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  vertexInputInfo.vertexBindingDescriptionCount = 1;
+  vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
   vertexInputInfo.vertexAttributeDescriptionCount =
-      static_cast<uint32_t>(attributeDescriptionsVertex.size());
-  vertexInputInfo.pVertexBindingDescriptions = &bindingDescriptionVertex;
-  vertexInputInfo.pVertexAttributeDescriptions =
-      attributeDescriptionsVertex.data();
+      static_cast<uint32_t>(attributeDescriptions.size());
+  vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+  vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
   std::vector<VkPipelineVertexInputStateCreateInfo> vertexInputStates(1);
   vertexInputStates[0] = vertexInputInfo;
@@ -145,22 +146,23 @@ template <class T> void BasePipeline<T>::Build() {
   colorBlending.blendConstants[2] = 0.0f;
   colorBlending.blendConstants[3] = 0.0f;
 
-  VkPushConstantRange push_constant;
-  push_constant.offset = 0;
-  push_constant.size = sizeof(PushConstant);
-  push_constant.stageFlags = VK_SHADER_STAGE_ALL;
+  // VkPushConstantRange push_constant;
+  // push_constant.offset = 0;
+  // push_constant.size = sizeof(PushConstant);
+  // push_constant.stageFlags = VK_SHADER_STAGE_ALL;
 
   std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
-  for (auto &descriptorSetLayout : descriptorSetLayouts_) {
+  for (auto& descriptorSetLayout : descriptorSetLayouts_) {
     descriptorSetLayouts.push_back(descriptorSetLayout->Get());
   }
 
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-  pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts_.size();
+  pipelineLayoutInfo.setLayoutCount =
+      static_cast<uint32_t>(descriptorSetLayouts_.size());
   pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-  pipelineLayoutInfo.pPushConstantRanges = &push_constant;
-  pipelineLayoutInfo.pushConstantRangeCount = 1;
+  // pipelineLayoutInfo.pPushConstantRanges = &push_constant;
+  // pipelineLayoutInfo.pushConstantRangeCount = 1;
 
   VK_CHECK(vkCreatePipelineLayout(logicalDevice_->Get(), &pipelineLayoutInfo,
                                   nullptr, &pipelineLayout_));
@@ -204,4 +206,4 @@ template <class T> void BasePipeline<T>::Build() {
 template class BasePipeline<TwoDVertex>;
 template class BasePipeline<ThreeDAnimVertex>;
 
-} // namespace Entropy::Graphics::Vulkan::Pipelines
+}  // namespace Entropy::Graphics::Vulkan::Pipelines

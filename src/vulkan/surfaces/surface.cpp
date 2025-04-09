@@ -1,41 +1,42 @@
 #include "surface.h"
 
-#include <iostream>
 #include <vulkan/devices/ilogical_device.h>
-
 #include "servicelocators/servicelocator.h"
-#include "vulkan/utilities/helpers.h"
 #include "vulkan/instances/vk_instance.h"
+#include "vulkan/utilities/helpers.h"
 
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::Instances;
 
 #if ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
-Surface::Surface(GLFWwindow *window) {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+Surface::Surface(GLFWwindow* window) {
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   instance_ = sl->getService<IVulkanInstance>();
   VK_CHECK(
       glfwCreateWindowSurface(instance_->Get(), window, nullptr, &surface_));
 }
 #elif ENTROPY_PLATFORM == IOS
-Surface::Surface(CA::MetalLayer *layer) {
 
-    const ServiceLocator *sl = ServiceLocator::GetInstance();
-    instance_ = sl->getService<IVulkanInstance>();
+Surface::Surface(CAMetalLayer* layer) {
 
-    VkMetalSurfaceCreateInfoEXT createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
-    createInfo.pNext = nullptr;
-    createInfo.flags = 0;
-    createInfo.pLayer= layer;
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
+  instance_ = sl->getService<IVulkanInstance>();
 
-    VK_CHECK(vkCreateMetalSurfaceEXT(instance_->Get(), &createInfo, nullptr, &surface_));
+  VkMetalSurfaceCreateInfoEXT createInfo{};
+  createInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
+  createInfo.pNext = nullptr;
+  createInfo.flags = 0;
+  createInfo.pLayer = layer;
+
+  VK_CHECK(vkCreateMetalSurfaceEXT(instance_->Get(), &createInfo, nullptr,
+                                   &surface_));
 }
+
 #else
 Surface::Surface(VkSurfaceKHR surface) {
-    const ServiceLocator *sl = ServiceLocator::GetInstance();
-    instance_ = sl->getService<IVulkanInstance>();
-    surface_ = surface;
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
+  instance_ = sl->getService<IVulkanInstance>();
+  surface_ = surface;
 }
 #endif
 
@@ -60,7 +61,6 @@ Surface::Surface(GLFWwindow *window) {
 #endif
 */
 
-
 Surface::~Surface() {
-    vkDestroySurfaceKHR(instance_->Get(), surface_, nullptr);
+  vkDestroySurfaceKHR(instance_->Get(), surface_, nullptr);
 }

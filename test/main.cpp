@@ -38,6 +38,7 @@
 #include "vulkan/textures/depthbuffer_texture.h"
 #include "vulkan/textures/swapchain_texture.h"
 #include "vulkan/textures/texture.h"
+#include "vulkan/textures/textureatlas.h"
 
 // PipelineCache
 #include "vulkan/pipelinecaches/ipipeline_cache.h"
@@ -101,23 +102,6 @@ void OnFramebufferResize(GLFWwindow* window, const int width,
     renderer->Resize(width, height);
     //renderer->Render(width, height);
   }
-}
-
-flecs::entity CreateSprite(const std::string& path,
-                           const glm::vec3 pos = glm::vec3(0.0f),
-                           const glm::vec3 dim = glm::vec3(100.0f)) {
-
-  const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto textureId =
-      sl->getService<IAssetManager>()->LoadAsync<Texture>(path);
-
-  return sl->getService<IWorld>()
-      ->Get()
-      ->entity()
-      .set<Components::Position>({pos})
-      .set<Components::Dimension>({dim})
-      .set<Components::TwoDQuad>({})
-      .set<Components::Texture>({path, textureId, true});
 }
 
 MonoDomain* domain;
@@ -201,7 +185,7 @@ extern "C" void Entity_AddTexture(const flecs::entity* entity,
   }
 
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto textureId = sl->getService<IAssetManager>()->LoadAsync<Texture>(
+  const auto textureId = sl->getService<IAssetManager>()->LoadToAtlas(
       mono_string_to_utf8(path));
 
   std::cout << "Texture created async with path: " << mono_string_to_utf8(path)

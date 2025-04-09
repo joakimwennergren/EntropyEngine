@@ -3,7 +3,6 @@
 using namespace Entropy::Graphics::Vulkan::Buffers;
 
 StorageBuffer::StorageBuffer(const VkDeviceSize bufferSize) {
-  CreateBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-  vmaMapMemory(allocator_->Get(), allocation_, &mappedMemory_);
-  vmaUnmapMemory(allocator_->Get(), allocation_);
+  CreateBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT |
+                      VMA_ALLOCATION_CREATE_MAPPED_BIT);
 }

@@ -18,22 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_CAMERAS_BASE_H
-#define ENTROPY_CAMERAS_BASE_H
+#ifndef ENTROPY_ENTRYPOINTS_ENTROPY_H
+#define ENTROPY_ENTRYPOINTS_ENTROPY_H
 
-#include <glm/glm.hpp>
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_metal.h>
 
-namespace Entropy::Cameras {
-  struct BaseCamera {
-    virtual ~BaseCamera() = default;
-    virtual void Zoom(const float delta) = 0;
-    virtual void Pan(const float deltaX, const float deltaY) = 0;
-    virtual void SetPerspective(uint32_t width, uint32_t height, float znear, float zfar) = 0;
-    glm::vec3 cameraPosition{};
-    float zoomFactor = 1.0f;
-    glm::mat4 projection;
-    glm::mat4 view;
-  };
-} // namespace Entropy::Cameras
+#include "renderers/vulkan_renderer.h"
+#include "config.h"
 
-#endif // ENTROPY_CAMERAS_BASE_H
+namespace Entropy::EntryPoints {
+
+class EntropyEngine {
+
+ public:
+#if ENTROPY_PLATFORM == IOS
+  EntropyEngine(void* layer, uint32_t width, uint32_t height);
+#elif ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
+  EntropyEngine(uint32_t width, uint32_t height);
+#endif
+  ~EntropyEngine();
+
+  Vulkan::Renderers::VulkanRenderer* renderer;
+
+ private:
+  void SetupServices();
+  void TeardownServices();
+};
+}  // namespace Entropy::EntryPoints
+
+#endif  // ENTROPY_ENTRYPOINTS_ENTROPY_H

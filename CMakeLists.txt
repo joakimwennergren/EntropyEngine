@@ -1,16 +1,15 @@
-#  ______       _                                            _
-#  |  ____|     | |                                          (_)
-#  | |__   _ __ | |_ _ __ ___  _ __  _   _    ___ _ __   __ _ _ _ __   ___
-#  |  __| | '_ \| __| '__/ _ \| '_ \| | | |  / _ \ '_ \ / _` | | '_ \ / _ \
-#  | |____| | | | |_| | | (_) | |_) | |_| | |  __/ | | | (_| | | | | |  __/
-#  |______|_| |_|\__|_|  \___/| .__/ \__, |  \___|_| |_|\__, |_|_| |_|\___|
-#                             | |     __/ |              __/ |
-#                             |_|    |___/              |___/               v 1.0.0
+# ______       _                                            _
+# |  ____|     | |                                          (_)
+# | |__   _ __ | |_ _ __ ___  _ __  _   _    ___ _ __   __ _ _ _ __   ___
+# |  __| | '_ \| __| '__/ _ \| '_ \| | | |  / _ \ '_ \ / _` | | '_ \ / _ \
+# | |____| | | | |_| | | (_) | |_) | |_| | |  __/ | | | (_| | | | | |  __/
+# |______|_| |_|\__|_|  \___/| .__/ \__, |  \___|_| |_|\__, |_|_| |_|\___|
+# | |     __/ |              __/ |
+# |_|    |___/              |___/               v 1.0.0
 
 cmake_minimum_required(VERSION 3.28.3)
 
 include(FetchContent)
-include(cmake/entropy.cmake)
 project(Entropy VERSION 1.0.0 LANGUAGES CXX)
 
 # Define an option to choose between executable or library
@@ -33,33 +32,24 @@ if(IOS)
     set(CMAKE_XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE DISABLED)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
-    set(MONO_INCLUDE_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0")
-    set(MONO_LIBRARY_DIR_PATH "/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/bin")
-    set(MONO_LIBRARY_ETC_PATH "/opt/homebrew/Cellar/mono/6.14.0/etc")
-    set(MONO_LIBRARY_CONFIG "/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config")
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+    # Find vulkan
     find_package(Vulkan REQUIRED COMPONENTS MoltenVK)
-    # Locate the Mono headers
-    #find_path(MONO_INCLUDE_DIR
-    #        NAMES mono/jit/jit.h
-    #        PATHS ${MONO_INCLUDE_DIR_PATH}
-    #)
-    # Locate the Mono library
-    #find_library(MONO_LIBRARY
-    #        NAMES arm64-darwin-mono-sgen
-    #        PATHS "/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/bin"
-    #)
+
+    # Libraries to link with
     set(ENTROPY_LINK_LIBS
-            Vulkan::MoltenVK
-            #${XAMARIN_IOS_FRAMEWORK}
-            flecs::flecs_static
-            GPUOpen::VulkanMemoryAllocator
-            glm::glm
-            quill
+        Vulkan::MoltenVK
+        flecs::flecs_static
+        GPUOpen::VulkanMemoryAllocator
+        glm::glm
+        quill
     )
+
     if(${CMAKE_OSX_SYSROOT} MATCHES "iphonesimulator")
-        set(ENTROPY_PLATFORM IOS_SIMULATOR)
-        if (${CMAKE_OSX_ARCHITECTURES} MATCHES "arm64")
+        set(ENTROPY_PLATFORM IOS) # @TODO change this to simulator
+        message("-- iOS Build for simulator")
+
+        if(${CMAKE_OSX_ARCHITECTURES} MATCHES "arm64")
             message("-- iOS Build for simulator arm64")
             set(ENTROPY_ARCH ARM64)
         elseif(${CMAKE_OSX_ARCHITECTURES} MATCHES "x86_64")
@@ -70,14 +60,15 @@ if(IOS)
         message("-- iOS Build for iphone")
         set(ENTROPY_PLATFORM IOS)
     else()
-        #message(FATAL_ERROR"-- iOS undefined build")
+        # message(FATAL_ERROR"-- iOS undefined build")
     endif()
+
 elseif(APPLE AND NOT IOS)
     message("BUILDING FOR MACOS!!")
     find_package(Vulkan REQUIRED)
     FetchContent_Declare(glfw3
-            GIT_REPOSITORY https://github.com/glfw/glfw.git
-            GIT_TAG master
+        GIT_REPOSITORY https://github.com/glfw/glfw.git
+        GIT_TAG master
     )
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
@@ -88,27 +79,29 @@ elseif(APPLE AND NOT IOS)
     set(MONO_LIBRARY_ETC_PATH "/opt/homebrew/Cellar/mono/6.14.0/etc")
     set(MONO_LIBRARY_CONFIG "/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config")
     set(ENTROPY_PLATFORM MACOS)
+
     # Locate the Mono headers
     find_path(MONO_INCLUDE_DIR
-            NAMES mono/jit/jit.h
-            PATHS ${MONO_INCLUDE_DIR_PATH}
+        NAMES mono/jit/jit.h
+        PATHS ${MONO_INCLUDE_DIR_PATH}
     )
 
     # Locate the Mono library
     find_library(MONO_LIBRARY
-            NAMES mono-2.0
-            PATHS ${MONO_LIBRARY_DIR_PATH}
+        NAMES mono-2.0
+        PATHS ${MONO_LIBRARY_DIR_PATH}
     )
     set(ENTROPY_LINK_LIBS
-            ${Vulkan_LIBRARIES}
-            ${MONO_LIBRARY}
-            flecs::flecs_static
-            GPUOpen::VulkanMemoryAllocator
-            glfw
-            glm::glm
-            quill
+        ${Vulkan_LIBRARIES}
+        ${MONO_LIBRARY}
+        flecs::flecs_static
+        GPUOpen::VulkanMemoryAllocator
+        glfw
+        glm::glm
+        quill
     )
-if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+
+    if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
         message("-- MacOS Build for x86_64")
         set(ENTROPY_ARCH X86_64)
     elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64")
@@ -121,8 +114,8 @@ elseif(UNIX AND NOT APPLE)
     message("-- Linux Build")
     find_package(Vulkan REQUIRED)
     FetchContent_Declare(glfw3
-            GIT_REPOSITORY https://github.com/glfw/glfw.git
-            GIT_TAG master
+        GIT_REPOSITORY https://github.com/glfw/glfw.git
+        GIT_TAG master
     )
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
@@ -134,22 +127,23 @@ elseif(UNIX AND NOT APPLE)
     set(MONO_LIBRARY_CONFIG "/etc/mono/config")
     set(ENTROPY_PLATFORM LINUX)
     find_path(MONO_INCLUDE_DIR
-            NAMES mono/jit/jit.h
-            PATHS ${MONO_INCLUDE_DIR_PATH}
+        NAMES mono/jit/jit.h
+        PATHS ${MONO_INCLUDE_DIR_PATH}
     )
+
     # Locate the Mono library
     find_library(MONO_LIBRARY
-            NAMES mono-2.0
-            PATHS ${MONO_LIBRARY_DIR_PATH}
+        NAMES mono-2.0
+        PATHS ${MONO_LIBRARY_DIR_PATH}
     )
     set(ENTROPY_LINK_LIBS
-            ${Vulkan_LIBRARIES}
-            ${MONO_LIBRARY}
-            flecs::flecs_static
-            GPUOpen::VulkanMemoryAllocator
-            glfw
-            glm::glm
-            quill
+        ${Vulkan_LIBRARIES}
+        ${MONO_LIBRARY}
+        flecs::flecs_static
+        GPUOpen::VulkanMemoryAllocator
+        glfw
+        glm::glm
+        quill
     )
 elseif(ANDROID)
     if(${ANDROID_ABI} STREQUAL "x86_64")
@@ -204,46 +198,30 @@ set(CS_SOURCES_ENTROPY
 file(GLOB CS_SOURCES ${PROJECT_SOURCE_DIR}/scripting/*.cs)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_LIST_DIR)
-
 else()
     set(ENTROPY_INCLUDE_DIRS
-            ${CMAKE_CURRENT_SOURCE_DIR}/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/src
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/metal-cpp
-            PARENT_SCOPE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PARENT_SCOPE
     )
 endif()
 
 # Path to C# source file
 set(CS_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GameScripts.dll)
-set(CS_AOT_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GameScripts_AOT.dll)
 
 find_program(CSC_EXECUTABLE NAMES csc mcs REQUIRED)
 
 # Custom command to build the DLL
 add_custom_command(
-        OUTPUT ${CS_OUTPUT}
-        COMMAND ${CSC_EXECUTABLE} /target:library /out:${CS_OUTPUT} ${CS_SOURCES_ENTROPY} ${CS_SOURCES}
-        DEPENDS ${CS_SOURCES_ENTROPY} ${CS_SOURCES}
-        COMMENT "Compiling GameScripts.dll"
-)
-
-# Custom command to build the DLL
-add_custom_command(
-        OUTPUT ${CS_AOT_OUTPUT}
-        COMMAND mono --aot=full ${CS_OUTPUT}
-        DEPENDS ${CS_OUTPUT}
-        COMMENT "Compiling GameScripts_AOT.dll"
+    OUTPUT ${CS_OUTPUT}
+    COMMAND ${CSC_EXECUTABLE} /target:library /out:${CS_OUTPUT} ${CS_SOURCES_ENTROPY} ${CS_SOURCES}
+    DEPENDS ${CS_SOURCES_ENTROPY} ${CS_SOURCES}
+    COMMENT "Compiling GameScripts.dll"
 )
 
 # Define a custom target for C# scripts
 if(NOT IOS)
     add_custom_target(GameScripts ALL
-            DEPENDS ${CS_OUTPUT}
-    )
-
-    add_custom_target(GameScriptsAOT ALL
-            DEPENDS ${CS_AOT_OUTPUT}
+        DEPENDS ${CS_OUTPUT}
     )
 endif()
 
@@ -256,55 +234,48 @@ endif()
 # Make your main target (Entropy) depend on GameScripts
 if(NOT IOS)
     add_dependencies(${PROJECT_NAME} GameScripts)
-    add_dependencies(${PROJECT_NAME} GameScriptsAOT)
+endif()
+
+if(BUILD_ENTROPY_AS_EXECUTABLE)
+    file(COPY shaders/compiled/2dshader/2dshader_vert.spv DESTINATION ${CMAKE_BINARY_DIR})
+    file(COPY shaders/compiled/2dshader/2dshader_frag.spv DESTINATION ${CMAKE_BINARY_DIR})
+    file(COPY test/test.png DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
 target_include_directories(${PROJECT_NAME} INTERFACE
-        ${vma_SOURCE_DIR}/include
-        ${quill_SOURCE_DIR}/include
-        ${glfw3_SOURCE_DIR}/include
-        ${flecs_SOURCE_DIR}/include
-        ${glm_SOURCE_DIR}
+    ${vma_SOURCE_DIR}/include
+    ${quill_SOURCE_DIR}/include
+    ${glfw3_SOURCE_DIR}/include
+    ${flecs_SOURCE_DIR}/include
+    ${glm_SOURCE_DIR}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        ${MONO_INCLUDE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${MONO_INCLUDE_DIR}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-        ${Vulkan_INCLUDE_DIRS}
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/metal-cpp
-        # (metal-cpp) See if application needs this exposed or if it can be
-        # wrapped in a entrypoint..
+    ${Vulkan_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
-
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     ${ENTROPY_LINK_LIBS}
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
-        -Wno-undef
-        -Wno-unused-parameter
-        -Wno-nested-anon-types
-        -Wno-nullability-completeness
-        -Wno-sign-conversion
-        -Wno-unused-variable
-        -Wno-missing-field-initializers
-        -Wno-nullability-extension
-        -Wdeprecated-declarations
-        -Wno-deprecated-declarations
+    -Wno-undef
+    -Wno-unused-parameter
+    -Wno-nested-anon-types
+    -Wno-nullability-completeness
+    -Wno-sign-conversion
+    -Wno-unused-variable
+    -Wno-missing-field-initializers
+    -Wno-nullability-extension
+    -Wdeprecated-declarations
+    -Wno-deprecated-declarations
 )
 
-file(COPY shaders/compiled/2d_shader/2d_shader_vert.spv DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY shaders/compiled/2d_shader/2d_shader_frag.spv DESTINATION ${CMAKE_BINARY_DIR})
-
-# For testing only..
-file(COPY test/test.png DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY test/test2.png DESTINATION ${CMAKE_BINARY_DIR})
-
-
 # Build config file
-configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/config.h @ONLY)
+configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/config.h @ONLY)
