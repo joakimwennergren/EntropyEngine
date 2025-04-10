@@ -18,22 +18,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_ECS_WORLD_H
-#define ENTROPY_ECS_WORLD_H
+#ifndef ENTROPY_ECS_TAGS_TWOD_H
+#define ENTROPY_ECS_TAGS_TWOD_H
 
-#include <flecs.h>
-#include "iworld.h"
+#include <glm/glm.hpp>
 
+namespace Entropy::ECS::Tags {
+  struct D2 {
+    uint32_t id = 0;
+  };
+}
 
-namespace Entropy::ECS {
-class World final : public ServiceBase<IWorld> {
-public:
-  World();
-  std::shared_ptr<flecs::world> Get() override { return gameWorld_; }
-
-private:
-  std::shared_ptr<flecs::world> gameWorld_;
-};
-} // namespace Entropy::ECS
-
-#endif // ENTROPY_ECS_WORLD_H
+#endif // ENTROPY_ECS_TAGS_TWOD_H

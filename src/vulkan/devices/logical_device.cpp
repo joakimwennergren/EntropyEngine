@@ -45,6 +45,7 @@ LogicalDevice::LogicalDevice() {
   indexingFeatures.sType =
       VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
   indexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
+  indexingFeatures.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
 
   VkDeviceCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

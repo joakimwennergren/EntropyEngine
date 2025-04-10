@@ -58,23 +58,17 @@ using namespace Entropy::Graphics::Vulkan::DescriptorPools;
 using namespace Entropy::Graphics::Vulkan::Caches;
 using namespace Entropy::Graphics::Vulkan::Surfaces;
 using namespace Entropy::Graphics::Vulkan::SwapChains;
-using namespace Entropy::Vulkan::Renderers;
+using namespace Entropy::Renderers;
 using namespace Entropy::ECS;
 using namespace Entropy::Assets;
 using namespace Entropy::Cameras;
 
-// @todo test!!
-#include <ecs/components/2d_quad.h>
-#include <ecs/components/dimension.h>
-#include <ecs/components/position.h>
-#include <ecs/components/texture.h>
-#include <vulkan/textures/texture.h>
-#include <glm/glm.hpp>
-
 #if ENTROPY_PLATFORM == IOS
+#include <vulkan/vulkan_metal.h>
+#include <vulkan/vulkan.h>
 EntropyEngine::EntropyEngine(void* layer, uint32_t width, uint32_t height) {
   InitializeQuill();
-  SetupServices();
+  RegisterServices();
   const auto sl = ServiceLocator::GetInstance();
   sl->getService<ISwapChain>()->Build(
       std::make_shared<Surface>((__bridge CAMetalLayer*)layer),
@@ -83,21 +77,63 @@ EntropyEngine::EntropyEngine(void* layer, uint32_t width, uint32_t height) {
   camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
   renderer = new VulkanRenderer(width, height);
 }
+void EntropyEngine::Run() const {
 
+}
 #elif ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
-EntropyEngine::EntropyEngine(uint32_t width, uint32_t height) {
+void EntropyEngine::OnFramebufferResize(GLFWwindow* window, const int width,
+                         const int height) {
+  const auto sl = ServiceLocator::GetInstance();
+  const auto renderer = sl->getService<IRenderer>();
+  renderer->Resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+  renderer->Render(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+}
+EntropyEngine::EntropyEngine(const uint32_t width, const uint32_t height) {
+  if (!glfwInit()) {
+    LOG_ERROR(logger_, "Could not initialize GLFW.");
+    return;
+  }
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+  window_ = glfwCreateWindow(width, height, "Entropy application", nullptr, nullptr);
+  if (!window_) {
+    LOG_ERROR(logger_, "Could not create GLFW window.");
+    glfwTerminate();
+    return;
+  }
+  glfwSetFramebufferSizeCallback(window_, OnFramebufferResize);
+  float xscale, yscale;
+  glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &xscale, &yscale);
   InitializeQuill();
-  SetupServices();
+  RegisterServices();
+  const auto sl = ServiceLocator::GetInstance();
+  sl->getService<ISwapChain>()->Build(
+      std::make_shared<Surface>(window_),
+      VkExtent2D{static_cast<uint32_t>(width * xscale), static_cast<uint32_t>(height * yscale)}, nullptr);
+  const auto camera_manager = sl->getService<ICameraManager>();
+  camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
+  sl->RegisterService<IRenderer>(std::make_shared<VulkanRenderer>(static_cast<uint32_t>(width * xscale), static_cast<uint32_t>(height * yscale)));
+}
+void EntropyEngine::Run() const {
+  const auto sl = ServiceLocator::GetInstance();
+  const auto renderer = sl->getService<IRenderer>();
+  while (!glfwWindowShouldClose(window_)) {
+    int width, height;
+    glfwGetFramebufferSize(window_, &width, &height);
+    renderer->Render(static_cast<uint32_t>(width),
+                     static_cast<uint32_t>(height));
+    glfwPollEvents();
+  }
 }
 #endif
 
 EntropyEngine::~EntropyEngine() {
-  delete renderer;
-  TeardownServices();
+  UnRegisterServices();
+#if ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
+  glfwTerminate();
+#endif
 }
 
-void EntropyEngine::SetupServices() {
-  // Register vulkan services
+void EntropyEngine::RegisterServices() {
   ServiceLocator* sl = ServiceLocator::GetInstance();
   sl->RegisterService(std::make_shared<VulkanInstance>());
   sl->RegisterService(std::make_shared<PhysicalDevice>());
@@ -112,8 +148,7 @@ void EntropyEngine::SetupServices() {
   sl->RegisterService(std::make_shared<CameraManager>());
 }
 
-void EntropyEngine::TeardownServices() {
-  // Unregister vulkan services
+void EntropyEngine::UnRegisterServices() {
   ServiceLocator* sl = ServiceLocator::GetInstance();
   sl->UnregisterService<ICameraManager>();
   sl->UnregisterService<IAssetManager>();

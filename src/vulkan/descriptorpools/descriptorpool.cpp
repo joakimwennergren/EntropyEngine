@@ -22,7 +22,7 @@ DescriptorPool::DescriptorPool() {
   poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
   poolInfo.pPoolSizes = poolSizes.data();
   poolInfo.maxSets = 1;
-  poolInfo.flags = 0;
+  poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 
   VK_CHECK(vkCreateDescriptorPool(logicalDevice_->Get(), &poolInfo, nullptr,
                                   &descriptorPool_));

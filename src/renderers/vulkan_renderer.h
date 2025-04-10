@@ -21,6 +21,7 @@
 #ifndef ENTROPY_VULKAN_BATCH_RENDERER_H
 #define ENTROPY_VULKAN_BATCH_RENDERER_H
 
+#include "irenderer.h"
 #include "assets/iasset_manager.h"
 #include "cameras/icamera_manger.h"
 #include "ecs/iworld.h"
@@ -28,7 +29,6 @@
 #include "vulkan/buffers/uniform_buffer.h"
 #include "vulkan/buffers/vertex_buffer.h"
 #include "vulkan/commandbuffers/commandbuffer.h"
-#include "vulkan/data/vertex.h"
 #include "vulkan/devices/ilogical_device.h"
 #include "vulkan/memory/iallocator.h"
 #include "vulkan/pipelines/twod_pipeline.h"
@@ -36,17 +36,15 @@
 #include "vulkan/swapchains/iswapchain.h"
 #include "vulkan/synchronization/synchronizer.h"
 
-namespace Entropy::Vulkan::Renderers {
-class VulkanRenderer {
+namespace Entropy::Renderers {
+class VulkanRenderer final : public ServiceBase<IRenderer>{
  public:
   VulkanRenderer(uint32_t width, uint32_t height);
-  void Render(uint32_t width, uint32_t height);
-  void Resize(uint32_t width, uint32_t height);
-
+  void Render(uint32_t width, uint32_t height) override;
+  void Resize(uint32_t width, uint32_t height) override;
  private:
   uint32_t currentFrame_{};
   uint32_t imageIndex_{};
-  uint32_t objectIndex_{};
 
   std::vector<std::shared_ptr<CommandBuffer>> commandBuffers_;
 
@@ -57,16 +55,11 @@ class VulkanRenderer {
 
   std::unique_ptr<VertexBuffer<Graphics::Vulkan::Data::InstanceDataTwoD>>
     instanceDataBuffer_;
-
-  std::unique_ptr<IndexBuffer<uint32_t>> indexDataBuffer_;
-
-  std::vector<Graphics::Vulkan::Data::TwoDVertex> vertices;
-  std::vector<uint32_t> indices;
-  std::vector<Graphics::Vulkan::Data::InstanceDataTwoD> instanceData_;
-
+  std::unique_ptr<IndexBuffer<uint16_t>> indexDataBuffer_;
   std::unique_ptr<Graphics::Vulkan::Synchronization::Synchronizer>
       synchronizer_;
 
+  // Pipelines
   std::unique_ptr<Graphics::Vulkan::Pipelines::TwoDPipeline> two_d_pipeline_;
 
   std::shared_ptr<Graphics::Vulkan::RenderPasses::RenderPass> renderPass_;
@@ -75,7 +68,6 @@ class VulkanRenderer {
   std::shared_ptr<Graphics::Vulkan::Devices::ILogicalDevice> logicalDevice_;
   std::shared_ptr<Graphics::Vulkan::SwapChains::ISwapChain> swapChain_;
   std::shared_ptr<Cameras::ICameraManager> cameraManager_;
-  std::shared_ptr<Assets::IAssetManager> assetManager_;
 };
 }  // namespace Entropy::Vulkan::Renderers
 #endif  // ENTROPY_VULKAN_BATCH_RENDERER_H
