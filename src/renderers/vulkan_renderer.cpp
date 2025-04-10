@@ -1,15 +1,9 @@
 #include "vulkan_renderer.h"
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "ecs/components/2d_quad.h"
-#include "ecs/components/dimension.h"
-#include "ecs/components/position.h"
 #include "ecs/components/texture.h"
 #include "vulkan/data/data.h"
 
-#include <iostream>
-
-using namespace Entropy::Vulkan::Renderers;
 using namespace Entropy::Graphics::Vulkan::Memory;
 using namespace Entropy::Graphics::Vulkan::Devices;
 using namespace Entropy::Graphics::Vulkan::SwapChains;
@@ -20,6 +14,7 @@ using namespace Entropy::Graphics::Vulkan::Buffers;
 using namespace Entropy::Graphics::Vulkan::Data;
 using namespace Entropy::Cameras;
 using namespace Entropy::Assets;
+using namespace Entropy::Renderers;
 
 VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
@@ -51,20 +46,15 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
       MAX_INSTANCE_COUNT * sizeof(InstanceDataTwoD));
 
   indexDataBuffer_ =
-      std::make_unique<IndexBuffer<uint32_t>>(MAX_INSTANCE_COUNT);
+      std::make_unique<IndexBuffer<uint16_t>>(MAX_INSTANCE_COUNT);
+  instanceData_2d.resize(MAX_INSTANCE_COUNT);
 
-  std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+  std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
 
   VkDescriptorBufferInfo uboInfo{};
   uboInfo.buffer = UBO_->GetVulkanBuffer();
   uboInfo.offset = 0;
   uboInfo.range = sizeof(UBOData);
-
-  VkDescriptorImageInfo imageInfo;
-  imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-  imageInfo.imageView =
-      assetManager_->textureAtlas.texture_->GetImageView()->Get();
-  imageInfo.sampler = assetManager_->textureAtlas.texture_->GetSampler();
 
   descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
   descriptorWrites[0].dstSet = two_d_pipeline_->descriptorSet;
@@ -73,15 +63,6 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
   descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
   descriptorWrites[0].descriptorCount = 1;
   descriptorWrites[0].pBufferInfo = &uboInfo;
-
-  descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-  descriptorWrites[1].dstSet = two_d_pipeline_->descriptorSet;
-  descriptorWrites[1].dstBinding = 2;
-  descriptorWrites[1].dstArrayElement = 0;
-  descriptorWrites[1].descriptorType =
-      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  descriptorWrites[1].descriptorCount = 1;
-  descriptorWrites[1].pImageInfo = &imageInfo;
 
   vkUpdateDescriptorSets(logicalDevice_->Get(), descriptorWrites.size(),
                          descriptorWrites.data(), 0, nullptr);
@@ -95,11 +76,24 @@ void VulkanRenderer::Resize(const uint32_t width, const uint32_t height) {
 }
 
 void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
-  const auto currentFence = synchronizer_->GetFences()[currentFrame_];
 
+  VkWriteDescriptorSet descriptorWrite{};
+  VkDescriptorImageInfo imageInfo;
+  imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  imageInfo.imageView = assetManager_->textureAtlas.texture_->GetImageView()->Get();
+  imageInfo.sampler = assetManager_->textureAtlas.texture_->GetSampler();
+  descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  descriptorWrite.dstSet = two_d_pipeline_->descriptorSet;
+  descriptorWrite.dstBinding = 2;
+  descriptorWrite.dstArrayElement = 0;
+  descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  descriptorWrite.descriptorCount = 1;
+  descriptorWrite.pImageInfo = &imageInfo;
+  vkUpdateDescriptorSets(logicalDevice_->Get(), 1,&descriptorWrite, 0, nullptr);
+
+  const auto currentFence = synchronizer_->GetFences()[currentFrame_];
   VK_CHECK(vkWaitForFences(logicalDevice_->Get(), 1, &currentFence, VK_TRUE,
                            UINT64_MAX));
-
   VK_CHECK(vkResetFences(logicalDevice_->Get(), 1, &currentFence));
 
   const auto imageResult = vkAcquireNextImageKHR(
@@ -114,6 +108,9 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
   const auto camera = cameraManager_->GetCurrentCamera();
   camera->SetPerspective(width, height, 0.1f, 1024.0f);
 
+  const UBOData ubo{camera->projection, camera->view};
+  memcpy(UBO_->GetMappedMemory(), &ubo, sizeof(ubo));
+
   commandBuffers_[currentFrame_]->Record();
   renderPass_->Begin(commandBuffers_[currentFrame_], imageIndex_);
 
@@ -122,7 +119,6 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
   scissor.extent = {width, height};
   vkCmdSetScissor(commandBuffers_[currentFrame_]->Get(), 0, 1, &scissor);
 
-  // Set Viewport
   VkViewport viewport{};
   viewport.x = 0.0f;
   viewport.y = 0.0f;
@@ -141,46 +137,18 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
       commandBuffers_[currentFrame_]->Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
       two_d_pipeline_->GetPipelineLayout(), 0, 1, &ds0, 0, nullptr);
 
-  // Copy UBO data
-  const UBOData ubo{camera->projection, camera->view};
-  memcpy(UBO_->GetMappedMemory(), &ubo, sizeof(ubo));
+  indices_2d.clear();
+  vertices_2d.clear();
+  objects_2d = 0;
 
-  objectIndex_ = 0;
-  indices.clear();
-  vertices.clear();
-  instanceData_.clear();
+  (void)world_->Get()->progress(); // @TODO handle bool return
 
-  world_->Get()->each<ECS::Components::TwoDQuad>(
-      [&](const flecs::entity e, const ECS::Components::TwoDQuad& quad) {
-        const auto& quadVertices = quad.vertices;
-        const auto& quadIndices = quad.indices;
-
-        vertices.insert(vertices.end(), quadVertices.begin(),
-                        quadVertices.end());
-        indices.insert(indices.end(), quadIndices.begin(), quadIndices.end());
-
-        const auto position = e.has<ECS::Components::Position>()
-                                  ? e.get_ref<ECS::Components::Position>()->pos
-                                  : glm::vec3(0.0f);
-
-        const auto scale = e.has<ECS::Components::Dimension>()
-                               ? e.get_ref<ECS::Components::Dimension>()->scale
-                               : glm::vec2(0.0f);
-
-        const auto region = assetManager_->textureAtlas.textureRegions[0];
-        glm::vec4 atlasUV = glm::vec4(region.uMin, region.vMin, region.uMax, region.vMax);
-        instanceData_.push_back(
-            InstanceDataTwoD{position, scale, 0, 0, atlasUV});
-        objectIndex_++;
-      });
-
-  vertexDataBuffer_->Update(vertices);
-  indexDataBuffer_->Update(indices);
-  instanceDataBuffer_->Update(instanceData_);
+  vertexDataBuffer_->Update(vertices_2d);
+  indexDataBuffer_->Update(indices_2d);
+  instanceDataBuffer_->Update(instanceData_2d);
 
   const auto vertexBuffer = vertexDataBuffer_->GetVulkanBuffer();
   const auto instanceBuffer = instanceDataBuffer_->GetVulkanBuffer();
-
   constexpr VkDeviceSize offsets[1] = {0};
   vkCmdBindVertexBuffers(commandBuffers_[currentFrame_]->Get(), 0, 1,
                          &vertexBuffer, offsets);
@@ -188,18 +156,14 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
                          &instanceBuffer, offsets);
   vkCmdBindIndexBuffer(commandBuffers_[currentFrame_]->Get(),
                        indexDataBuffer_->GetVulkanBuffer(), 0,
-                       VK_INDEX_TYPE_UINT32);
+                       VK_INDEX_TYPE_UINT16);
+  vkCmdDrawIndexed(commandBuffers_[currentFrame_]->Get(), indices_2d.size(),
+                   objects_2d, 0, 0, 0);
 
-  // Draw current renderable
-  vkCmdDrawIndexed(commandBuffers_[currentFrame_]->Get(), indices.size(),
-                   objectIndex_, 0, 0, 0);
-
-  // End render pass and command buffer recording
   RenderPass::End(commandBuffers_[currentFrame_]);
   commandBuffers_[currentFrame_]->EndRecording();
 
-  constexpr VkPipelineStageFlags waitStages[] = {
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+  constexpr VkPipelineStageFlags waitStages[1] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
   const auto& waitSemaphores = synchronizer_->GetImageSemaphores();
   const auto& signalSemaphores = synchronizer_->GetRenderFinishedSemaphores();
   const auto& cmdBuffer = commandBuffers_[currentFrame_]->Get();
@@ -214,8 +178,6 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
   submitInfo.pCommandBuffers = &cmdBuffer;
   submitInfo.signalSemaphoreCount = 1;
   submitInfo.pSignalSemaphores = &signalSemaphores[currentFrame_];
-
-  // Submit queue
   VK_CHECK(vkQueueSubmit(logicalDevice_->GetGraphicQueue(), 1, &submitInfo,
                          synchronizer_->GetFences()[currentFrame_]));
 
@@ -227,7 +189,6 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
   presentInfo.swapchainCount = 1;
   presentInfo.pSwapchains = &swapChain;
   presentInfo.pImageIndices = &imageIndex_;
-  vkQueuePresentKHR(logicalDevice_->GetGraphicQueue(), &presentInfo);
-
+  VK_CHECK(vkQueuePresentKHR(logicalDevice_->GetGraphicQueue(), &presentInfo));
   currentFrame_ = (currentFrame_ + 1) % CONCURRENT_FRAMES_IN_FLIGHT;
 }

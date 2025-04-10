@@ -46,7 +46,7 @@ TwoDPipeline::TwoDPipeline(
 
   // const std::vector bindings2 = {samplerLayoutBinding};
 
-  const std::vector<VkDescriptorBindingFlags> bindingFlags0 = {0, 0};
+  const std::vector<VkDescriptorBindingFlags> bindingFlags0 = {0, VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT};
   // const std::vector<VkDescriptorBindingFlags> bindingFlags1 = {};
 
   descriptorSetLayouts_.push_back(

@@ -136,22 +136,18 @@ VkPresentModeKHR SwapChain::ChooseSwapPresentMode(
 }
 
 VkExtent2D
-SwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities,
-                            VkExtent2D frame) {
+SwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, const VkExtent2D frame) {
   if (capabilities.currentExtent.width !=
       std::numeric_limits<uint32_t>::max()) {
     return capabilities.currentExtent;
   }
-
   VkExtent2D actualExtent = {(frame.width), (frame.height)};
-
   actualExtent.width =
       std::clamp(actualExtent.width, capabilities.minImageExtent.width,
                  capabilities.maxImageExtent.width);
   actualExtent.height =
       std::clamp(actualExtent.height, capabilities.minImageExtent.height,
                  capabilities.maxImageExtent.height);
-
   return actualExtent;
 }
 

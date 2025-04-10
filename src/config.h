@@ -27,7 +27,7 @@
 #define USE_VALIDATION_LAYERS 1
 
 #define CONCURRENT_FRAMES_IN_FLIGHT (3)
-#define MAX_INSTANCE_COUNT (1000)
+#define MAX_INSTANCE_COUNT (65536)
 
 #define ENTROPY_ENABLE_SCRIPTING 1
 #define MONO_INCLUDE_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0"

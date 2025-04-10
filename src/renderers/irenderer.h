@@ -18,22 +18,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_ECS_WORLD_H
-#define ENTROPY_ECS_WORLD_H
+#ifndef ENTROPY_RENDERERS_IRENDERER_H
+#define ENTROPY_RENDERERS_IRENDERER_H
 
-#include <flecs.h>
-#include "iworld.h"
+#include "servicelocators/servicelocator.h"
+#include "vulkan/data/vertex.h"
 
+#include <assets/iasset_manager.h>
 
-namespace Entropy::ECS {
-class World final : public ServiceBase<IWorld> {
+namespace Entropy::Renderers {
+class IRenderer : public IService {
 public:
-  World();
-  std::shared_ptr<flecs::world> Get() override { return gameWorld_; }
-
-private:
-  std::shared_ptr<flecs::world> gameWorld_;
+  ~IRenderer() override = default;
+  virtual void Render(uint32_t width, uint32_t height) = 0;
+  virtual void Resize(uint32_t width, uint32_t height) = 0;
+  std::vector<Graphics::Vulkan::Data::TwoDVertex> vertices_2d;
+  std::vector<uint16_t> indices_2d;
+  std::vector<Graphics::Vulkan::Data::InstanceDataTwoD> instanceData_2d;
+  uint32_t objects_2d;
+  std::shared_ptr<Assets::IAssetManager> assetManager_;
 };
-} // namespace Entropy::ECS
 
-#endif // ENTROPY_ECS_WORLD_H
+} // namespace Entropy::Graphics::Vulkan::CommandPools
+
+#endif // ENTROPY_RENDERERS_IRENDERER_H

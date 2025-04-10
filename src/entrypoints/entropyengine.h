@@ -21,29 +21,35 @@
 #ifndef ENTROPY_ENTRYPOINTS_ENTROPY_H
 #define ENTROPY_ENTRYPOINTS_ENTROPY_H
 
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_metal.h>
-
 #include "renderers/vulkan_renderer.h"
 #include "config.h"
 
 namespace Entropy::EntryPoints {
 
+/**
+ * @class EntropyEngine
+ *
+ * @brief A class that serves as the core engine for initializing and managing the rendering infrastructure
+ *        using Vulkan. It handles registration and un registration of various Vulkan-related services.
+ *
+ * The EntropyEngine is platform-dependent, with constructors tailored for different operating systems.
+ * It initializes Vulkan services and manages a Vulkan renderer instance.
+ */
 class EntropyEngine {
-
  public:
+  void Run() const;
+  ~EntropyEngine();
 #if ENTROPY_PLATFORM == IOS
   EntropyEngine(void* layer, uint32_t width, uint32_t height);
 #elif ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
   EntropyEngine(uint32_t width, uint32_t height);
+private:
+  static void OnFramebufferResize(GLFWwindow* window, int width, int height);
+  GLFWwindow* window_;
 #endif
-  ~EntropyEngine();
-
-  Vulkan::Renderers::VulkanRenderer* renderer;
-
- private:
-  void SetupServices();
-  void TeardownServices();
+private:
+  static void RegisterServices();
+  static void UnRegisterServices();
 };
 }  // namespace Entropy::EntryPoints
 
