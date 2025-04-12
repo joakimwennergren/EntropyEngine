@@ -9,7 +9,7 @@ layout(location = 0) out vec4 outColor;
 
 void main()
 {
-    outColor = texture(atlas, mix(inAtlasCoords.xy, inAtlasCoords.zw, inUV));
+    outColor = texture(atlas, mix(inAtlasCoords.xy, inAtlasCoords.zw, inUV)) * vec4(1.0, 1.0, 1.0, 1.0);
     /*
     switch (instanceBuffer.objects[PushConstants.instanceIndex].type) {
 

@@ -18,27 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_VULKAN_TEXTURE_ATLAS_H
-#define ENTROPY_VULKAN_TEXTURE_ATLAS_H
+#ifndef ENTROPY_ECS_COMPONENT_TEXTURE_H
+#define ENTROPY_ECS_COMPONENT_TEXTURE_H
 
-#include "texture.h"
-
-namespace Entropy::Graphics::Vulkan::Textures {
-class TextureAtlas final {
- public:
-  struct TextureRegion {
-   float uMin, vMin, uMax, vMax;
-  };
-  explicit TextureAtlas();
-  bool CreateAtlas(const std::vector<std::string>& imagePaths);
-  void DebugPrint(const std::string &name);
-  std::shared_ptr<Texture> texture_;
-  std::vector<TextureRegion> textureRegions;
-  std::vector<std::string> imagePaths_;
-  std::vector<unsigned char> atlas_;
-  int width_, height_;
-
+#include "assets/iasset_manager.h"
+namespace Entropy::ECS::Components {
+struct Asset {
+  Assets::IAssetManager::AssetHandle handle;
 };
-}  // namespace Entropy::Graphics::Vulkan::Textures
+} // namespace Entropy::ECS::Components
 
-#endif  // ENTROPY_VULKAN_TEXTURE_ATLAS_H
+#endif // ENTROPY_ECS_COMPONENT_TEXTURE_H

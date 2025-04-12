@@ -6,7 +6,7 @@
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 #include "stb/stb_rect_pack.h"
-
+#include "loggers/logger.h"
 #include "config.h"
 
 #if ENTROPY_PLATFORM == IOS
@@ -32,13 +32,21 @@ using namespace Entropy::Graphics::Vulkan::Textures;
 
 TextureAtlas::TextureAtlas() {}
 
-bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
+void TextureAtlas::DebugPrint(const std::string& name) {
+  stbi_write_png((name + ".png").c_str(), width_, height_, 4, atlas_.data(), width_ * 4);
+}
 
+
+bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
+  imagePaths_ = imagePaths;
   stbi_set_flip_vertically_on_load(true);
   std::vector<stbrp_rect> rects;
 
   // Load images and store their dimensions
   std::vector<unsigned char*> images(imagePaths.size());
+  // Copy images into the atlas
+  textureRegions.resize(imagePaths_.size());
+
   int totalWidth = 0;
   int totalHeight = 0;
   int totalArea = 0;
@@ -101,50 +109,42 @@ bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
 
   // Setup packing context
   stbrp_context packer;
+
   std::vector<stbrp_node> nodes(atlasWidth);
   stbrp_init_target(&packer, atlasWidth, atlasHeight, nodes.data(),
                     static_cast<uint32_t>(nodes.size()));
 
+
+
   // Pack rectangles
-  if (!stbrp_pack_rects(&packer, rects.data(),
-                        static_cast<uint32_t>(rects.size()))) {
-    return false;
-  }
+  int res = stbrp_pack_rects(&packer, rects.data(),
+                        static_cast<uint32_t>(rects.size()));
 
   // Create an empty atlas (RGBA)
-  std::vector<unsigned char> atlas(atlasWidth * atlasHeight * 4,
-                                   0);  // 4 channels (RGBA)
+  atlas_.resize(atlasWidth * atlasHeight * 4);  // 4 channels (RGBA)
+  width_ = atlasWidth;
+  height_ = atlasHeight;
 
-  // Copy images into the atlas
-  for (auto& rect : rects) {
-    if (!rect.was_packed)
+  uint32_t i = 0;
+  for (auto& [id, w, h, x, y, was_packed] : rects) {
+    if (!was_packed)
       continue;
-
-    int x = rect.x, y = rect.y, w = rect.w, h = rect.h;
-    const unsigned char* img = images[rect.id];
-
+    const unsigned char* img = images[id];
     for (int row = 0; row < h; ++row) {
-      std::memcpy(&atlas[((y + row) * atlasWidth + x) * 4], &img[row * w * 4],
+      std::memcpy(&atlas_[((y + row) * atlasWidth + x) * 4], &img[row * w * 4],
                   w * 4);
     }
-
     // Store UV coordinates in textureRegions
-    textureRegions.push_back({
+    textureRegions[i] = TextureRegion({
         x / (float)atlasWidth,         // min U (left)
         y / (float)atlasHeight,        // min V (bottom)
         (x + w) / (float)atlasWidth,   // max U (right)
-        (y + h) / (float)atlasHeight,  // max V (top)
-        w,
-        h  // width and height of the texture in pixels
+        (y + h) / (float)atlasHeight  // max V (top)
     });
-
     stbi_image_free((void*)img);
+    i++;
   }
-
-  texture_ = std::make_shared<Texture>(atlas, atlasWidth, atlasHeight);
-
-  // Save atlas to file (optional, for debugging)
-  //stbi_write_png(outputAtlasPath, atlasWidth, atlasHeight, 4, atlas.data(), atlasWidth * 4);
+  texture_ = std::make_shared<Texture>(atlas_, atlasWidth, atlasHeight);
 
   //std::cout << "Texture atlas created: " << outputAtlasPath << "\n";
   return true;

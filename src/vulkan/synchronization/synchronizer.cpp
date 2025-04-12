@@ -34,7 +34,6 @@ Synchronizer::Synchronizer(uint32_t numObjects) {
 Synchronizer::~Synchronizer() {
   // @todo remove this wait
   vkDeviceWaitIdle(logicalDevice_->Get());
-
   for (size_t i = 0; i < numObjects_; i++) {
     vkDestroySemaphore(logicalDevice_->Get(), imageSemaphores_[i], nullptr);
     vkDestroySemaphore(logicalDevice_->Get(), renderFinishedSemaphores_[i],

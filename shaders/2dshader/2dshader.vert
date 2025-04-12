@@ -19,11 +19,9 @@ layout (binding = 1) uniform UBO {
     mat4 modelview;
 } ubo;
 
-void main()
-{
+void main() {
     outUV = inUV;
     outAtlasCoords = instanceAtlasCoords;
-
     vec4 localPos = vec4(inPos * vec3(instanceDim, 0.0), 1.0);
     vec4 worldPos = vec4(localPos.xyz + vec3(instancePos, 0.0), 1.0);
     gl_Position = ubo.projection * ubo.modelview * worldPos;

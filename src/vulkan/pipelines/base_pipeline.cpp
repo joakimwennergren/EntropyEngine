@@ -44,16 +44,14 @@ void BasePipeline<T>::Build() {
   fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
   fragShaderStageInfo.module = shader_->GetFragShaderModule();
   fragShaderStageInfo.pName = "main";
+  VkPipelineShaderStageCreateInfo shaderStages[2] = {vertShaderStageInfo, fragShaderStageInfo};
 
-  std::vector shaderStages = {vertShaderStageInfo, fragShaderStageInfo};
-
-  std::vector dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT,
-                               VK_DYNAMIC_STATE_SCISSOR};
-
+  VkDynamicState dynamicStates[2] = {VK_DYNAMIC_STATE_VIEWPORT,
+                                     VK_DYNAMIC_STATE_SCISSOR};
   VkPipelineDynamicStateCreateInfo dynamicState{};
   dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-  dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-  dynamicState.pDynamicStates = dynamicStates.data();
+  dynamicState.dynamicStateCount = 2;
+  dynamicState.pDynamicStates = dynamicStates;
 
   VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
   inputAssembly.sType =
@@ -183,7 +181,7 @@ void BasePipeline<T>::Build() {
   VkGraphicsPipelineCreateInfo pipelineInfo{};
   pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
   pipelineInfo.stageCount = 2;
-  pipelineInfo.pStages = shaderStages.data();
+  pipelineInfo.pStages = shaderStages;
   pipelineInfo.pVertexInputState = vertexInputStates.data();
   pipelineInfo.pInputAssemblyState = &inputAssembly;
   pipelineInfo.pViewportState = &viewportState;
@@ -204,6 +202,6 @@ void BasePipeline<T>::Build() {
 }
 
 template class BasePipeline<TwoDVertex>;
-template class BasePipeline<ThreeDAnimVertex>;
+//template class BasePipeline<ThreeDAnimVertex>;
 
 }  // namespace Entropy::Graphics::Vulkan::Pipelines

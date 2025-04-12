@@ -18,17 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_ECS_COMPONENT_TEXTURE_H
-#define ENTROPY_ECS_COMPONENT_TEXTURE_H
+#ifndef ENTROPY_ECS_TAGS_TEXTURE_ATLAS_H
+#define ENTROPY_ECS_TAGS_TEXTURE_ATLAS_H
 
-#include "vulkan/textures/texture.h"
-
-namespace Entropy::ECS::Components {
-struct Texture {
-  std::string path;
-  int32_t index;
-  bool async;
-};
-} // namespace Entropy::ECS::Components
-
-#endif // ENTROPY_ECS_COMPONENT_TEXTURE_H
+namespace Entropy::ECS::Tags {
+  struct TextureAtlas {
+    int32_t asset_index = 0;
+    int32_t region_index = 0;
+  };
+}
+#endif // ENTROPY_ECS_TAGS_TEXTURE_ATLAS_H

@@ -16,10 +16,8 @@
 #include "assets/iasset_manager.h"
 
 // ECS
-#include "ecs/components/2d_quad.h"
 #include "ecs/components/dimension.h"
 #include "ecs/components/position.h"
-#include "ecs/components/texture.h"
 #include "ecs/iworld.h"
 #include "ecs/world.h"
 
@@ -28,10 +26,6 @@
 
 // Surfaces
 #include "vulkan/surfaces/surface.h"
-
-// Textures
-#include "vulkan/textures/depthbuffer_texture.h"
-#include "vulkan/textures/texture.h"
 
 // PipelineCache
 #include "vulkan/pipelinecaches/ipipeline_cache.h"
@@ -49,11 +43,12 @@
 #include "vulkan/devices/ilogical_device.h"
 
 // Vulkan Instance
+#include <ecs/components/asset.h>
 #include <ecs/tags/2d.h>
+#include <ecs/tags/textureatlas.h>
 #include <entrypoints/entropyengine.h>
 
 #include "vulkan/instances/ivk_instance.h"
-
 #include "loggers/logger.h"
 #include "servicelocators/servicelocator.h"
 
@@ -86,29 +81,21 @@ MonoDomain* domain;
 MonoAssembly* assembly;
 MonoImage* image;
 
-extern "C" int32_t Texture_Create(MonoString* path) {
-  // Your texture creation logic
-
+extern "C" void Texture_Create(MonoString* path) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto textureId = sl->getService<IAssetManager>()->LoadAsync<Texture>(
-      mono_string_to_utf8(path));
-
-  std::cout << "Texture created async with path: " << mono_string_to_utf8(path)
-            << std::endl;
-
-  return textureId;
+  const auto handle = sl->getService<IAssetManager>()->Load(mono_string_to_utf8(path), IAssetManager::kLoadTextureSync);
 }
 
 extern "C" void Texture_Destroy(const int32_t textureId) {
   // Your texture destruction logic
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  sl->getService<IAssetManager>()->Unload<Texture>(textureId);
+  //sl->getService<IAssetManager>()->Unload<Texture>(textureId);
 }
 
 extern "C" flecs::entity* Entity_Create() {
   std::cout << "Entity created." << std::endl;
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  flecs::entity entity = sl->getService<IWorld>()->Get()->entity();
+  const flecs::entity entity = sl->getService<IWorld>()->Get()->entity();
   return new flecs::entity(entity);
 }
 
@@ -119,7 +106,6 @@ extern "C" void Entity_Destroy(const flecs::entity* entity) {
     delete entity;
   } else {
     std::cout << "Entity is not valid." << std::endl;
-    return;
   }
 }
 
@@ -157,24 +143,17 @@ extern "C" void Entity_AddDimension(const flecs::entity* entity, CPosition dim) 
 
 extern "C" void Entity_AddTexture(const flecs::entity* entity,
                                   MonoString* path) {
-  if (entity == nullptr) {
-    std::cout << "Entity is null." << std::endl;
-    return;
+  if (entity != nullptr) {
+    const ServiceLocator* sl = ServiceLocator::GetInstance();
+    const auto asset_handle = sl->getService<IAssetManager>()->Load(mono_string_to_utf8(path), IAssetManager::kLoadTextureAtlasSync);
+    entity->set<Components::Asset>({asset_handle});
+    const auto num_textures = static_cast<TextureAtlas*>(asset_handle.asset)->imagePaths_.size() - 1;
+    entity->set<Tags::TextureAtlas>({asset_handle.index, static_cast<int32_t>(num_textures)});
   }
-
-  const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto textureId =
-      sl->getService<IAssetManager>()->LoadToAtlas(mono_string_to_utf8(path));
-
-  std::cout << "Texture created async with path: " << mono_string_to_utf8(path)
-            << std::endl;
-
-  entity->set<Components::Texture>(
-      {mono_string_to_utf8(path), textureId, true});
 }
 
 int main() {
-  const auto engine = Entropy::EntryPoints::EntropyEngine(820, 820);
+  const auto engine = Entropy::EntryPoints::EntropyEngine(1266, 585);
 
 #if ENTROPY_ENABLE_SCRIPTING
 

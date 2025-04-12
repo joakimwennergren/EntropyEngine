@@ -7,34 +7,20 @@
 #include "iasset_manager.h"
 
 namespace Entropy::Assets {
-
 class AssetManager final : public ServiceBase<IAssetManager> {
+public:
+ ~AssetManager() override;
  protected:
-  int32_t LoadTexture(const std::string& path) override;
-
-  std::shared_ptr<Graphics::Vulkan::Textures::Texture> GetTexture(
-      int32_t textureId) override;
-
-  int32_t LoadTextureAsync(const std::string& path) override;
-  std::shared_ptr<Graphics::Vulkan::Textures::Texture> GetTextureAsync(
-    int32_t textureId) override;
-
-  void UnloadTexture(int32_t textureId) override;
-
-  std::unordered_map<
-      std::string,
-      std::pair<int32_t, std::shared_future<std::shared_ptr<Graphics::Vulkan::Textures::Texture>>>>
-      textureFutures_;
-
-  std::unordered_map<std::string,
-          std::pair<int32_t, std::shared_ptr<Graphics::Vulkan::Textures::Texture>>>
-      textures_;
-
+  AssetHandle LoadTexture(const std::string& path) override;
+  AssetHandle LoadTextureAsync(const std::string& path) override;
+  AssetHandle LoadTextureAtlas(const std::string& path) override;
+  AssetHandle LoadTextureAtlasAsync(const std::string& path) override;
 private:
-  std::string GetTextureKeyById(int32_t textureId);
   std::mutex mutex_;
+  std::unordered_map<std::string, std::shared_future<AssetHandle>> futures_;
+  std::unordered_map<std::string, AssetHandle> assets_;
+  int32_t asset_index = 0;
+  std::vector<std::string> loadedTexturesAtlas_;
 };
-
 }  // namespace Entropy::Assets
-
 #endif  // ENTROPY_ASSETS_TEXTURE_MANAGER_H

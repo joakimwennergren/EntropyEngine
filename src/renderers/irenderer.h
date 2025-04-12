@@ -23,8 +23,9 @@
 
 #include "servicelocators/servicelocator.h"
 #include "vulkan/data/vertex.h"
-
-#include <assets/iasset_manager.h>
+#include "assets/iasset_manager.h"
+#include "vulkan/pipelines/twod_pipeline.h"
+#include "vulkan/data/frame.h"
 
 namespace Entropy::Renderers {
 class IRenderer : public IService {
@@ -32,10 +33,17 @@ public:
   ~IRenderer() override = default;
   virtual void Render(uint32_t width, uint32_t height) = 0;
   virtual void Resize(uint32_t width, uint32_t height) = 0;
-  std::vector<Graphics::Vulkan::Data::TwoDVertex> vertices_2d;
-  std::vector<uint16_t> indices_2d;
-  std::vector<Graphics::Vulkan::Data::InstanceDataTwoD> instanceData_2d;
-  uint32_t objects_2d;
+  virtual uint32_t Frame(Graphics::Vulkan::Data::FrameData<
+    Graphics::Vulkan::Data::TwoDVertex,
+    uint16_t,
+    Graphics::Vulkan::Data::InstanceDataTwoD> *frame) = 0;
+  virtual Graphics::Vulkan::Data::FrameData<
+    Graphics::Vulkan::Data::TwoDVertex,
+    uint16_t,
+    Graphics::Vulkan::Data::InstanceDataTwoD> *GetFrame() = 0;
+  virtual void End() = 0;
+  // @TODO test!! remove
+  std::unique_ptr<Graphics::Vulkan::Pipelines::TwoDPipeline> two_d_pipeline_;
   std::shared_ptr<Assets::IAssetManager> assetManager_;
 };
 

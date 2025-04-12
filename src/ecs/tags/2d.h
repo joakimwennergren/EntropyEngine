@@ -21,11 +21,9 @@
 #ifndef ENTROPY_ECS_TAGS_TWOD_H
 #define ENTROPY_ECS_TAGS_TWOD_H
 
-#include <glm/glm.hpp>
-
 namespace Entropy::ECS::Tags {
   struct D2 {
-    uint32_t id = 0;
+    uint32_t index = 0;
   };
 }
 

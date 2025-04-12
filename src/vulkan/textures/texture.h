@@ -29,9 +29,8 @@ public:
   explicit Texture(int32_t width, int32_t height);
   explicit Texture(const std::vector<uint8_t> &data, int width, int height);
   explicit Texture(const std::string &path);
+  static std::vector<uint8_t> LoadAndResize(const std::string &path, uint32_t targetWidth, uint32_t targetHeight);
   // Texture(const FT_Bitmap &bitmap);
-  int32_t textureIndex{};
-  std::string texturePath{};
 private:
   void Create(int width, int height);
   void CreateTextureSampler();

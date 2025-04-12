@@ -28,19 +28,43 @@
 namespace Entropy::Assets {
 class IAssetManager : public IService {
  public:
+  enum AssetType {
+    kTexture,
+    kTextureAtlas,
+    kUnknown,
+  };
+  struct AssetHandle {
+    void *asset;
+    int32_t index;
+    std::string path;
+    bool is_async = false;
+    AssetType type;
+
+  };
+  enum LoadOperation {
+    kLoadTextureSync,
+    kLoadTextureAsync,
+    kLoadTextureAtlasSync,
+    kLoadTextureAtlasAsync,
+  };
+
+  // NEW STUFF
+  AssetHandle Load(const std::string& path, const LoadOperation operation) {
+    if (operation == kLoadTextureSync) {
+      return LoadTexture(path);
+    }
+    if (operation == kLoadTextureAsync) {
+      return LoadTextureAsync(path);
+    }
+    if (operation == kLoadTextureAtlasSync) {
+      return LoadTextureAtlas(path);
+    }
+    return AssetHandle{};
+  }
+
   ~IAssetManager() override = default;
 
-  int32_t LoadToAtlas(const std::string& path) {
-    textureAtlas_textures_.push_back(path);
-    textureAtlas.CreateAtlas(textureAtlas_textures_);
-    return textureIndex_++;
-  }
-
-  template <typename T>
-  int32_t Load(const std::string& path) {
-    return LoadImpl<T>(path);
-  }
-
+  /*
   template <typename T>
   int32_t LoadAsync(const std::string& path) {
     return LoadAsyncImpl<T>(path);
@@ -60,24 +84,24 @@ class IAssetManager : public IService {
   std::shared_ptr<T> GetAsync(const int32_t textureId) {
     return GetAsyncImpl<T>(textureId);
   }
-
-  Graphics::Vulkan::Textures::TextureAtlas textureAtlas;
-  std::vector<std::string> textureAtlas_textures_;
-  int32_t textureIndex_ = -1;
+  */
 
  protected:
-  virtual int32_t LoadTexture(const std::string& path) = 0;
-  virtual int32_t LoadTextureAsync(const std::string& path) = 0;
+  virtual AssetHandle LoadTexture(const std::string& path) = 0;
+  virtual AssetHandle LoadTextureAsync(const std::string& path) = 0;
+  virtual AssetHandle LoadTextureAtlas(const std::string& path) = 0;
+  virtual AssetHandle LoadTextureAtlasAsync(const std::string& path) = 0;
+  /*
   virtual std::shared_ptr<Graphics::Vulkan::Textures::Texture> GetTexture(
       int32_t textureId) = 0;
   virtual std::shared_ptr<Graphics::Vulkan::Textures::Texture> GetTextureAsync(
       int32_t textureId) = 0;
   virtual void UnloadTexture(int32_t textureId) = 0;
+  */
 
  private:
-  template <typename T>
-  int32_t LoadImpl(const std::string& path);
 
+  /*
   template <typename T>
   int32_t LoadAsyncImpl(const std::string& path);
 
@@ -89,23 +113,9 @@ class IAssetManager : public IService {
 
   template <typename T>
   void UnloadImpl(const int32_t textureId);
+  */
 };
-
-// Template Specialization in Interface
-template <>
-inline int32_t IAssetManager::LoadImpl<Graphics::Vulkan::Textures::Texture>(
-    const std::string& path) {
-  return LoadTexture(path);
-}
-
-// Template Specialization in Interface
-template <>
-inline int32_t
-IAssetManager::LoadAsyncImpl<Graphics::Vulkan::Textures::Texture>(
-    const std::string& path) {
-  return LoadTextureAsync(path);
-}
-
+/*
 template <>
 inline std::shared_ptr<Graphics::Vulkan::Textures::Texture>
 IAssetManager::GetImpl<Graphics::Vulkan::Textures::Texture>(
@@ -125,6 +135,7 @@ inline void IAssetManager::UnloadImpl<Graphics::Vulkan::Textures::Texture>(
     const int32_t textureId) {
   UnloadTexture(textureId);
 }
+*/
 }  // namespace Entropy::Assets
 
 #endif  // ENTROPY_ASSETS_IASSET_MANAGER_H

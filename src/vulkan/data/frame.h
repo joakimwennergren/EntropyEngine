@@ -1,6 +1,3 @@
-// Copyright 2025 Joakim Wennergren
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -18,27 +15,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_VULKAN_TEXTURE_ATLAS_H
-#define ENTROPY_VULKAN_TEXTURE_ATLAS_H
+#ifndef ENTROPY_VULKAN_DATA_FRAME_H
+#define ENTROPY_VULKAN_DATA_FRAME_H
 
-#include "texture.h"
-
-namespace Entropy::Graphics::Vulkan::Textures {
-class TextureAtlas final {
- public:
-  struct TextureRegion {
-   float uMin, vMin, uMax, vMax;
-  };
-  explicit TextureAtlas();
-  bool CreateAtlas(const std::vector<std::string>& imagePaths);
-  void DebugPrint(const std::string &name);
-  std::shared_ptr<Texture> texture_;
-  std::vector<TextureRegion> textureRegions;
-  std::vector<std::string> imagePaths_;
-  std::vector<unsigned char> atlas_;
-  int width_, height_;
-
+namespace Entropy::Graphics::Vulkan::Data {
+template<typename V, typename I, typename D>
+struct FrameData {
+  std::vector<V> vertices;
+  std::vector<I> indices;
+  std::vector<D> data;
 };
-}  // namespace Entropy::Graphics::Vulkan::Textures
+} // namespace Entropy::Graphics::Vulkan::Data
 
-#endif  // ENTROPY_VULKAN_TEXTURE_ATLAS_H
+#endif // ENTROPY_VULKAN_DATA_FRAME_H
+
+

@@ -85,8 +85,11 @@ void EntropyEngine::OnFramebufferResize(GLFWwindow* window, const int width,
                          const int height) {
   const auto sl = ServiceLocator::GetInstance();
   const auto renderer = sl->getService<IRenderer>();
+  const auto world = sl->getService<IWorld>();
   renderer->Resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+  (void)world->Get()->progress();
   renderer->Render(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+  renderer->End();
 }
 EntropyEngine::EntropyEngine(const uint32_t width, const uint32_t height) {
   if (!glfwInit()) {
@@ -116,11 +119,15 @@ EntropyEngine::EntropyEngine(const uint32_t width, const uint32_t height) {
 void EntropyEngine::Run() const {
   const auto sl = ServiceLocator::GetInstance();
   const auto renderer = sl->getService<IRenderer>();
+  const auto world = sl->getService<IWorld>();
   while (!glfwWindowShouldClose(window_)) {
     int width, height;
     glfwGetFramebufferSize(window_, &width, &height);
+    // @TODO handle bool return
+    (void)world->Get()->progress();
     renderer->Render(static_cast<uint32_t>(width),
                      static_cast<uint32_t>(height));
+    renderer->End();
     glfwPollEvents();
   }
 }
@@ -150,6 +157,7 @@ void EntropyEngine::RegisterServices() {
 
 void EntropyEngine::UnRegisterServices() {
   ServiceLocator* sl = ServiceLocator::GetInstance();
+  sl->UnregisterService<IRenderer>();
   sl->UnregisterService<ICameraManager>();
   sl->UnregisterService<IAssetManager>();
   sl->UnregisterService<IWorld>();
