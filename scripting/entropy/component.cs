@@ -17,6 +17,9 @@ namespace Entropy.ECS
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public static extern void Entity_AddTexture(IntPtr entity, string path);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public static extern void Entity_AddTextureAtlas(IntPtr entity, string[] paths);
     }
 
     public interface IComponent
@@ -91,20 +94,38 @@ namespace Entropy.ECS
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct TextureAtlas : IComponent
+    {
+        public string[] paths;
+
+        public TextureAtlas(string[] paths)
+        {
+            this.paths = paths;
+        }
+
+        public void AddTo(IntPtr entity)
+        {
+            NativeBindings.Entity_AddTextureAtlas(entity, paths);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct Sprite : IComponent
     {
-        private string path;
+        private string[] paths;
         private Dimension dimension;
         private Position position;
 
 
         // Main constructor
-        public Sprite(string path, Dimension dim, Position pos)
+        public Sprite(string[] paths, Dimension dim, Position pos)
         {
             this.dimension = dim;
             this.position = pos;
-            this.path = path;
+            this.paths = paths;
         }
+
+        /*
 
         // Overload with default Dimension and Position
         public Sprite(string path)
@@ -113,17 +134,18 @@ namespace Entropy.ECS
         }
 
         // Overload with default Position only
-        public Sprite(string path, Dimension dim)
+        public Sprite(strings path, Dimension dim)
             : this(path, dim, new Position(0.0f, 0.0f, 0.0f))
         {
         }
+        */
 
         public void AddTo(IntPtr entity)
         {
             NativeBindings.Entity_AddPosition(entity, position);
             NativeBindings.Entity_AddDimension(entity, dimension);
             NativeBindings.Entity_Add2DQuad(entity);
-            NativeBindings.Entity_AddTexture(entity, path);
+            NativeBindings.Entity_AddTextureAtlas(entity, paths);
         }
     }
 }

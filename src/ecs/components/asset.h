@@ -24,7 +24,7 @@
 #include "assets/iasset_manager.h"
 namespace Entropy::ECS::Components {
 struct Asset {
-  Assets::IAssetManager::AssetHandle handle;
+  std::vector<Assets::IAssetManager::AssetHandle> handles;
 };
 } // namespace Entropy::ECS::Components
 

@@ -47,10 +47,11 @@
 #include <ecs/tags/2d.h>
 #include <ecs/tags/textureatlas.h>
 #include <entrypoints/entropyengine.h>
+#include <vulkan/textures/textureatlas.h>
 
-#include "vulkan/instances/ivk_instance.h"
 #include "loggers/logger.h"
 #include "servicelocators/servicelocator.h"
+#include "vulkan/instances/ivk_instance.h"
 
 #include "config.h"
 
@@ -83,7 +84,9 @@ MonoImage* image;
 
 extern "C" void Texture_Create(MonoString* path) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto handle = sl->getService<IAssetManager>()->Load(mono_string_to_utf8(path), IAssetManager::kLoadTextureSync);
+  std::vector<std::string> paths;
+  paths.emplace_back(mono_string_to_utf8(path));
+  const auto handle = sl->getService<IAssetManager>()->Load(paths, IAssetManager::kLoadTextureSync);
 }
 
 extern "C" void Texture_Destroy(const int32_t textureId) {
@@ -145,10 +148,32 @@ extern "C" void Entity_AddTexture(const flecs::entity* entity,
                                   MonoString* path) {
   if (entity != nullptr) {
     const ServiceLocator* sl = ServiceLocator::GetInstance();
-    const auto asset_handle = sl->getService<IAssetManager>()->Load(mono_string_to_utf8(path), IAssetManager::kLoadTextureAtlasSync);
-    entity->set<Components::Asset>({asset_handle});
-    const auto num_textures = static_cast<TextureAtlas*>(asset_handle.asset)->imagePaths_.size() - 1;
-    entity->set<Tags::TextureAtlas>({asset_handle.index, static_cast<int32_t>(num_textures)});
+    std::vector<std::string> paths;
+    paths.emplace_back(mono_string_to_utf8(path));
+    const auto asset_handles = sl->getService<IAssetManager>()->Load(paths, IAssetManager::kLoadTextureAtlasSync);
+    entity->set<Components::Asset>({asset_handles});
+    const auto num_textures = static_cast<TextureAtlas*>(asset_handles[0].asset)->imagePaths_.size() - 1;
+    entity->set<Tags::TextureAtlas>({asset_handles[0].index, static_cast<int32_t>(num_textures)});
+  }
+}
+
+extern "C" void Entity_AddTextureAtlas(const flecs::entity* entity,
+                                  MonoArray* paths) {
+  if (entity != nullptr) {
+    std::vector<std::string> stringPaths;
+    const uint32_t length = mono_array_length(paths);
+    for (int i = 0; i < length; ++i) {
+      auto* str = mono_array_get(paths, MonoString*, i);
+      char* utf8 = mono_string_to_utf8(str);
+      // Use utf8...
+      stringPaths.emplace_back(utf8);
+      mono_free(utf8);
+    }
+    const ServiceLocator* sl = ServiceLocator::GetInstance();
+    const auto asset_handles = sl->getService<IAssetManager>()->Load(stringPaths, IAssetManager::kLoadTextureAtlasSync);
+    entity->set<Components::Asset>({asset_handles});
+    const auto num_textures = static_cast<TextureAtlas*>(asset_handles[0].asset)->imagePaths_.size() - 1;
+    entity->set<Tags::TextureAtlas>({asset_handles[0].index, static_cast<int32_t>(num_textures)});
   }
 }
 
@@ -178,6 +203,8 @@ int main() {
                          (void*)Entity_AddDimension);
   mono_add_internal_call("Entropy.ECS.NativeBindings::Entity_AddTexture",
                          (void*)Entity_AddTexture);
+  mono_add_internal_call("Entropy.ECS.NativeBindings::Entity_AddTextureAtlas",
+                       (void*)Entity_AddTextureAtlas);
 
   // Bind the Entity class to C#
   mono_add_internal_call("Entropy.ECS.Entity::Entity_Create",

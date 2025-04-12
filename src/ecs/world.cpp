@@ -1,5 +1,7 @@
 #include "world.h"
 
+#include <vulkan/textures/textureatlas.h>
+
 #include <iostream>
 
 #include "ecs/components/dimension.h"
@@ -46,7 +48,7 @@ World::World() {
 
     const auto renderer = sl_->getService<Renderers::IRenderer>();
     const auto logicalDevice = sl_->getService<Graphics::Vulkan::Devices::ILogicalDevice>();
-    const auto atlas = static_cast<Graphics::Vulkan::Textures::TextureAtlas*>(asset.handle.asset);
+    const auto atlas = static_cast<Graphics::Vulkan::Textures::TextureAtlas*>(asset.handles[0].asset);
     VkWriteDescriptorSet descriptorWrite{};
     VkDescriptorImageInfo imageInfo;
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
