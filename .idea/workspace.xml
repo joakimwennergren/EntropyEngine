@@ -101,11 +101,6 @@
     </key>
   </component>
   <component name="RunManager" selected="CMake Application.Entropy">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Entropy" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Entropy" TARGET_NAME="Entropy" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Entropy" RUN_TARGET_NAME="Entropy">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -158,7 +153,8 @@
       <workItem from="1744519490818" duration="3428000" />
       <workItem from="1744523273296" duration="1058000" />
       <workItem from="1744524345309" duration="907000" />
-      <workItem from="1744609474690" duration="1496000" />
+      <workItem from="1744609474690" duration="1824000" />
+      <workItem from="1744612616146" duration="8000" />
     </task>
     <servers />
   </component>
