@@ -19,12 +19,24 @@ layout (binding = 1) uniform UBO {
     mat4 modelview;
 } ubo;
 
-void main()
-{
+void main() {
     outUV = inUV;
     outAtlasCoords = instanceAtlasCoords;
 
-    vec4 localPos = vec4(inPos * vec3(instanceDim, 0.0), 1.0);
-    vec4 worldPos = vec4(localPos.xyz + vec3(instancePos, 0.0), 1.0);
-    gl_Position = ubo.projection * ubo.modelview * worldPos;
+    // Scale local position
+    vec2 scaledPos = inPos.xy * instanceDim;
+
+    // Apply 2D rotation
+    float s = sin(instanceRot);
+    float c = cos(instanceRot);
+    vec2 rotatedPos = vec2(
+        scaledPos.x * c - scaledPos.y * s,
+        scaledPos.x * s + scaledPos.y * c
+    );
+
+    // Translate
+    vec3 worldPos = vec3(rotatedPos + instancePos, 0.0);
+
+    // Final position
+    gl_Position = ubo.projection * ubo.modelview * vec4(worldPos, 1.0);
 }

@@ -1,85 +1,117 @@
 #include "asset_manager.h"
+#include "loggers/logger.h"
+#include "vulkan/textures/texture.h"
+#include "vulkan/textures/textureatlas.h"
 
 using namespace Entropy::Assets;
 using namespace Entropy::Graphics::Vulkan::Textures;
 
-int32_t AssetManager::LoadTexture(const std::string& path) {
-
-  if (const auto it = textures_.find(path); it != textures_.end()) {
-    return it->second.first;
+AssetManager::~AssetManager() {
+  for (const auto& [key, value] : assets_) {
+    if (value.type == kTexture) {
+      delete static_cast<Texture*>(value.asset);
+    } else if (value.type == kTextureAtlas) {
+      LOG_INFO(logger_, "Deleting texture atlas..");
+      delete static_cast<TextureAtlas*>(value.asset);
+    }
   }
-
-  auto asset = std::make_shared<Texture>(path);
-  textureIndex_++;
-  textures_[path] = std::make_pair(textureIndex_, asset);
-  return textureIndex_;
+  assets_.clear();
 }
 
-std::shared_ptr<Texture> AssetManager::GetTexture(const int32_t textureId) {
-  const auto it = textures_.find(GetTextureKeyById(textureId));
-  return it != textures_.end() ? it->second.second : nullptr;
+std::vector<IAssetManager::AssetHandle> AssetManager::LoadTexture(const std::vector<std::string> &paths) {
+  std::vector<AssetHandle> assets;
+  for (const auto& path : paths) {
+    if (const auto it = assets_.find(path); it != assets_.end()) {
+      assets.push_back(it->second);
+      continue;
+    }
+    assets_[path] = AssetHandle{new Texture(path), asset_index++, path.c_str(), false, kTexture};
+    assets.push_back(assets_[path]);
+  }
+  return assets;
 }
 
-int32_t AssetManager::LoadTextureAsync(const std::string& path) {
+std::vector<IAssetManager::AssetHandle> AssetManager::LoadTextureAsync(const std::vector<std::string> &paths) {
+  /*
   std::lock_guard lock(mutex_);
-
-  // Check if texture is already loaded
-  if (const auto it = textures_.find(path); it != textures_.end()) {
-    return it->second.first;
+  if (const auto it = assets_.find(path); it != assets_.end()) {
+    return it->second;
+  }
+  if (const auto fit = futures_.find(path);
+    fit != futures_.end()) {
+    return AssetHandle{nullptr, -1, path, true, kTexture};
   }
 
-  // Check if it's already loading
-  if (const auto fit = textureFutures_.find(path);
-      fit != textureFutures_.end()) {
-    return -1;
-  }
+  const std::shared_future future = std::async(
+      std::launch::async, [&, path] { return AssetHandle{new Texture(path), asset_index++, path, true, kTexture}; });
 
-  // Start async loading using shared_future
-  std::shared_future<std::shared_ptr<Texture>> future = std::async(
-      std::launch::async, [path] { return std::make_shared<Texture>(path); });
-
-  // Store the shared_future
-  textureIndex_++;
-  textureFutures_[path] = std::make_pair(textureIndex_, future);
-  return textureIndex_;
+  futures_[path] = future;
+  return AssetHandle{nullptr, -1, path, true, kTexture};
+  */
+  return {};
 }
 
-std::shared_ptr<Texture> AssetManager::GetTextureAsync(
-    const int32_t textureId) {
-  std::lock_guard lock(mutex_);
-
-  // Check if texture is already loaded
-
-  if (const auto it = textures_.find(GetTextureKeyById(textureId));
-      it != textures_.end()) {
-    return it->second.second;
-  }
-
-  for (const auto& [key, value] : textureFutures_) {
-    if (value.first == textureId) {
-      if (auto asset = value.second.get()) {
-        // Ensure the asset is valid (not nullptr)
-        textures_[key] = std::make_pair(textureId, asset);
-        textureFutures_.erase(key);  // Remove from future map
-        return asset;
+/*
+std::vector<IAssetManager::AssetHandle> AssetManager::LoadTextureAtlas(const std::vector<std::string> &paths) {
+  auto* atlas = static_cast<TextureAtlas*>(assets_[std::string("TextureAtlas" + std::to_string(asset_index))].asset);
+  if (atlas == nullptr) {
+    LOG_INFO(logger_, "Creating a new atlas..");
+    atlas = new TextureAtlas();
+    for (auto &path : paths) {
+      if (std::find(atlas->imagePaths_.begin(), atlas->imagePaths_.end(), path) == atlas->imagePaths_.end()) {
+        LOG_INFO(logger_, "Adding image path to atlas..");
+        atlas->imagePaths_.push_back(path);
       }
     }
-
-    return nullptr;
-  }
-
-  return nullptr;
-}
-
-void AssetManager::UnloadTexture(const int32_t textureId) {
-  textures_.erase(GetTextureKeyById(textureId));
-}
-
-std::string AssetManager::GetTextureKeyById(int32_t textureId) {
-  for (const auto& [key, value] : textures_) {
-    if (value.first == textureId) {
-      return key;
+    atlas->CreateAtlas(atlas->imagePaths_);
+    assets_[std::string("TextureAtlas" + std::to_string(asset_index))] = AssetHandle{atlas, asset_index++, "", false, kTextureAtlas};
+  } else {
+    if (atlas->imagePaths_.size() < 2) {
+      for (auto &path : paths) {
+        if (std::find(atlas->imagePaths_.begin(), atlas->imagePaths_.end(), path) == atlas->imagePaths_.end()) {
+          LOG_INFO(logger_, "Adding image path to atlas..");
+          atlas->imagePaths_.push_back(path);
+        }
+      }
+      atlas->CreateAtlas(atlas->imagePaths_);
+    } else {
+      LOG_INFO(logger_, "Creating a new atlas since old one maxed out..");
+      atlas = new TextureAtlas();
+      for (auto &path : paths) {
+        if (std::find(atlas->imagePaths_.begin(), atlas->imagePaths_.end(), path) == atlas->imagePaths_.end()) {
+          LOG_INFO(logger_, "Adding image path to atlas..");
+          atlas->imagePaths_.push_back(path);
+        }
+      }
+      atlas->CreateAtlas(atlas->imagePaths_);
+      assets_[std::string("TextureAtlas" + std::to_string(asset_index))] = AssetHandle{atlas, asset_index++, "", false, kTextureAtlas};
     }
   }
-  return {};  // or throw / return std::optional
+  atlas->DebugPrint(std::string("TextureAtlas" + std::to_string(asset_index)));
+  return std::vector{assets_[std::string("TextureAtlas" + std::to_string(asset_index))]};
+}
+*/
+
+
+std::vector<IAssetManager::AssetHandle> AssetManager::LoadTextureAtlas(const std::vector<std::string>& paths) {
+  const std::string key = "TextureAtlas" + std::to_string(asset_index);
+  LOG_INFO(logger_, "Creating a new atlas..");
+
+  auto* atlas = new TextureAtlas();
+  atlas->image_paths = paths;
+
+  for (const auto& path : paths) {
+    LOG_INFO(logger_, "Adding image path to atlas: {}", path);
+  }
+
+  atlas->CreateAtlas();
+  atlas->DebugPrint(key);
+
+  assets_[key] = AssetHandle{atlas, asset_index++, "", false, kTextureAtlas};
+  return {assets_[key]};
+}
+
+std::vector<IAssetManager::AssetHandle> AssetManager::LoadTextureAtlasAsync(
+    const std::vector<std::string>& paths) {
+  return {};
 }

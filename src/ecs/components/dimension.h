@@ -24,9 +24,11 @@
 #include <glm/glm.hpp>
 
 namespace Entropy::ECS::Components {
-struct Dimension {
-  glm::vec2 scale;
-};
+  struct Dimension {
+    float x{};
+    float y{};
+    float z{};
+  };
 }
 
 #endif // ENTROPY_ECS_COMPONENT_DIMENSION_H

@@ -7,6 +7,9 @@
 #include "vulkan/buffers/staging_buffer.h"
 #include "vulkan/utilities/helpers.h"
 
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include "stb/stb_image_resize2.h"
+
 #if ENTROPY_PLATFORM == IOS
 #include <CoreFoundation/CoreFoundation.h>
 
@@ -70,7 +73,7 @@ Texture::Texture(const std::vector<uint8_t> &data, const int width, const int he
 
 Texture::Texture(const std::string& path) {
   assert(!path.empty());
-  texturePath = path;
+
   int texWidth, texHeight, texChannels;
   stbi_set_flip_vertically_on_load(true);
 
@@ -179,5 +182,23 @@ void Texture::CreateTextureSampler() {
 
   VK_CHECK(vkCreateSampler(logicalDevice_->Get(), &samplerInfo, nullptr,
                            &textureSampler_));
+}
+
+std::vector<uint8_t> Texture::LoadAndResize(const std::string &path,
+                                            const uint32_t targetWidth, const uint32_t targetHeight) {
+  int w, h, channels;
+  uint8_t* data = stbi_load(path.c_str(), &w, &h, &channels, 4); // Force RGBA
+  if (!data) throw std::runtime_error("Failed to load image");
+
+  std::vector<uint8_t> resized(targetWidth * targetHeight * 4);
+  stbir_resize_uint8_linear(
+      data,
+      static_cast<int32_t>(targetWidth), static_cast<int32_t>(targetHeight), 0,
+      resized.data(),
+      0, 0, 0,
+      STBIR_RGBA
+  );
+  stbi_image_free(data);
+  return resized;
 }
 }  // namespace Entropy::Graphics::Vulkan::Textures

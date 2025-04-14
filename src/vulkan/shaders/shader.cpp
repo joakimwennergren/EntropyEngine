@@ -1,6 +1,9 @@
 #include <fstream>
 
 #include "shader.h"
+
+#include <iostream>
+
 #include "vulkan/utilities/helpers.h"
 
 using namespace Entropy::Graphics::Vulkan::Shaders;
@@ -13,6 +16,8 @@ Shader::Shader(const std::string &vert, const std::string &frag) {
   if (!vertCode_.empty() && !fragCode_.empty()) {
     shaderModuleVert_ = BuildShader(vertCode_);
     shaderModuleFrag_ = BuildShader(fragCode_);
+  } else {
+    LOG_ERROR(logger_, "Could not read shader: {}, {}", vert, frag);
   }
 }
 

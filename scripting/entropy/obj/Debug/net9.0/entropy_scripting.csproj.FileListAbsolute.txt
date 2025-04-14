@@ -1,0 +1,12 @@
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/bin/Debug/net9.0/entropy_scripting.deps.json
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/bin/Debug/net9.0/entropy_scripting.dll
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/bin/Debug/net9.0/entropy_scripting.pdb
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/obj/Debug/net9.0/entropy_scripting.GeneratedMSBuildEditorConfig.editorconfig
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/obj/Debug/net9.0/entropy_scripting.AssemblyInfoInputs.cache
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/obj/Debug/net9.0/entropy_scripting.AssemblyInfo.cs
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/obj/Debug/net9.0/entropy_scripting.csproj.CoreCompileInputs.cache
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/obj/Debug/net9.0/entropy_scripting.sourcelink.json
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/obj/Debug/net9.0/entropy_scripting.dll
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/obj/Debug/net9.0/refint/entropy_scripting.dll
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/obj/Debug/net9.0/entropy_scripting.pdb
+/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/obj/Debug/net9.0/ref/entropy_scripting.dll

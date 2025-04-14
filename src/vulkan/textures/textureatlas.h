@@ -28,14 +28,16 @@ class TextureAtlas final {
  public:
   struct TextureRegion {
    float uMin, vMin, uMax, vMax;
-   int width, height;
   };
   explicit TextureAtlas();
-  bool CreateAtlas(const std::vector<std::string>& imagePaths);
+  bool CreateAtlas();
+  void DebugPrint(const std::string &name) const;
   std::shared_ptr<Texture> texture_;
   std::vector<TextureRegion> textureRegions;
-
+  std::vector<std::string> image_paths;
+  std::vector<unsigned char> atlas_;
+  int width_, height_;
 };
 }  // namespace Entropy::Graphics::Vulkan::Textures
 
-#endif  // ENTROPY_VULKAN_TEXTURE_H
+#endif  // ENTROPY_VULKAN_TEXTURE_ATLAS_H

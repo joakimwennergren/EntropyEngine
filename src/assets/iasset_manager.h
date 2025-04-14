@@ -23,108 +23,47 @@
 
 #include "servicelocators/servicelocator.h"
 #include "vulkan/textures/texture.h"
-#include "vulkan/textures/textureatlas.h"
 
 namespace Entropy::Assets {
 class IAssetManager : public IService {
  public:
+  enum AssetType {
+    kTexture,
+    kTextureAtlas,
+    kUnknown,
+  };
+  struct AssetHandle {
+    void* asset;
+    int32_t index;
+    const char* path;
+    bool is_async;
+    uint32_t type;
+  };
+  enum LoadOperation {
+    kLoadTextureSync,
+    kLoadTextureAsync,
+    kLoadTextureAtlasSync,
+    kLoadTextureAtlasAsync,
+  };
+  std::vector<AssetHandle> Load(const std::vector<std::string> &paths, const LoadOperation operation) {
+    if (operation == kLoadTextureSync) {
+      return LoadTexture(paths);
+    }
+    if (operation == kLoadTextureAsync) {
+      return LoadTextureAsync(paths);
+    }
+    if (operation == kLoadTextureAtlasSync) {
+      return LoadTextureAtlas(paths);
+    }
+    return {};
+  }
   ~IAssetManager() override = default;
-
-  int32_t LoadToAtlas(const std::string& path) {
-    textureAtlas_textures_.push_back(path);
-    textureAtlas.CreateAtlas(textureAtlas_textures_);
-    return textureIndex_++;
-  }
-
-  template <typename T>
-  int32_t Load(const std::string& path) {
-    return LoadImpl<T>(path);
-  }
-
-  template <typename T>
-  int32_t LoadAsync(const std::string& path) {
-    return LoadAsyncImpl<T>(path);
-  }
-
-  template <typename T>
-  void Unload(const int32_t textureId) {
-    UnloadImpl<T>(textureId);
-  }
-
-  template <typename T>
-  std::shared_ptr<T> Get(const int32_t textureId) {
-    return GetImpl<T>(textureId);
-  }
-
-  template <typename T>
-  std::shared_ptr<T> GetAsync(const int32_t textureId) {
-    return GetAsyncImpl<T>(textureId);
-  }
-
-  Graphics::Vulkan::Textures::TextureAtlas textureAtlas;
-  std::vector<std::string> textureAtlas_textures_;
-  int32_t textureIndex_ = -1;
-
  protected:
-  virtual int32_t LoadTexture(const std::string& path) = 0;
-  virtual int32_t LoadTextureAsync(const std::string& path) = 0;
-  virtual std::shared_ptr<Graphics::Vulkan::Textures::Texture> GetTexture(
-      int32_t textureId) = 0;
-  virtual std::shared_ptr<Graphics::Vulkan::Textures::Texture> GetTextureAsync(
-      int32_t textureId) = 0;
-  virtual void UnloadTexture(int32_t textureId) = 0;
-
- private:
-  template <typename T>
-  int32_t LoadImpl(const std::string& path);
-
-  template <typename T>
-  int32_t LoadAsyncImpl(const std::string& path);
-
-  template <typename T>
-  std::shared_ptr<T> GetImpl(const int32_t textureId);
-
-  template <typename T>
-  std::shared_ptr<T> GetAsyncImpl(const int32_t textureId);
-
-  template <typename T>
-  void UnloadImpl(const int32_t textureId);
+  virtual std::vector<AssetHandle> LoadTexture(const std::vector<std::string> &paths) = 0;
+  virtual std::vector<AssetHandle> LoadTextureAsync(const std::vector<std::string> &paths) = 0;
+  virtual std::vector<AssetHandle> LoadTextureAtlas(const std::vector<std::string> &paths) = 0;
+  virtual std::vector<AssetHandle> LoadTextureAtlasAsync(const std::vector<std::string> &paths) = 0;
 };
-
-// Template Specialization in Interface
-template <>
-inline int32_t IAssetManager::LoadImpl<Graphics::Vulkan::Textures::Texture>(
-    const std::string& path) {
-  return LoadTexture(path);
-}
-
-// Template Specialization in Interface
-template <>
-inline int32_t
-IAssetManager::LoadAsyncImpl<Graphics::Vulkan::Textures::Texture>(
-    const std::string& path) {
-  return LoadTextureAsync(path);
-}
-
-template <>
-inline std::shared_ptr<Graphics::Vulkan::Textures::Texture>
-IAssetManager::GetImpl<Graphics::Vulkan::Textures::Texture>(
-    const int32_t textureId) {
-  return GetTexture(textureId);
-}
-
-template <>
-inline std::shared_ptr<Graphics::Vulkan::Textures::Texture>
-IAssetManager::GetAsyncImpl<Graphics::Vulkan::Textures::Texture>(
-    const int32_t textureId) {
-  return GetTextureAsync(textureId);
-}
-
-template <>
-inline void IAssetManager::UnloadImpl<Graphics::Vulkan::Textures::Texture>(
-    const int32_t textureId) {
-  UnloadTexture(textureId);
-}
 }  // namespace Entropy::Assets
 
 #endif  // ENTROPY_ASSETS_IASSET_MANAGER_H

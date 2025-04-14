@@ -40,14 +40,25 @@ namespace Entropy::Renderers {
 class VulkanRenderer final : public ServiceBase<IRenderer>{
  public:
   VulkanRenderer(uint32_t width, uint32_t height);
+  ~VulkanRenderer() override;
   void Render(uint32_t width, uint32_t height) override;
   void Resize(uint32_t width, uint32_t height) override;
+  uint32_t  Frame(Graphics::Vulkan::Data::FrameData<Graphics::Vulkan::Data::TwoDVertex,
+    uint16_t,
+    Graphics::Vulkan::Data::InstanceDataTwoD> *frame) override;
+  Graphics::Vulkan::Data::FrameData<Graphics::Vulkan::Data::TwoDVertex,
+    uint16_t,
+    Graphics::Vulkan::Data::InstanceDataTwoD> *GetFrame() override;
+  void End() override;
+
  private:
   uint32_t currentFrame_{};
   uint32_t imageIndex_{};
 
-  std::vector<std::shared_ptr<CommandBuffer>> commandBuffers_;
+  Graphics::Vulkan::Data::FrameData<Graphics::Vulkan::Data::TwoDVertex, uint16_t,
+    Graphics::Vulkan::Data::InstanceDataTwoD> *frame_{};
 
+  std::vector<std::shared_ptr<CommandBuffer>> commandBuffers_;
   std::unique_ptr<UniformBuffer> UBO_;
 
   std::unique_ptr<VertexBuffer<Graphics::Vulkan::Data::TwoDVertex>>
@@ -58,9 +69,6 @@ class VulkanRenderer final : public ServiceBase<IRenderer>{
   std::unique_ptr<IndexBuffer<uint16_t>> indexDataBuffer_;
   std::unique_ptr<Graphics::Vulkan::Synchronization::Synchronizer>
       synchronizer_;
-
-  // Pipelines
-  std::unique_ptr<Graphics::Vulkan::Pipelines::TwoDPipeline> two_d_pipeline_;
 
   std::shared_ptr<Graphics::Vulkan::RenderPasses::RenderPass> renderPass_;
   std::shared_ptr<ECS::IWorld> world_;
