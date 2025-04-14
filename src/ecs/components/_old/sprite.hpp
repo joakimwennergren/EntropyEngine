@@ -5,7 +5,7 @@
 namespace Entropy {
 namespace Components {
 struct SpriteComponent {
-  std::shared_ptr<Entropy::Graphics::Primitives::Sprite> sprite;
+  std::shared_ptr<Entropy::Primitives::Sprite> sprite;
 };
-} // namespace Components
-} // namespace Entropy
+}  // namespace Components
+}  // namespace Entropy

@@ -24,13 +24,13 @@
 #include <vulkan/vulkan.hpp>
 #include "servicelocators/servicelocator.h"
 
-namespace Entropy::Graphics::Vulkan::DescriptorPools {
+namespace Entropy::Vulkan::DescriptorPools {
 
 class IDescriptorPool : public IService {
-  public:
+ public:
   ~IDescriptorPool() override = default;
   virtual VkDescriptorPool Get() = 0;
 };
-}
+}  // namespace Entropy::Vulkan::DescriptorPools
 
-#endif // ENTROPY_VULKAN_IDESCRIPTORPOOL_H
+#endif  // ENTROPY_VULKAN_IDESCRIPTORPOOL_H

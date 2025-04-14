@@ -24,9 +24,9 @@
 #include <vulkan/vulkan.hpp>
 #include "servicelocators/servicelocator.h"
 
-namespace Entropy::Graphics::Vulkan::Devices {
+namespace Entropy::Vulkan::Devices {
 class ILogicalDevice : public IService {
-public:
+ public:
   ~ILogicalDevice() override = default;
   virtual VkDevice Get() = 0;
   virtual VkQueue GetGraphicQueue() = 0;
@@ -34,6 +34,6 @@ public:
   // QueueFamily index
   uint32_t queueFamiliyIndex = 0;
 };
-} // namespace Entropy::Graphics::Vulkan::Devices
+}  // namespace Entropy::Vulkan::Devices
 
-#endif // ENTROPY_VULKAN_ILOGICAL_DEVICE_H
+#endif  // ENTROPY_VULKAN_ILOGICAL_DEVICE_H

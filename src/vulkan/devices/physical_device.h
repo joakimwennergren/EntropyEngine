@@ -24,7 +24,7 @@
 #include <vulkan/vulkan.hpp>
 #include "vulkan/devices/iphysical_device.h"
 
-namespace Entropy::Graphics::Vulkan::Devices {
+namespace Entropy::Vulkan::Devices {
 
 /**
  * @brief A service class that wraps and manages a Vulkan physical device.
@@ -38,11 +38,11 @@ namespace Entropy::Graphics::Vulkan::Devices {
  * met, such as checking extension support and device suitability.
  */
 class PhysicalDevice final : public ServiceBase<IPhysicalDevice> {
-public:
+ public:
   PhysicalDevice();
   VkPhysicalDevice Get() override { return _physicalDevice; }
 
-private:
+ private:
   /**
    * @brief Checks if a given Vulkan physical device is suitable for rendering.
    *
@@ -58,7 +58,7 @@ private:
    * returns false.
    */
   bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface,
-                        std::vector<const char *> deviceExtensions);
+                        std::vector<const char*> deviceExtensions);
 
   /**
    * @brief Checks if the specified Vulkan physical device supports the required
@@ -74,11 +74,11 @@ private:
    * device; otherwise, returns false.
    */
   bool CheckDeviceExtensionSupport(VkPhysicalDevice device,
-                                   std::vector<const char *> extensions);
+                                   std::vector<const char*> extensions);
 
   // physical device handle
   VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
 };
-} // namespace Entropy::Graphics::Vulkan::Devices
+}  // namespace Entropy::Vulkan::Devices
 
-#endif // ENTROPY_VULKAN_PHYSICAL_DEVICE_H
+#endif  // ENTROPY_VULKAN_PHYSICAL_DEVICE_H

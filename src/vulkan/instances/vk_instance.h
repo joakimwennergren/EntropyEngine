@@ -27,7 +27,7 @@
 #include "servicelocators/servicelocator.h"
 #include "vulkan/validationlayers/validationlayer.h"
 
-namespace Entropy::Graphics::Vulkan::Instances {
+namespace Entropy::Vulkan::Instances {
 
 /**
  * @class VulkanInstance
@@ -46,18 +46,17 @@ namespace Entropy::Graphics::Vulkan::Instances {
  * - Cleaning up the Vulkan instance during destruction to avoid resource leaks.
  */
 class VulkanInstance final : public ServiceBase<IVulkanInstance> {
-public:
+ public:
   VulkanInstance();
   ~VulkanInstance() override;
   VkInstance Get() override { return instance_; }
 
-private:
+ private:
   VkInstance instance_ = VK_NULL_HANDLE;
   ValidationLayers::ValidationLayer validationLayer_;
   std::vector<const char*> extensions_;
-  const std::vector layers = {"VK_LAYER_KHRONOS_validation"};
-  
+  const std::vector<const char*> layers = {"VK_LAYER_KHRONOS_validation"};
 };
-} // namespace Entropy::Graphics::Vulkan::Instances
+}  // namespace Entropy::Vulkan::Instances
 
-#endif // ENTROPY_VULKAN_VKINSTANCE_H
+#endif  // ENTROPY_VULKAN_VKINSTANCE_H

@@ -18,23 +18,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_ECS_COMPONENT_SPRITE_H
-#define ENTROPY_ECS_COMPONENT_SPRITE_H
+#ifndef ENTROPY_FILESYSTEM_FILESYSTEM_H
+#define ENTROPY_FILESYSTEM_FILESYSTEM_H
 
-#include <glm/glm.hpp>
-#include "ecs/components/position.h"
-#include "ecs/components/dimension.h"
-#include "ecs/components/texture.h"
-#include "ecs/components/2d_quad.h"
+#include "config.h"
 
-namespace Entropy::ECS::Components {
-struct Sprite {
-  TwoDQuad two_d_quad;
-  Texture texture;
-  Position position;
-  Dimension dimension;
-  glm::vec4 color;
-};
-} // namespace Entropy::ECS::Components
+#if ENTROPY_PLATFORM == IOS
+#include <CoreFoundation/CoreFoundation.h>
 
-#endif // ENTROPY_ECS_COMPONENT_SPRITE_H
+static std::string GetProjectBasePath() {
+  const CFURLRef resourceURL =
+      CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+  if (char resourcePath[PATH_MAX]; CFURLGetFileSystemRepresentation(
+          resourceURL, true, reinterpret_cast<UInt8*>(resourcePath),
+          PATH_MAX)) {
+    if (resourceURL != nullptr) {
+      CFRelease(resourceURL);
+    }
+    return resourcePath;
+  }
+  return "";
+}
+#endif
+
+#endif  // ENTROPY_FILESYSTEM_FILESYSTEM_H

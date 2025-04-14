@@ -1,15 +1,15 @@
 #include "base_pipeline.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Devices;
-using namespace Entropy::Graphics::Vulkan::DescriptorSets;
-using namespace Entropy::Graphics::Vulkan::DescriptorPools;
-using namespace Entropy::Graphics::Vulkan::SwapChains;
-using namespace Entropy::Graphics::Vulkan::RenderPasses;
-using namespace Entropy::Graphics::Vulkan::Shaders;
-using namespace Entropy::Graphics::Vulkan::Data;
+using namespace Entropy::Vulkan::Devices;
+using namespace Entropy::Vulkan::DescriptorSets;
+using namespace Entropy::Vulkan::DescriptorPools;
+using namespace Entropy::Vulkan::SwapChains;
+using namespace Entropy::Vulkan::RenderPasses;
+using namespace Entropy::Vulkan::Shaders;
+using namespace Entropy::Vulkan::Data;
 
-namespace Entropy::Graphics::Vulkan::Pipelines {
+namespace Entropy::Vulkan::Pipelines {
 
 template <class T>
 BasePipeline<T>::BasePipeline(const std::shared_ptr<RenderPass>& renderPass)
@@ -44,7 +44,8 @@ void BasePipeline<T>::Build() {
   fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
   fragShaderStageInfo.module = shader_->GetFragShaderModule();
   fragShaderStageInfo.pName = "main";
-  VkPipelineShaderStageCreateInfo shaderStages[2] = {vertShaderStageInfo, fragShaderStageInfo};
+  VkPipelineShaderStageCreateInfo shaderStages[2] = {vertShaderStageInfo,
+                                                     fragShaderStageInfo};
 
   VkDynamicState dynamicStates[2] = {VK_DYNAMIC_STATE_VIEWPORT,
                                      VK_DYNAMIC_STATE_SCISSOR};
@@ -68,7 +69,8 @@ void BasePipeline<T>::Build() {
   VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
   vertexInputInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+  vertexInputInfo.vertexBindingDescriptionCount =
+      static_cast<uint32_t>(bindingDescriptions.size());
   vertexInputInfo.vertexAttributeDescriptionCount =
       static_cast<uint32_t>(attributeDescriptions.size());
   vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
@@ -204,4 +206,4 @@ void BasePipeline<T>::Build() {
 template class BasePipeline<TwoDVertex>;
 //template class BasePipeline<ThreeDAnimVertex>;
 
-}  // namespace Entropy::Graphics::Vulkan::Pipelines
+}  // namespace Entropy::Vulkan::Pipelines

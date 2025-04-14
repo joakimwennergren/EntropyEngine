@@ -24,20 +24,22 @@
 #include <vulkan/vulkan.hpp>
 #include "vulkan/devices/ilogical_device.h"
 
-namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts {
+namespace Entropy::Vulkan::DescriptorSetLayouts {
 
-  class DescriptorSetLayout {
-public:
-    DescriptorSetLayout(
-      const std::vector<VkDescriptorSetLayoutBinding> &layoutBindings,
-      const std::vector<VkDescriptorBindingFlagsEXT> &bindingFlags);
-    ~DescriptorSetLayout();
-    [[nodiscard]] VkDescriptorSetLayout Get() const { return descriptorSetLayout_; }
+class DescriptorSetLayout {
+ public:
+  DescriptorSetLayout(
+      const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings,
+      const std::vector<VkDescriptorBindingFlagsEXT>& bindingFlags);
+  ~DescriptorSetLayout();
+  [[nodiscard]] VkDescriptorSetLayout Get() const {
+    return descriptorSetLayout_;
+  }
 
-  private:
-    VkDescriptorSetLayout descriptorSetLayout_ = VK_NULL_HANDLE;
-    std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
-  };
-} // namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts
+ private:
+  VkDescriptorSetLayout descriptorSetLayout_ = VK_NULL_HANDLE;
+  std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
+};
+}  // namespace Entropy::Vulkan::DescriptorSetLayouts
 
-#endif // ENTROPY_VULKAN_DESCRIPTORSET_LAYOUT_H
+#endif  // ENTROPY_VULKAN_DESCRIPTORSET_LAYOUT_H

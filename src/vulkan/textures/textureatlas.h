@@ -23,21 +23,21 @@
 
 #include "texture.h"
 
-namespace Entropy::Graphics::Vulkan::Textures {
+namespace Entropy::Vulkan::Textures {
 class TextureAtlas final {
  public:
   struct TextureRegion {
-   float uMin, vMin, uMax, vMax;
+    float uMin, vMin, uMax, vMax;
   };
   explicit TextureAtlas();
   bool CreateAtlas();
-  void DebugPrint(const std::string &name) const;
+  void DebugPrint(const std::string& name) const;
   std::shared_ptr<Texture> texture_;
   std::vector<TextureRegion> textureRegions;
   std::vector<std::string> image_paths;
   std::vector<unsigned char> atlas_;
   int width_, height_;
 };
-}  // namespace Entropy::Graphics::Vulkan::Textures
+}  // namespace Entropy::Vulkan::Textures
 
 #endif  // ENTROPY_VULKAN_TEXTURE_ATLAS_H

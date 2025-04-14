@@ -10,26 +10,7 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb/stb_image_resize2.h"
 
-#if ENTROPY_PLATFORM == IOS
-#include <CoreFoundation/CoreFoundation.h>
-
-static std::string GetProjectBasePath() {
-
-  const CFURLRef resourceURL =
-      CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
-  if (char resourcePath[PATH_MAX]; CFURLGetFileSystemRepresentation(
-          resourceURL, true, reinterpret_cast<UInt8*>(resourcePath),
-          PATH_MAX)) {
-    if (resourceURL != nullptr) {
-      CFRelease(resourceURL);
-    }
-    return resourcePath;
-  }
-  return "";
-}
-#endif
-
-namespace Entropy::Graphics::Vulkan::Textures {
+namespace Entropy::Vulkan::Textures {
 
 // Custom write callback to store PNG data in a stbi_uc* buffer
 void write_callback(void* context, void* data, int size) {
@@ -39,11 +20,11 @@ void write_callback(void* context, void* data, int size) {
   // Allocate new memory safely
   stbi_uc* temp = (stbi_uc*)realloc(*buffer, size);
   if (temp != NULL) {
-      *buffer = temp;
-      memcpy(*buffer, data, size);
+    *buffer = temp;
+    memcpy(*buffer, data, size);
   } else {
-      // Handle allocation failure
-      // Leave *buffer unchanged; caller must deal with it
+    // Handle allocation failure
+    // Leave *buffer unchanged; caller must deal with it
   }
 }
 
@@ -70,7 +51,8 @@ Texture::Texture(const int32_t width, const int32_t height) {
   Create(width, height);
 }
 
-Texture::Texture(const std::vector<uint8_t> &data, const int width, const int height) {
+Texture::Texture(const std::vector<uint8_t>& data, const int width,
+                 const int height) {
   const VkDeviceSize imageSize = width * height * 4;
   stagingBuffer_ = std::make_unique<StagingBuffer>(
       imageSize, data.data(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -190,21 +172,19 @@ void Texture::CreateTextureSampler() {
                            &textureSampler_));
 }
 
-std::vector<uint8_t> Texture::LoadAndResize(const std::string &path,
-                                            const uint32_t targetWidth, const uint32_t targetHeight) {
+std::vector<uint8_t> Texture::LoadAndResize(const std::string& path,
+                                            const uint32_t targetWidth,
+                                            const uint32_t targetHeight) {
   int w, h, channels;
-  uint8_t* data = stbi_load(path.c_str(), &w, &h, &channels, 4); // Force RGBA
-  if (!data) throw std::runtime_error("Failed to load image");
+  uint8_t* data = stbi_load(path.c_str(), &w, &h, &channels, 4);  // Force RGBA
+  if (!data)
+    throw std::runtime_error("Failed to load image");
 
   std::vector<uint8_t> resized(targetWidth * targetHeight * 4);
-  stbir_resize_uint8_linear(
-      data,
-      static_cast<int32_t>(targetWidth), static_cast<int32_t>(targetHeight), 0,
-      resized.data(),
-      0, 0, 0,
-      STBIR_RGBA
-  );
+  stbir_resize_uint8_linear(data, static_cast<int32_t>(targetWidth),
+                            static_cast<int32_t>(targetHeight), 0,
+                            resized.data(), 0, 0, 0, STBIR_RGBA);
   stbi_image_free(data);
   return resized;
 }
-}  // namespace Entropy::Graphics::Vulkan::Textures
+}  // namespace Entropy::Vulkan::Textures

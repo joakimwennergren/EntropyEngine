@@ -1,9 +1,10 @@
 #include "depthbuffer_texture.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Textures;
+using namespace Entropy::Vulkan::Textures;
 
-DepthBufferTexture::DepthBufferTexture(const uint32_t width, const uint32_t height) {
+DepthBufferTexture::DepthBufferTexture(const uint32_t width,
+                                       const uint32_t height) {
 
   VkFormat depthFormat =
       FindSupportedFormat({VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
@@ -32,20 +33,19 @@ DepthBufferTexture::DepthBufferTexture(const uint32_t width, const uint32_t heig
                           &textureImage_, &allocation_, nullptr));
 
   imageView_ = std::make_shared<ImageView>(textureImage_, depthFormat,
-                                          VK_IMAGE_ASPECT_DEPTH_BIT);
+                                           VK_IMAGE_ASPECT_DEPTH_BIT);
 };
 
 VkFormat DepthBufferTexture::FindSupportedFormat(
-    const std::vector<VkFormat> &candidates){
+    const std::vector<VkFormat>& candidates) {
   for (const VkFormat format : candidates) {
     VkFormatProperties props;
-    vkGetPhysicalDeviceFormatProperties(physicalDevice_->Get(), format,
-                                        &props);
+    vkGetPhysicalDeviceFormatProperties(physicalDevice_->Get(), format, &props);
     if ((props.optimalTilingFeatures &
          VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) ==
         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) {
       return format;
-        }
+    }
   }
 
   LOG_INFO(logger_, "Failed to find supported depth format!");

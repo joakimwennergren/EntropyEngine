@@ -23,17 +23,17 @@
 
 #include "vulkan/textures/base_texture.h"
 
-namespace Entropy::Graphics::Vulkan::Textures {
+namespace Entropy::Vulkan::Textures {
 
 class DepthBufferTexture : public BaseTexture {
 
-public:
+ public:
   DepthBufferTexture(const uint32_t width, const uint32_t height);
 
  private:
   [[nodiscard]] VkFormat FindSupportedFormat(
-      const std::vector<VkFormat> &candidates);
+      const std::vector<VkFormat>& candidates);
 };
-}  // namespace Entropy::Graphics::Vulkan::Textures
+}  // namespace Entropy::Vulkan::Textures
 
 #endif  // ENTROPY_VULKAN_DEPTHBUFFER_TEXTURE_H

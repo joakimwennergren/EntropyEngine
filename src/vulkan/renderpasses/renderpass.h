@@ -29,16 +29,18 @@
 #include "vulkan/textures/depthbuffer_texture.h"
 #include "vulkan/textures/swapchain_texture.h"
 
-namespace Entropy::Graphics::Vulkan::RenderPasses {
+namespace Entropy::Vulkan::RenderPasses {
 class RenderPass {
-public:
+ public:
   RenderPass();
   ~RenderPass();
 
-  void Begin(const std::shared_ptr<CommandBuffers::CommandBuffer> &commandBuffer,
-             uint32_t imageIndex);
+  void Begin(
+      const std::shared_ptr<CommandBuffers::CommandBuffer>& commandBuffer,
+      uint32_t imageIndex);
 
-  static void End(std::shared_ptr<CommandBuffers::CommandBuffer> &commandBuffer);
+  static void End(
+      std::shared_ptr<CommandBuffers::CommandBuffer>& commandBuffer);
 
   void CreateFrameBuffers(uint32_t width, uint32_t height);
   void RecreateFrameBuffers(uint32_t width, uint32_t height);
@@ -47,10 +49,10 @@ public:
 
   [[nodiscard]] VkRenderPass Get() const { return renderPass_; }
 
-private:
-  [[nodiscard]] VkFormat
-  findSupportedFormat(const std::vector<VkFormat> &candidates,
-                      VkImageTiling tiling, VkFormatFeatureFlags features);
+ private:
+  [[nodiscard]] VkFormat findSupportedFormat(
+      const std::vector<VkFormat>& candidates, VkImageTiling tiling,
+      VkFormatFeatureFlags features);
 
   [[nodiscard]] VkFormat FindDepthFormat();
 
@@ -62,6 +64,6 @@ private:
   std::shared_ptr<Devices::IPhysicalDevice> physicalDevice_;
   std::shared_ptr<SwapChains::ISwapChain> swapChain_;
 };
-} // namespace Entropy::Graphics::Vulkan::RenderPasses
+}  // namespace Entropy::Vulkan::RenderPasses
 
-#endif // ENTROPY_VULKAN_RENDERPASS_H
+#endif  // ENTROPY_VULKAN_RENDERPASS_H

@@ -3,17 +3,16 @@ cmake_minimum_required(VERSION 3.28.3)
 include(FetchContent)
 project(Entropy VERSION 1.0.0 LANGUAGES CXX)
 
-# Define an option to choose between executable or library
-option(BUILD_ENTROPY_AS_EXECUTABLE "Build Entropy as executable" ON)
-option(ENTROPY_LIBRARY_TYPE SHARED)
+set(ENTROPY_VERSION_MAJOR 1)
+set(ENTROPY_VERSION_MINOR 0)
+set(ENTROPY_VERSION_PATCH 0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(ENTROPY_VERSION_MAJOR 1)
-set(ENTROPY_VERSION_MINOR 0)
-set(ENTROPY_VERSION_PATCH 0)
+# Define an option to choose between executable or library
+option(ENTROPY_TESTS "Build Entropy Tests" ON)
 
 if(IOS)
     message("BUILDING FOR IOS!!!")
@@ -65,26 +64,10 @@ elseif(APPLE AND NOT IOS)
     set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
     set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(glfw3)
-    set(MONO_INCLUDE_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/include/mono-2.0")
-    set(MONO_LIBRARY_DIR_PATH "/opt/homebrew/Cellar/mono/6.14.0/lib")
-    set(MONO_LIBRARY_ETC_PATH "/opt/homebrew/Cellar/mono/6.14.0/etc")
-    set(MONO_LIBRARY_CONFIG "/opt/homebrew/Cellar/mono/6.14.0/etc/mono/config")
+
     set(ENTROPY_PLATFORM MACOS)
-
-    # Locate the Mono headers
-    find_path(MONO_INCLUDE_DIR
-        NAMES mono/jit/jit.h
-        PATHS ${MONO_INCLUDE_DIR_PATH}
-    )
-
-    # Locate the Mono library
-    find_library(MONO_LIBRARY
-        NAMES mono-2.0
-        PATHS ${MONO_LIBRARY_DIR_PATH}
-    )
     set(ENTROPY_LINK_LIBS
         ${Vulkan_LIBRARIES}
-        ${MONO_LIBRARY}
         flecs::flecs_static
         GPUOpen::VulkanMemoryAllocator
         glfw
@@ -112,24 +95,10 @@ elseif(UNIX AND NOT APPLE)
     set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
     set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(glfw3)
-    set(MONO_INCLUDE_DIR_PATH "/usr/include/mono-2.0")
-    set(MONO_LIBRARY_DIR_PATH "/usr/lib")
-    set(MONO_LIBRARY_ETC_PATH "/etc/mono")
-    set(MONO_LIBRARY_CONFIG "/etc/mono/config")
-    set(ENTROPY_PLATFORM LINUX)
-    find_path(MONO_INCLUDE_DIR
-        NAMES mono/jit/jit.h
-        PATHS ${MONO_INCLUDE_DIR_PATH}
-    )
 
-    # Locate the Mono library
-    find_library(MONO_LIBRARY
-        NAMES mono-2.0
-        PATHS ${MONO_LIBRARY_DIR_PATH}
-    )
+    set(ENTROPY_PLATFORM LINUX)
     set(ENTROPY_LINK_LIBS
         ${Vulkan_LIBRARIES}
-        ${MONO_LIBRARY}
         flecs::flecs_static
         GPUOpen::VulkanMemoryAllocator
         glfw
@@ -179,47 +148,42 @@ set(VMA_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
 set(VMA_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(vma)
 
+if(ENTROPY_TESTS)
+    # Fetch GoogleTest
+    FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+    )
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+
+    enable_testing()
+
+    file(GLOB_RECURSE TEST_SOURCES ${PROJECT_SOURCE_DIR}/test/unit/*.cpp)
+
+    add_executable(${PROJECT_NAME}_test ${TEST_SOURCES})
+
+    target_link_libraries(${PROJECT_NAME}_test PRIVATE
+        GTest::gtest_main
+        ${PROJECT_NAME} # Link against the core library
+    )
+
+    include(GoogleTest)
+    gtest_add_tests(TARGET ${PROJECT_NAME}_test AUTO)
+endif() 
+
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
-if(BUILD_ENTROPY_AS_EXECUTABLE)
-    add_executable(${PROJECT_NAME} ${SOURCES} ${PROJECT_SOURCE_DIR}/test/main.cpp)
-else()
-    set(ENTROPY_INCLUDE_DIRS
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${vma_SOURCE_DIR}/include
-        ${quill_SOURCE_DIR}/include
-        ${glfw3_SOURCE_DIR}/include
-        ${flecs_SOURCE_DIR}/include
-        ${glm_SOURCE_DIR}
-        PARENT_SCOPE
-    )
-    add_library(${PROJECT_NAME} ${ENTROPY_LIBRARY_TYPE} ${SOURCES})
-endif()
+# Always build Entropy as a library
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
-if(BUILD_ENTROPY_AS_EXECUTABLE)
-    file(CREATE_LINK
-        "${CMAKE_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_vert.spv"
-        "${CMAKE_BINARY_DIR}/2dshader_vert.spv"
-        SYMBOLIC
-    )
-    file(CREATE_LINK
-        "${CMAKE_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_frag.spv"
-        "${CMAKE_BINARY_DIR}/2dshader_frag.spv"
-        SYMBOLIC
-    )
-endif()
-
+# Include directories
 target_include_directories(${PROJECT_NAME} INTERFACE
     ${vma_SOURCE_DIR}/include
     ${quill_SOURCE_DIR}/include
     ${glfw3_SOURCE_DIR}/include
     ${flecs_SOURCE_DIR}/include
     ${glm_SOURCE_DIR}
-)
-
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${MONO_INCLUDE_DIR}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -244,6 +208,29 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     -Wdeprecated-declarations
     -Wno-deprecated-declarations
 )
+
+file(CREATE_LINK
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_vert.spv"
+    "${CMAKE_BINARY_DIR}/2dshader_vert.spv"
+    SYMBOLIC
+)
+
+file(CREATE_LINK
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_frag.spv"
+    "${CMAKE_BINARY_DIR}/2dshader_frag.spv"
+    SYMBOLIC
+)
+
+# set(ENTROPY_INCLUDE_DIRS
+# ${CMAKE_CURRENT_SOURCE_DIR}/include
+# ${CMAKE_CURRENT_SOURCE_DIR}/src
+# ${vma_SOURCE_DIR}/include
+# ${quill_SOURCE_DIR}/include
+# ${glfw3_SOURCE_DIR}/include
+# ${flecs_SOURCE_DIR}/include
+# ${glm_SOURCE_DIR}
+# PARENT_SCOPE
+# )
 
 # Build config file
 configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/config.h @ONLY)

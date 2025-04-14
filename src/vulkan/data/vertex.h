@@ -26,14 +26,15 @@
 #include <vulkan/vulkan.hpp>
 #include "data.h"
 
-namespace Entropy::Graphics::Vulkan::Data {
+namespace Entropy::Vulkan::Data {
 
 struct TwoDVertex {
   glm::vec3 pos;
   glm::vec2 uv;
 
-  static std::array<VkVertexInputBindingDescription,2> getBindingDescriptions() {
-    std::array<VkVertexInputBindingDescription,2> bindingDescriptions{};
+  static std::array<VkVertexInputBindingDescription, 2>
+  getBindingDescriptions() {
+    std::array<VkVertexInputBindingDescription, 2> bindingDescriptions{};
     bindingDescriptions[0].binding = 0;
     bindingDescriptions[0].stride = sizeof(TwoDVertex);
     bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
@@ -66,7 +67,7 @@ struct TwoDVertex {
 
     attributeDescriptions[3].binding = 1;
     attributeDescriptions[3].location = 3;
-    attributeDescriptions[3].format =  VK_FORMAT_R32G32_SFLOAT;
+    attributeDescriptions[3].format = VK_FORMAT_R32G32_SFLOAT;
     attributeDescriptions[3].offset = sizeof(float) * 2;
 
     attributeDescriptions[4].binding = 1;
@@ -96,8 +97,9 @@ struct ThreeDAnimVertex {
   glm::vec4 joint;
   glm::vec4 weight;
 
-  static std::array<VkVertexInputBindingDescription,1> getBindingDescriptions() {
-    std::array<VkVertexInputBindingDescription,1> bindingDescriptions{};
+  static std::array<VkVertexInputBindingDescription, 1>
+  getBindingDescriptions() {
+    std::array<VkVertexInputBindingDescription, 1> bindingDescriptions{};
     bindingDescriptions[0].binding = 0;
     bindingDescriptions[0].stride = sizeof(ThreeDAnimVertex);
     bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
@@ -142,6 +144,6 @@ struct ThreeDAnimVertex {
     return attributeDescriptions;
   }
 };
-}  // namespace Entropy::Graphics::Vulkan::Data
+}  // namespace Entropy::Vulkan::Data
 
 #endif  // ENTROPY_VULKAN_VERTEX_H

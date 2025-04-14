@@ -5,8 +5,8 @@
 #include "vulkan/instances/vk_instance.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Surfaces;
-using namespace Entropy::Graphics::Vulkan::Instances;
+using namespace Entropy::Vulkan::Surfaces;
+using namespace Entropy::Vulkan::Instances;
 
 #if ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
 Surface::Surface(GLFWwindow* window) {

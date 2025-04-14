@@ -6,12 +6,12 @@
 #include "vulkan/instances/ivk_instance.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Memory;
-using namespace Entropy::Graphics::Vulkan::Instances;
-using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Vulkan::Memory;
+using namespace Entropy::Vulkan::Instances;
+using namespace Entropy::Vulkan::Devices;
 
 Allocator::Allocator() {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   const auto vulkanInstance = sl->getService<IVulkanInstance>();
   const auto physicalDevice = sl->getService<IPhysicalDevice>();
   const auto logicalDevice = sl->getService<ILogicalDevice>();
@@ -23,7 +23,7 @@ Allocator::Allocator() {
   VmaAllocatorCreateInfo allocatorCreateInfo = {};
   allocatorCreateInfo.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT;
   allocatorCreateInfo.vulkanApiVersion =
-      VK_API_VERSION_1_3; // @TODO make this configurable?
+      VK_API_VERSION_1_3;  // @TODO make this configurable?
   allocatorCreateInfo.physicalDevice = physicalDevice->Get();
   allocatorCreateInfo.device = logicalDevice->Get();
   allocatorCreateInfo.instance = vulkanInstance->Get();
@@ -32,4 +32,6 @@ Allocator::Allocator() {
   VK_CHECK(vmaCreateAllocator(&allocatorCreateInfo, &_allocator));
 }
 
-Allocator::~Allocator() { vmaDestroyAllocator(_allocator); }
+Allocator::~Allocator() {
+  vmaDestroyAllocator(_allocator);
+}

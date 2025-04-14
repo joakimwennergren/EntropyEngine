@@ -30,12 +30,13 @@
 #include "vulkan/shaders/shader.h"
 #include "vulkan/swapchains/swapchain.h"
 
-namespace Entropy::Graphics::Vulkan::Pipelines {
+namespace Entropy::Vulkan::Pipelines {
 
-template <class T> class BasePipeline {
+template <class T>
+class BasePipeline {
 
-public:
-  BasePipeline(const std::shared_ptr<RenderPasses::RenderPass> &renderPass);
+ public:
+  BasePipeline(const std::shared_ptr<RenderPasses::RenderPass>& renderPass);
   ~BasePipeline();
 
   void Build();
@@ -47,7 +48,7 @@ public:
 
   VkDescriptorSet descriptorSet;
 
-protected:
+ protected:
   VkPipelineLayout pipelineLayout_ = VK_NULL_HANDLE;
   VkPipeline pipeline_ = VK_NULL_HANDLE;
   std::shared_ptr<Shaders::Shader> shader_;
@@ -58,6 +59,6 @@ protected:
   std::shared_ptr<Caches::IPipelineCache> pipelineCache_;
   std::vector<std::shared_ptr<DescriptorSetLayout>> descriptorSetLayouts_;
 };
-} // namespace Entropy::Graphics::Vulkan::Pipelines
+}  // namespace Entropy::Vulkan::Pipelines
 
-#endif // ENTROPY_VULKAN_BASE_PIPELINE_H
+#endif  // ENTROPY_VULKAN_BASE_PIPELINE_H

@@ -55,8 +55,7 @@ jobs:
 
     - uses: ConorMacBride/install-package@v1
       with:
-        brew: mono
-        apt: xorg-dev mono-complete
+        apt: xorg-dev
 
     - name: Prepare Vulkan SDK
       uses: humbletim/setup-vulkan-sdk@v1.2.1
@@ -84,3 +83,7 @@ jobs:
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+
+    #- name: Test
+    #  working-directory: ${{ steps.strings.outputs.build-output-dir }}
+    #  run: ctest --output-on-failure -C ${{ matrix.build_type }}

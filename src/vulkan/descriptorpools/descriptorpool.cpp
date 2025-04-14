@@ -2,11 +2,11 @@
 #include "config.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::DescriptorPools;
-using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Vulkan::DescriptorPools;
+using namespace Entropy::Vulkan::Devices;
 
 DescriptorPool::DescriptorPool() {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   logicalDevice_ = sl->getService<ILogicalDevice>();
 
   std::array<VkDescriptorPoolSize, 2> poolSizes{};
@@ -22,7 +22,8 @@ DescriptorPool::DescriptorPool() {
   poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
   poolInfo.pPoolSizes = poolSizes.data();
   poolInfo.maxSets = 1;
-  poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
+  poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT |
+                   VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
   VK_CHECK(vkCreateDescriptorPool(logicalDevice_->Get(), &poolInfo, nullptr,
                                   &descriptorPool_));

@@ -30,14 +30,14 @@ static std::string GetProjectBasePath() {
 }
 #endif
 
-using namespace Entropy::Graphics::Vulkan::Textures;
+using namespace Entropy::Vulkan::Textures;
 
 TextureAtlas::TextureAtlas() {}
 
 void TextureAtlas::DebugPrint(const std::string& name) const {
-  stbi_write_png((name + ".png").c_str(), width_, height_, 4, atlas_.data(), width_ * 4);
+  stbi_write_png((name + ".png").c_str(), width_, height_, 4, atlas_.data(),
+                 width_ * 4);
 }
-
 
 bool TextureAtlas::CreateAtlas() {
 
@@ -115,17 +115,13 @@ bool TextureAtlas::CreateAtlas() {
   stbrp_init_target(&packer, atlasWidth, atlasHeight, nodes.data(),
                     static_cast<uint32_t>(nodes.size()));
 
-
-
   // Pack rectangles
-  stbrp_pack_rects(&packer, rects.data(),
-                        static_cast<uint32_t>(rects.size()));
+  stbrp_pack_rects(&packer, rects.data(), static_cast<uint32_t>(rects.size()));
 
   // Create an empty atlas (RGBA)
   atlas_.resize(atlasWidth * atlasHeight * 4);  // 4 channels (RGBA)
   width_ = atlasWidth;
   height_ = atlasHeight;
-
 
   uint32_t i = 0;
   for (auto& [id, w, h, x, y, was_packed] : rects) {
@@ -138,9 +134,9 @@ bool TextureAtlas::CreateAtlas() {
     }
     // Store UV coordinates in textureRegions
     textureRegions[i] = TextureRegion({
-        x / (float)atlasWidth,         // min U (left)
-        y / (float)atlasHeight,        // min V (bottom)
-        (x + w) / (float)atlasWidth,   // max U (right)
+        x / (float)atlasWidth,        // min U (left)
+        y / (float)atlasHeight,       // min V (bottom)
+        (x + w) / (float)atlasWidth,  // max U (right)
         (y + h) / (float)atlasHeight  // max V (top)
     });
     stbi_image_free((void*)img);

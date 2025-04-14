@@ -18,8 +18,6 @@
 #include "ecs/components/2d_quad.h"
 #include "ecs/components/dimension.h"
 #include "ecs/components/position.h"
-#include "ecs/components/sprite.h"
-#include "ecs/components/texture.h"
 #include "ecs/iworld.h"
 #include "ecs/world.h"
 
@@ -92,7 +90,7 @@
 
 #include "config.h"
 
-using namespace Entropy::Graphics::Vulkan;
+using namespace Entropy::Vulkan;
 
 class Dut : public ::testing::Test {
  protected:
@@ -172,7 +170,7 @@ TEST_F(Dut, CreateStagingBuffer) {
 
 TEST_F(Dut, CreateVertexBuffer) {
   /*
-  std::vector<Graphics::Vulkan::Data::TwoDVertex> vertices = {
+  std::vector<Vulkan::Data::TwoDVertex> vertices = {
     {{-1.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},
     {{1.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
     {{1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
@@ -217,13 +215,8 @@ TEST_F(Dut, CreateMaxImageSamplersDescriptorSets) {
 }
 
 TEST_F(Dut, CreateShader) {
-  auto shader = Shaders::Shader("2d_shader_vert.spv", "2d_shader_frag.spv");
+  auto shader = Shaders::Shader("2dshader_vert.spv", "2dshader_frag.spv");
   ASSERT_TRUE(shader.GetVertShaderModule() != nullptr);
-}
-
-TEST_F(Dut, CreateTexture) {
-  auto texture = Textures::Texture("test.png");
-  ASSERT_TRUE(texture.GetImageView() != nullptr);
 }
 
 TEST_F(Dut, CreateBlankTexture) {

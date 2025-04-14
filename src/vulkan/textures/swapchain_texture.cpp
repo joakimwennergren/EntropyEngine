@@ -1,11 +1,12 @@
-#include <vulkan/vulkan.hpp>
 #include "swapchain_texture.h"
-#include "vulkan/utilities/helpers.h"
+#include <vulkan/vulkan.hpp>
 #include "config.h"
+#include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Textures;
+using namespace Entropy::Vulkan::Textures;
 
-SwapChainTexture::SwapChainTexture(const uint32_t width, const uint32_t height) {
+SwapChainTexture::SwapChainTexture(const uint32_t width,
+                                   const uint32_t height) {
 
   VkImageCreateInfo imageInfo{};
   imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -28,7 +29,7 @@ SwapChainTexture::SwapChainTexture(const uint32_t width, const uint32_t height) 
   allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
 
   VK_CHECK(vmaCreateImage(allocator_->Get(), &imageInfo, &allocCreateInfo,
-    &textureImage_, &allocation_, nullptr));
+                          &textureImage_, &allocation_, nullptr));
 
   imageView_ = std::make_shared<ImageView>(textureImage_, COLOR_FORMAT);
 };

@@ -25,7 +25,7 @@
 #include "icommandpool.h"
 #include "vulkan/devices/ilogical_device.h"
 
-namespace Entropy::Graphics::Vulkan::CommandPools {
+namespace Entropy::Vulkan::CommandPools {
 
 /**
  * @class CommandPool
@@ -52,16 +52,16 @@ namespace Entropy::Graphics::Vulkan::CommandPools {
  *
  */
 class CommandPool final : public ServiceBase<ICommandPool> {
-public:
+ public:
   CommandPool();
   ~CommandPool() override;
   VkCommandPool Get() override { return commandPool_; }
 
-private:
+ private:
   VkCommandPool commandPool_ = VK_NULL_HANDLE;
   std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
 };
 
-} // namespace Entropy::Graphics::Vulkan::CommandPools
+}  // namespace Entropy::Vulkan::CommandPools
 
-#endif // ENTROPY_VULKAN_COMMANDPOOL_H
+#endif  // ENTROPY_VULKAN_COMMANDPOOL_H

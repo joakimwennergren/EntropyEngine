@@ -20,15 +20,13 @@
 #ifndef ENTROPY_VULKAN_DATA_FRAME_H
 #define ENTROPY_VULKAN_DATA_FRAME_H
 
-namespace Entropy::Graphics::Vulkan::Data {
-template<typename V, typename I, typename D>
+namespace Entropy::Vulkan::Data {
+template <typename V, typename I, typename D>
 struct FrameData {
   std::vector<V> vertices;
   std::vector<I> indices;
   std::vector<D> data;
 };
-} // namespace Entropy::Graphics::Vulkan::Data
+}  // namespace Entropy::Vulkan::Data
 
-#endif // ENTROPY_VULKAN_DATA_FRAME_H
-
-
+#endif  // ENTROPY_VULKAN_DATA_FRAME_H

@@ -6,10 +6,10 @@
 
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Shaders;
-using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Vulkan::Shaders;
+using namespace Entropy::Vulkan::Devices;
 
-Shader::Shader(const std::string &vert, const std::string &frag) {
+Shader::Shader(const std::string& vert, const std::string& frag) {
   logicalDevice_ = ServiceLocator::GetInstance()->getService<ILogicalDevice>();
   vertCode_ = ReadFile(vert);
   fragCode_ = ReadFile(frag);
@@ -45,11 +45,11 @@ std::vector<char> Shader::ReadFile(std::string filename) {
   return buffer;
 }
 
-VkShaderModule Shader::BuildShader(const std::vector<char> &code) const {
+VkShaderModule Shader::BuildShader(const std::vector<char>& code) const {
   VkShaderModuleCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = code.size();
-  createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
+  createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
   VkShaderModule shaderModule;
   VK_CHECK(vkCreateShaderModule(logicalDevice_->Get(), &createInfo, nullptr,

@@ -21,15 +21,15 @@
 #ifndef ENTROPY_VULKAN_SURFACE_H
 #define ENTROPY_VULKAN_SURFACE_H
 
+#include <vulkan/vulkan.h>
 #include "config.h"
 
 #if ENTROPY_PLATFORM == MACOS
-#include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
 
 #elif ENTROPY_PLATFORM == LINUX
-#include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan.hpp>
 
 #elif ENTROPY_PLATFORM == WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -54,7 +54,7 @@
 
 #include "vulkan/instances/ivk_instance.h"
 
-namespace Entropy::Graphics::Vulkan::Surfaces {
+namespace Entropy::Vulkan::Surfaces {
 
 /**
  * @class Surface
@@ -79,6 +79,6 @@ class Surface {
   VkSurfaceKHR surface_ = VK_NULL_HANDLE;
   std::shared_ptr<Instances::IVulkanInstance> instance_;
 };
-}  // namespace Entropy::Graphics::Vulkan::Surfaces
+}  // namespace Entropy::Vulkan::Surfaces
 
 #endif  // ENTROPY_VULKAN_SURFACE_H

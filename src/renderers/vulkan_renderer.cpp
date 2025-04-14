@@ -1,15 +1,15 @@
-#include <glm/glm.hpp>
 #include "vulkan_renderer.h"
+#include <glm/glm.hpp>
 #include "vulkan/data/data.h"
 
-using namespace Entropy::Graphics::Vulkan::Memory;
-using namespace Entropy::Graphics::Vulkan::Devices;
-using namespace Entropy::Graphics::Vulkan::SwapChains;
-using namespace Entropy::Graphics::Vulkan::Synchronization;
-using namespace Entropy::Graphics::Vulkan::Pipelines;
-using namespace Entropy::Graphics::Vulkan::RenderPasses;
-using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Graphics::Vulkan::Data;
+using namespace Entropy::Vulkan::Memory;
+using namespace Entropy::Vulkan::Devices;
+using namespace Entropy::Vulkan::SwapChains;
+using namespace Entropy::Vulkan::Synchronization;
+using namespace Entropy::Vulkan::Pipelines;
+using namespace Entropy::Vulkan::RenderPasses;
+using namespace Entropy::Vulkan::Buffers;
+using namespace Entropy::Vulkan::Data;
 using namespace Entropy::Cameras;
 using namespace Entropy::Assets;
 using namespace Entropy::Renderers;
@@ -79,13 +79,13 @@ void VulkanRenderer::Resize(const uint32_t width, const uint32_t height) {
 }
 
 uint32_t VulkanRenderer::Frame(
-    FrameData<TwoDVertex, uint16_t, InstanceDataTwoD> *frame) {
+    FrameData<TwoDVertex, uint16_t, InstanceDataTwoD>* frame) {
   frame_ = frame;
   return frame_->data.size();
 }
 
 FrameData<TwoDVertex, uint16_t, InstanceDataTwoD>* VulkanRenderer::GetFrame() {
- return frame_;
+  return frame_;
 }
 
 void VulkanRenderer::End() {
@@ -156,13 +156,14 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
                        indexDataBuffer_->GetVulkanBuffer(), 0,
                        VK_INDEX_TYPE_UINT16);
 
-  vkCmdDrawIndexed(commandBuffers_[currentFrame_]->Get(), frame_->indices.size(),
-                   frame_->data.size(), 0, 0, 0);
+  vkCmdDrawIndexed(commandBuffers_[currentFrame_]->Get(),
+                   frame_->indices.size(), frame_->data.size(), 0, 0, 0);
 
   RenderPass::End(commandBuffers_[currentFrame_]);
   commandBuffers_[currentFrame_]->EndRecording();
 
-  constexpr VkPipelineStageFlags waitStages[1] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+  constexpr VkPipelineStageFlags waitStages[1] = {
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
   const auto& waitSemaphores = synchronizer_->GetImageSemaphores();
   const auto& signalSemaphores = synchronizer_->GetRenderFinishedSemaphores();
   const auto& cmdBuffer = commandBuffers_[currentFrame_]->Get();

@@ -26,7 +26,7 @@
 #include "vulkan/commandpools/icommandpool.h"
 #include "vulkan/devices/ilogical_device.h"
 
-namespace Entropy::Graphics::Vulkan::CommandBuffers {
+namespace Entropy::Vulkan::CommandBuffers {
 
 /**
  * @class CommandBuffer
@@ -49,7 +49,7 @@ namespace Entropy::Graphics::Vulkan::CommandBuffers {
  * execution.
  */
 class CommandBuffer {
-public:
+ public:
   explicit CommandBuffer(VkCommandBufferLevel level);
   ~CommandBuffer();
   [[nodiscard]] VkCommandBuffer Get() const { return commandBuffer_; }
@@ -60,11 +60,11 @@ public:
   void RecordOnce() const;
   void EndRecordingOnce() const;
 
-private:
+ private:
   VkCommandBuffer commandBuffer_ = VK_NULL_HANDLE;
   std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
   std::shared_ptr<CommandPools::ICommandPool> commandPool_;
 };
-} // namespace Entropy::Graphics::Vulkan::CommandBuffers
+}  // namespace Entropy::Vulkan::CommandBuffers
 
-#endif // ENTROPY_VULKAN_COMMAND_BUFFER_H
+#endif  // ENTROPY_VULKAN_COMMAND_BUFFER_H

@@ -24,7 +24,7 @@
 #include <vk_mem_alloc.h>
 #include "servicelocators/servicelocator.h"
 
-namespace Entropy::Graphics::Vulkan::Memory {
+namespace Entropy::Vulkan::Memory {
 /**
  * @class IAllocator
  * @brief Abstract interface for a memory allocator service.
@@ -37,10 +37,10 @@ namespace Entropy::Graphics::Vulkan::Memory {
  * to a VmaAllocator object via the Get() method.
  */
 class IAllocator : public IService {
-public:
+ public:
   ~IAllocator() override = default;
   virtual VmaAllocator Get() = 0;
 };
-} // namespace Entropy::Graphics::Vulkan::Memory
+}  // namespace Entropy::Vulkan::Memory
 
-#endif // ENTROPY_VULKAN_IALLOCATOR_H
+#endif  // ENTROPY_VULKAN_IALLOCATOR_H

@@ -1,10 +1,10 @@
 #include "base_texture.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Textures;
+using namespace Entropy::Vulkan::Textures;
 
 BaseTexture::BaseTexture() {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   physicalDevice_ = sl->getService<Devices::IPhysicalDevice>();
   logicalDevice_ = sl->getService<Devices::ILogicalDevice>();
   allocator_ = sl->getService<Memory::IAllocator>();
@@ -122,7 +122,7 @@ void BaseTexture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
 
 void BaseTexture::CreateImage(const uint32_t width, const uint32_t height,
                               const VkFormat format, const VkImageTiling tiling,
-                              const VkImageUsageFlags usage, VkImage &image) {
+                              const VkImageUsageFlags usage, VkImage& image) {
   // Assert on parameters
   assert(width != 0);
   assert(height != 0);

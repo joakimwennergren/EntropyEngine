@@ -23,7 +23,7 @@
 
 #include "iallocator.h"
 
-namespace Entropy::Graphics::Vulkan::Memory {
+namespace Entropy::Vulkan::Memory {
 
 /**
  * @class Allocator
@@ -45,14 +45,14 @@ namespace Entropy::Graphics::Vulkan::Memory {
  * The class is non-copyable due to its management of underlying Vulkan handles.
  */
 class Allocator final : public ServiceBase<IAllocator> {
-public:
+ public:
   Allocator();
   ~Allocator() override;
   VmaAllocator Get() override { return _allocator; }
 
-private:
+ private:
   VmaAllocator _allocator = VK_NULL_HANDLE;
 };
-} // namespace Entropy::Graphics::Vulkan::Memory
+}  // namespace Entropy::Vulkan::Memory
 
-#endif // ENTROPY_VULKAN_ALLOCATOR_H
+#endif  // ENTROPY_VULKAN_ALLOCATOR_H

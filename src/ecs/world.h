@@ -28,16 +28,17 @@
 
 namespace Entropy::ECS {
 class World final : public ServiceBase<IWorld> {
-public:
+ public:
   World();
   std::shared_ptr<flecs::world> Get() override { return gameWorld_; }
 
-private:
-  Graphics::Vulkan::Data::FrameData<Graphics::Vulkan::Data::TwoDVertex, uint16_t,
-                                   Graphics::Vulkan::Data::InstanceDataTwoD> frame_;
+ private:
+  Vulkan::Data::FrameData<Vulkan::Data::TwoDVertex, uint16_t,
+                          Vulkan::Data::InstanceDataTwoD>
+      frame_;
   ServiceLocator* sl_ = nullptr;
   std::shared_ptr<flecs::world> gameWorld_;
 };
-} // namespace Entropy::ECS
+}  // namespace Entropy::ECS
 
-#endif // ENTROPY_ECS_WORLD_H
+#endif  // ENTROPY_ECS_WORLD_H

@@ -23,10 +23,10 @@
 
 #include <cstdint>
 
-namespace Entropy::Graphics::Vulkan::Data {
+namespace Entropy::Vulkan::Data {
 struct PushConstant {
   uint32_t instanceIndex;
 };
-} // namespace Entropy::Graphics::Vulkan::Data
+}  // namespace Entropy::Vulkan::Data
 
-#endif // ENTROPY_VULKAN_PUSHCONSTANTS_H
+#endif  // ENTROPY_VULKAN_PUSHCONSTANTS_H

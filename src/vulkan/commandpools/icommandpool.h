@@ -24,7 +24,7 @@
 #include <vulkan/vulkan.hpp>
 #include "servicelocators/servicelocator.h"
 
-namespace Entropy::Graphics::Vulkan::CommandPools {
+namespace Entropy::Vulkan::CommandPools {
 
 /**
  * @class ICommandPool
@@ -43,11 +43,11 @@ namespace Entropy::Graphics::Vulkan::CommandPools {
  *       from multiple threads simultaneously.
  */
 class ICommandPool : public IService {
-public:
+ public:
   ~ICommandPool() override = default;
   virtual VkCommandPool Get() = 0;
 };
 
-} // namespace Entropy::Graphics::Vulkan::CommandPools
+}  // namespace Entropy::Vulkan::CommandPools
 
-#endif // ENTROPY_VULKAN_ICOMMANDPOOL_H
+#endif  // ENTROPY_VULKAN_ICOMMANDPOOL_H

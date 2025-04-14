@@ -24,13 +24,13 @@
 #include <vulkan/vulkan.hpp>
 #include "servicelocators/servicelocator.h"
 
-namespace Entropy::Graphics::Vulkan::Devices {
+namespace Entropy::Vulkan::Devices {
 
 class IPhysicalDevice : public IService {
-public:
+ public:
   virtual VkPhysicalDevice Get() = 0;
 };
 
-} // namespace Entropy::Graphics::Vulkan::Devices
+}  // namespace Entropy::Vulkan::Devices
 
-#endif // ENTROPY_VULKAN_IPHYSICAL_DEVICE_H
+#endif  // ENTROPY_VULKAN_IPHYSICAL_DEVICE_H

@@ -21,24 +21,24 @@
 #ifndef ENTROPY_VULKAN_QUEUEFAMILY_H
 #define ENTROPY_VULKAN_QUEUEFAMILY_H
 
-#include <vulkan/vulkan.hpp>
 #include <optional>
+#include <vulkan/vulkan.hpp>
 
-namespace Entropy::Graphics::Vulkan::QueueFamilies {
+namespace Entropy::Vulkan::QueueFamilies {
 
 struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
-    std::optional<uint32_t> presentFamily;
-    [[nodiscard]] bool isComplete() const {
-      return graphicsFamily.has_value() && presentFamily.has_value();
-    }
-  };
+  std::optional<uint32_t> graphicsFamily;
+  std::optional<uint32_t> presentFamily;
+  [[nodiscard]] bool isComplete() const {
+    return graphicsFamily.has_value() && presentFamily.has_value();
+  }
+};
 
-  class QueueFamily {
-  public:
-    static QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device,
-                                                VkSurfaceKHR surface);
-  };
-} // namespace Entropy::Graphics::Vulkan::QueueFamilies
+class QueueFamily {
+ public:
+  static QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device,
+                                              VkSurfaceKHR surface);
+};
+}  // namespace Entropy::Vulkan::QueueFamilies
 
-#endif // ENTROPY_VULKAN_QUEUEFAMILY_H
+#endif  // ENTROPY_VULKAN_QUEUEFAMILY_H

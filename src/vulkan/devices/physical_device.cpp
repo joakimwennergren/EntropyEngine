@@ -3,11 +3,11 @@
 #include "vulkan/instances/ivk_instance.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Devices;
-using namespace Entropy::Graphics::Vulkan::Instances;
+using namespace Entropy::Vulkan::Devices;
+using namespace Entropy::Vulkan::Instances;
 
 PhysicalDevice::PhysicalDevice() {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   const auto vulkanInstance = sl->getService<IVulkanInstance>();
 
   uint32_t deviceCount;
