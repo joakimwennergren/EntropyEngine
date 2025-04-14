@@ -55,7 +55,7 @@ private:
   VkInstance instance_ = VK_NULL_HANDLE;
   ValidationLayers::ValidationLayer validationLayer_;
   std::vector<const char*> extensions_;
-  const std::vector layers = {"VK_LAYER_KHRONOS_validation"};
+  const std::vector<const char*> layers = {"VK_LAYER_KHRONOS_validation"};
   
 };
 } // namespace Entropy::Graphics::Vulkan::Instances
