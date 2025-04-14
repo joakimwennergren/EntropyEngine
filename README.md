@@ -7,7 +7,6 @@
     <img src="https://github.com/joakimwennergren/EntropyEngine/blob/main/.github/images/entropy.png" alt="Logo" width="240" height="240">
   </a>
 <h3 align="center">Entropy Engine</h3>
-<h4>Graphics engine with vulkan backend</h4>
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/joakimwennergren/EntropyEngine/cmake-multi-platform.yml?branch=main&style=for-the-badge)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](https://github.com/joakimwennergren/EntropyEngine/blob/main/LICENSE.txt)
