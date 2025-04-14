@@ -24,10 +24,10 @@
 #include <glm/glm.hpp>
 
 namespace Entropy::ECS::Components {
-
 struct Position {
-  glm::vec3 pos;
+  float x{};
+  float y{};
+  float z{};
 };
 }
-
 #endif // ENTROPY_ECS_COMPONENT_POSITION_H

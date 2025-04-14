@@ -26,8 +26,10 @@
 namespace Entropy::ECS::Components {
 
 struct Rotation {
-  glm::vec3 orientation;
-  float rot;
+  float x{};
+  float y{};
+  float z{};
+  float angle{};
 };
 }
 

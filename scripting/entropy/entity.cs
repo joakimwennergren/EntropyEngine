@@ -3,32 +3,27 @@ using System.Runtime.CompilerServices;
 
 namespace Entropy.ECS
 {
-    class Entity
+    public class Entity : IDisposable
     {
-        private IntPtr nativePtr;
-
-        // The method that will be called from native code
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern IntPtr Entity_Create();
-
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern void Entity_Destroy(IntPtr ptr);
-
+        private IntPtr entityPtr;
         public Entity()
         {
-            nativePtr = Entity_Create();
+            Console.WriteLine("FROM ENTITY C#");
+            entityPtr = NativeBindings.EntityCreate();
         }
-
-        ~Entity()
+        public void Dispose()
         {
-            Entity_Destroy(nativePtr);
+            if (entityPtr != IntPtr.Zero)
+            {
+                NativeBindings.EntityDestroy(entityPtr);
+                entityPtr = IntPtr.Zero;
+            }
         }
-
+        /*
         public void AddComponent(IComponent component)
         {
             component.AddTo(nativePtr);
         }
-
-
+        */
     }
 }

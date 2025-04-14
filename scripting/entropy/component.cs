@@ -4,24 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace Entropy.ECS
 {
-    internal static class NativeBindings
-    {
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern void Entity_AddPosition(IntPtr entity, Position position);
-
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern void Entity_AddDimension(IntPtr entity, Dimension dimension);
-
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern void Entity_Add2DQuad(IntPtr entity);
-
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern void Entity_AddTexture(IntPtr entity, string path);
-
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern void Entity_AddTextureAtlas(IntPtr entity, string[] paths);
-    }
-
     public interface IComponent
     {
         void AddTo(IntPtr entity);
@@ -43,7 +25,7 @@ namespace Entropy.ECS
 
         public void AddTo(IntPtr entity)
         {
-            NativeBindings.Entity_AddPosition(entity, this);
+
         }
     }
 
@@ -64,65 +46,47 @@ namespace Entropy.ECS
 
         public void AddTo(IntPtr entity)
         {
-            NativeBindings.Entity_AddDimension(entity, this);
+            //NativeBindings.Entity_AddDimension(entity, this);
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct TwoDQuad : IComponent
+    public struct Rotation : IComponent
     {
-        public void AddTo(IntPtr entity)
+        public float x, y, z, a;
+        public Rotation(float x, float y, float z, float a)
         {
-            NativeBindings.Entity_Add2DQuad(entity);
+            this.x = x; this.y = y; this.z = z; this.a = a;
         }
-    }
 
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Texture : IComponent
-    {
-        public string path;
-
-        public Texture(string path)
+        public Rotation(float a)
         {
-            this.path = path;
+            this.x = 0.0f; this.y = 0.0f; this.z = 0.0f; this.a = a;
         }
 
         public void AddTo(IntPtr entity)
         {
-            NativeBindings.Entity_AddTexture(entity, path);
-        }
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct TextureAtlas : IComponent
-    {
-        public string[] paths;
-
-        public TextureAtlas(string[] paths)
-        {
-            this.paths = paths;
-        }
-
-        public void AddTo(IntPtr entity)
-        {
-            NativeBindings.Entity_AddTextureAtlas(entity, paths);
+            //NativeBindings.Entity_AddRotation(entity, this);
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct Sprite : IComponent
     {
-        private string[] paths;
+        public TextureAtlas atlas;
         private Dimension dimension;
         private Position position;
-
+        private Rotation rotation;
+        private string sprite;
 
         // Main constructor
-        public Sprite(string[] paths, Dimension dim, Position pos)
+        public Sprite(TextureAtlas atlas, string sprite, Dimension dim, Position pos, Rotation rot)
         {
+            this.atlas = atlas;
+            this.sprite = sprite;
             this.dimension = dim;
             this.position = pos;
-            this.paths = paths;
+            this.rotation = rot;
         }
 
         /*
@@ -142,10 +106,11 @@ namespace Entropy.ECS
 
         public void AddTo(IntPtr entity)
         {
-            NativeBindings.Entity_AddPosition(entity, position);
-            NativeBindings.Entity_AddDimension(entity, dimension);
-            NativeBindings.Entity_Add2DQuad(entity);
-            NativeBindings.Entity_AddTextureAtlas(entity, paths);
+            //NativeBindings.Entity_AddPosition(entity, position);
+            //NativeBindings.Entity_AddDimension(entity, dimension);
+            //NativeBindings.Entity_AddRotation(entity, rotation);
+            //atlas.asset_handle.path = Marshal.StringToHGlobalAnsi(this.sprite);
+            //NativeBindings.Entity_AddAsset(entity, atlas.asset_handle);
         }
     }
 }

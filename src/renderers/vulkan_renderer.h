@@ -40,6 +40,7 @@ namespace Entropy::Renderers {
 class VulkanRenderer final : public ServiceBase<IRenderer>{
  public:
   VulkanRenderer(uint32_t width, uint32_t height);
+  ~VulkanRenderer() override;
   void Render(uint32_t width, uint32_t height) override;
   void Resize(uint32_t width, uint32_t height) override;
   uint32_t  Frame(Graphics::Vulkan::Data::FrameData<Graphics::Vulkan::Data::TwoDVertex,

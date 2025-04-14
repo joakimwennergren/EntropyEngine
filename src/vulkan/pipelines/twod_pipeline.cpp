@@ -1,4 +1,7 @@
 #include "twod_pipeline.h"
+
+#include <iostream>
+
 #include "config.h"
 
 #if ENTROPY_PLATFORM == IOS

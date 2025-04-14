@@ -181,64 +181,33 @@ FetchContent_MakeAvailable(vma)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
-set(CS_SOURCES_ENTROPY
-    ${PROJECT_SOURCE_DIR}/scripting/entropy/component.cs
-    ${PROJECT_SOURCE_DIR}/scripting/entropy/entity.cs
-    ${PROJECT_SOURCE_DIR}/scripting/entropy/entropy_script.cs
-)
-file(GLOB CS_SOURCES ${PROJECT_SOURCE_DIR}/scripting/*.cs)
-
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_LIST_DIR)
-else()
-    set(ENTROPY_INCLUDE_DIRS
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        PARENT_SCOPE
-    )
-endif()
-
-# Path to C# source file
-set(CS_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GameScripts.dll)
-
-find_program(CSC_EXECUTABLE NAMES csc mcs REQUIRED)
-
-# Custom command to build the DLL
-add_custom_command(
-    OUTPUT ${CS_OUTPUT}
-    COMMAND ${CSC_EXECUTABLE} /target:library /out:${CS_OUTPUT} ${CS_SOURCES_ENTROPY} ${CS_SOURCES}
-    DEPENDS ${CS_SOURCES_ENTROPY} ${CS_SOURCES}
-    COMMENT "Compiling GameScripts.dll"
-)
-
-# Define a custom target for C# scripts
-if(NOT IOS)
-    add_custom_target(GameScripts ALL
-        DEPENDS ${CS_OUTPUT}
-    )
-endif()
-
 if(BUILD_ENTROPY_AS_EXECUTABLE)
     add_executable(${PROJECT_NAME} ${SOURCES} ${PROJECT_SOURCE_DIR}/test/main.cpp)
 else()
+    set(ENTROPY_INCLUDE_DIRS
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${vma_SOURCE_DIR}/include
+        ${quill_SOURCE_DIR}/include
+        ${glfw3_SOURCE_DIR}/include
+        ${flecs_SOURCE_DIR}/include
+        ${glm_SOURCE_DIR}
+        PARENT_SCOPE
+    )
     add_library(${PROJECT_NAME} ${ENTROPY_LIBRARY_TYPE} ${SOURCES})
-endif()
-
-# Make your main target (Entropy) depend on GameScripts
-if(NOT IOS)
-    add_dependencies(${PROJECT_NAME} GameScripts)
 endif()
 
 if(BUILD_ENTROPY_AS_EXECUTABLE)
     file(CREATE_LINK
-            "${CMAKE_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_vert.spv"
-            "${CMAKE_BINARY_DIR}/2dshader_vert.spv"
-            SYMBOLIC
+        "${CMAKE_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_vert.spv"
+        "${CMAKE_BINARY_DIR}/2dshader_vert.spv"
+        SYMBOLIC
     )
     file(CREATE_LINK
-            "${CMAKE_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_frag.spv"
-            "${CMAKE_BINARY_DIR}/2dshader_frag.spv"
-            SYMBOLIC
+        "${CMAKE_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_frag.spv"
+        "${CMAKE_BINARY_DIR}/2dshader_frag.spv"
+        SYMBOLIC
     )
-    file(COPY test/test.png DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
 target_include_directories(${PROJECT_NAME} INTERFACE

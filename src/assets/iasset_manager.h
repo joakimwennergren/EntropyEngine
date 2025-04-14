@@ -33,11 +33,11 @@ class IAssetManager : public IService {
     kUnknown,
   };
   struct AssetHandle {
-    void *asset{};
-    int32_t index{};
-    std::string paths;
-    bool is_async = false;
-    AssetType type = kUnknown;
+    void* asset;
+    int32_t index;
+    const char* path;
+    bool is_async;
+    uint32_t type;
   };
   enum LoadOperation {
     kLoadTextureSync,

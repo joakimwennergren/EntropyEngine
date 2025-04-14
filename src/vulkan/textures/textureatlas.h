@@ -30,14 +30,13 @@ class TextureAtlas final {
    float uMin, vMin, uMax, vMax;
   };
   explicit TextureAtlas();
-  bool CreateAtlas(const std::vector<std::string>& imagePaths);
-  void DebugPrint(const std::string &name);
+  bool CreateAtlas();
+  void DebugPrint(const std::string &name) const;
   std::shared_ptr<Texture> texture_;
   std::vector<TextureRegion> textureRegions;
-  std::vector<std::string> imagePaths_;
+  std::vector<std::string> image_paths;
   std::vector<unsigned char> atlas_;
   int width_, height_;
-
 };
 }  // namespace Entropy::Graphics::Vulkan::Textures
 

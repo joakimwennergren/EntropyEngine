@@ -1,6 +1,10 @@
 #ifndef ENTROPY_ASSETS_TEXTURE_MANAGER_H
 #define ENTROPY_ASSETS_TEXTURE_MANAGER_H
 
+/**
+ * @TODO Save atlas to disk with regions in some format..
+ * @TODO LOAD atlas from disk
+*/
 #include <future>
 #include <mutex>
 #include <unordered_map>

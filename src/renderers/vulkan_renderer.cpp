@@ -45,6 +45,9 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height)
       MAX_INSTANCE_COUNT * sizeof(InstanceDataTwoD));
   indexDataBuffer_ =
       std::make_unique<IndexBuffer<uint16_t>>(MAX_INSTANCE_COUNT);
+
+  frame_ = new FrameData<TwoDVertex, uint16_t, InstanceDataTwoD>();
+
   std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
 
   VkDescriptorBufferInfo uboInfo{};
@@ -62,6 +65,10 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height)
 
   vkUpdateDescriptorSets(logicalDevice_->Get(), descriptorWrites.size(),
                          descriptorWrites.data(), 0, nullptr);
+}
+
+VulkanRenderer::~VulkanRenderer() {
+  //delete frame_;
 }
 
 void VulkanRenderer::Resize(const uint32_t width, const uint32_t height) {

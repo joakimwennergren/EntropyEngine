@@ -3,11 +3,13 @@
 #define STB_RECT_PACK_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <iostream>
+
+#include "config.h"
+#include "loggers/logger.h"
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 #include "stb/stb_rect_pack.h"
-#include "loggers/logger.h"
-#include "config.h"
 
 #if ENTROPY_PLATFORM == IOS
 #include <CoreFoundation/CoreFoundation.h>
@@ -32,35 +34,34 @@ using namespace Entropy::Graphics::Vulkan::Textures;
 
 TextureAtlas::TextureAtlas() {}
 
-void TextureAtlas::DebugPrint(const std::string& name) {
+void TextureAtlas::DebugPrint(const std::string& name) const {
   stbi_write_png((name + ".png").c_str(), width_, height_, 4, atlas_.data(), width_ * 4);
 }
 
 
-bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
-  imagePaths_ = imagePaths;
+bool TextureAtlas::CreateAtlas() {
+
   stbi_set_flip_vertically_on_load(true);
   std::vector<stbrp_rect> rects;
 
   // Load images and store their dimensions
-  std::vector<unsigned char*> images(imagePaths.size());
+  std::vector<unsigned char*> images(image_paths.size());
   // Copy images into the atlas
-  textureRegions.resize(imagePaths_.size());
+  textureRegions.resize(image_paths.size());
 
   int totalWidth = 0;
   int totalHeight = 0;
   int totalArea = 0;
   int maxWidth = 0;
   int maxHeight = 0;
-
   // Load images and calculate the total area
-  for (int32_t i = 0; i < imagePaths.size(); ++i) {
+  for (int32_t i = 0; i < image_paths.size(); ++i) {
     int w, h, c;
 #if ENTROPY_PLATFORM == IOS
     images[i] = stbi_load((GetProjectBasePath() + "/" + imagePaths[i]).c_str(),
                           &w, &h, &c, 4);  // Force RGBA
 #else
-    images[i] = stbi_load(imagePaths[i].c_str(), &w, &h, &c, 4);  // Force RGBA
+    images[i] = stbi_load(image_paths[i].c_str(), &w, &h, &c, 4);  // Force RGBA
 #endif
     if (!images[i]) {
       //std::cerr << "Failed to load image: " << imagePaths[i] << "\n";
@@ -117,13 +118,14 @@ bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
 
 
   // Pack rectangles
-  int res = stbrp_pack_rects(&packer, rects.data(),
+  stbrp_pack_rects(&packer, rects.data(),
                         static_cast<uint32_t>(rects.size()));
 
   // Create an empty atlas (RGBA)
   atlas_.resize(atlasWidth * atlasHeight * 4);  // 4 channels (RGBA)
   width_ = atlasWidth;
   height_ = atlasHeight;
+
 
   uint32_t i = 0;
   for (auto& [id, w, h, x, y, was_packed] : rects) {
@@ -146,6 +148,6 @@ bool TextureAtlas::CreateAtlas(const std::vector<std::string>& imagePaths) {
   }
   texture_ = std::make_shared<Texture>(atlas_, atlasWidth, atlasHeight);
 
-  //std::cout << "Texture atlas created: " << outputAtlasPath << "\n";
+  std::cout << "Texture atlas created: " << texture_ << "\n";
   return true;
 }
