@@ -23,13 +23,6 @@ The engine is written primarily in C++, and designed for developers who want low
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Built With
-
-![Vulkan](https://a11ybadges.com/badge?logo=vulkan)<br />
-<a href="https://github.com/SanderMertens/flecs"><img src="https://github.com/SanderMertens/flecs/raw/master/docs/img/logo.png" alt="Logo" width="155" height="32"></a>
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 ## Getting Started
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
