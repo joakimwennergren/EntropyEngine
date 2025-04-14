@@ -30,40 +30,37 @@ VulkanInstance::VulkanInstance() {
   vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount,
                                          extensionProps.data());
 
-  std::vector<const char*> extensions;
-  extensions.reserve(extensionProps.size());
   for (const auto& extension : extensionProps) {
-    extensions.push_back(extension.extensionName);
+    extensions_.push_back(extension.extensionName);
   }
-  extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+  extensions_.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
 #if ENTROPY_PLATFORM == MACOS
-  extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-  extensions.push_back("VK_MVK_macos_surface");
-  createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-  createInfo.ppEnabledExtensionNames = extensions.data();
+  extensions_.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+  extensions_.push_back("VK_MVK_macos_surface");
+  createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions_.size());
+  createInfo.ppEnabledExtensionNames = extensions_.data();
 #endif
 
 #if ENTROPY_PLATFORM == LINUX
-  createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-  createInfo.ppEnabledExtensionNames = extensions.data();
+  createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions_.size());
+  createInfo.ppEnabledExtensionNames = extensions_.data();
 #endif
 
 #if ENTROPY_PLATFORM == ANDROID
-  extensions.push_back("VK_KHR_surface");
-  extensions.push_back("VK_KHR_android_surface");
-  // extensions.push_back("VK_KHR_surface_protected_capabilities");
-  createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-  createInfo.ppEnabledExtensionNames = extensions.data();
+  extensions_.push_back("VK_KHR_surface");
+  extensions_.push_back("VK_KHR_android_surface");
+  // extensions_.push_back("VK_KHR_surface_protected_capabilities");
+//  createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions_.size());
+//  createInfo.ppEnabledExtensionNames = extensions_.data();
 #endif
 
 #if ENTROPY_PLATFORM == WINDOWS
-  createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-  createInfo.ppEnabledExtensionNames = extensions.data();
+  //createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions_.size());
+  //createInfo.ppEnabledExtensionNames = extensions_.data();
 #endif
 
 #if USE_VALIDATION_LAYERS == 1
-  const std::vector layers = {"VK_LAYER_KHRONOS_validation"};
   if (ValidationLayer::CheckValidationLayerSupport(layers)) {
     createInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
     createInfo.ppEnabledLayerNames = layers.data();

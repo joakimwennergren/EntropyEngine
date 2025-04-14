@@ -35,10 +35,16 @@ namespace Entropy::Graphics::Vulkan::Textures {
 void write_callback(void* context, void* data, int size) {
   // Cast context to a stbi_uc pointer to store data
   stbi_uc** buffer = (stbi_uc**)context;
-  // Resize the buffer to accommodate the new data
-  *buffer = (stbi_uc*)realloc(*buffer, size);
-  // Copy the new data into the buffer
-  memcpy(*buffer, data, size);
+
+  // Allocate new memory safely
+  stbi_uc* temp = (stbi_uc*)realloc(*buffer, size);
+  if (temp != NULL) {
+      *buffer = temp;
+      memcpy(*buffer, data, size);
+  } else {
+      // Handle allocation failure
+      // Leave *buffer unchanged; caller must deal with it
+  }
 }
 
 Texture::Texture(const int32_t width, const int32_t height) {
