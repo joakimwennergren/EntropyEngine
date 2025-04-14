@@ -1,7 +1,7 @@
 #include "queuefamily.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::QueueFamilies;
+using namespace Entropy::Vulkan::QueueFamilies;
 
 QueueFamilyIndices QueueFamily::FindQueueFamilies(VkPhysicalDevice device,
                                                   VkSurfaceKHR surface) {
@@ -15,13 +15,14 @@ QueueFamilyIndices QueueFamily::FindQueueFamilies(VkPhysicalDevice device,
                                            queueFamilies.data());
 
   int i = 0;
-  for (const auto &queueFamily : queueFamilies) {
+  for (const auto& queueFamily : queueFamilies) {
     if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
       indices.graphicsFamily = i;
     }
 
     VkBool32 presentSupport = false;
-    VK_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport));
+    VK_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface,
+                                                  &presentSupport));
 
     if (presentSupport) {
       indices.presentFamily = i;

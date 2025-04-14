@@ -531,11 +531,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/EntropyBindings.csproj",
+      "projectUniqueName": "/Users/joakimwennergren/Projects/Entropy-Engine/scripting/entropy/EntropyBindings.csproj",
       "projectName": "EntropyBindings",
-      "projectPath": "/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/EntropyBindings.csproj",
+      "projectPath": "/Users/joakimwennergren/Projects/Entropy-Engine/scripting/entropy/EntropyBindings.csproj",
       "packagesPath": "/Users/joakimwennergren/.nuget/packages/",
-      "outputPath": "/Users/joakimwennergren/CLionProjects/Entropy-Engine/scripting/entropy/obj/",
+      "outputPath": "/Users/joakimwennergren/Projects/Entropy-Engine/scripting/entropy/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/joakimwennergren/.nuget/NuGet/NuGet.Config"

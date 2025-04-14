@@ -30,22 +30,22 @@
 #include "vulkan/imageviews/imageview.h"
 #include "vulkan/memory/allocator.h"
 
-using namespace Entropy::Graphics::Vulkan::Buffers;
-using namespace Entropy::Graphics::Vulkan::CommandBuffers;
-using namespace Entropy::Graphics::Vulkan::ImageViews;
-using namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts;
-using namespace Entropy::Graphics::Vulkan::DescriptorSets;
+using namespace Entropy::Vulkan::Buffers;
+using namespace Entropy::Vulkan::CommandBuffers;
+using namespace Entropy::Vulkan::ImageViews;
+using namespace Entropy::Vulkan::DescriptorSetLayouts;
+using namespace Entropy::Vulkan::DescriptorSets;
 
-namespace Entropy::Graphics::Vulkan::Textures {
+namespace Entropy::Vulkan::Textures {
 
 class BaseTexture {
 
-public:
+ public:
   std::shared_ptr<ImageView> GetImageView() { return imageView_; }
   std::shared_ptr<DescriptorSet> GetDescriptorSet() { return descriptorSet_; }
   [[nodiscard]] VkSampler GetSampler() const { return textureSampler_; }
 
-protected:
+ protected:
   BaseTexture();
   ~BaseTexture();
 
@@ -57,7 +57,7 @@ protected:
 
   void CreateImage(uint32_t width, uint32_t height, VkFormat format,
                    VkImageTiling tiling, VkImageUsageFlags usage,
-                   VkImage &image);
+                   VkImage& image);
 
   std::unique_ptr<CommandBuffer> commandBuffer_;
   std::unique_ptr<StagingBuffer> stagingBuffer_;
@@ -72,6 +72,6 @@ protected:
   VmaAllocation allocation_ = VK_NULL_HANDLE;
   VkSampler textureSampler_ = VK_NULL_HANDLE;
 };
-} // namespace Entropy::Graphics::Vulkan::Textures
+}  // namespace Entropy::Vulkan::Textures
 
-#endif // ENTROPY_VULKAN_BASE_TEXTURE_H
+#endif  // ENTROPY_VULKAN_BASE_TEXTURE_H

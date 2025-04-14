@@ -25,17 +25,17 @@
 #include "idescriptorpool.h"
 #include "vulkan/devices/ilogical_device.h"
 
-namespace Entropy::Graphics::Vulkan::DescriptorPools {
- class DescriptorPool final : public ServiceBase<IDescriptorPool> {
-   public:
-    DescriptorPool();
-    ~DescriptorPool() override;
-    VkDescriptorPool Get() override { return descriptorPool_; }
+namespace Entropy::Vulkan::DescriptorPools {
+class DescriptorPool final : public ServiceBase<IDescriptorPool> {
+ public:
+  DescriptorPool();
+  ~DescriptorPool() override;
+  VkDescriptorPool Get() override { return descriptorPool_; }
 
-  private:
-    VkDescriptorPool descriptorPool_ = VK_NULL_HANDLE;
-    std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
-  };
-} // namespace Entropy::Graphics::Vulkan::DescriptorPools
+ private:
+  VkDescriptorPool descriptorPool_ = VK_NULL_HANDLE;
+  std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
+};
+}  // namespace Entropy::Vulkan::DescriptorPools
 
-#endif // ENTROPY_VULKAN_DESCRIPTORPOOL_H
+#endif  // ENTROPY_VULKAN_DESCRIPTORPOOL_H

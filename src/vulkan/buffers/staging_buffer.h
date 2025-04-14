@@ -23,7 +23,7 @@
 
 #include "base_buffer.h"
 
-namespace Entropy::Graphics::Vulkan::Buffers {
+namespace Entropy::Vulkan::Buffers {
 
 /**
  * @class StagingBuffer
@@ -46,10 +46,10 @@ namespace Entropy::Graphics::Vulkan::Buffers {
  * where frequent data updates are required between CPU and GPU memory.
  */
 class StagingBuffer final : public BaseBuffer {
-public:
-  StagingBuffer(VkDeviceSize size, const uint8_t *data,
+ public:
+  StagingBuffer(VkDeviceSize size, const uint8_t* data,
                 VkBufferUsageFlags flags);
 };
-} // namespace Entropy::Graphics::Vulkan::Buffers
+}  // namespace Entropy::Vulkan::Buffers
 
-#endif // ENTROPY_VULKAN_STAGING_BUFFER_H
+#endif  // ENTROPY_VULKAN_STAGING_BUFFER_H

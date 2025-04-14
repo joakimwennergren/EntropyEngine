@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EntropyBindings")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d02a5ead42c5771a5ddb5fa243ffbd96ab57e166")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d08f27c66548de1dd31a8fa483edd0d46b543278")]
 [assembly: System.Reflection.AssemblyProductAttribute("EntropyBindings")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EntropyBindings")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

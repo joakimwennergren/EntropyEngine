@@ -1,14 +1,14 @@
 #include "descriptorset_layout.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts;
-using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Vulkan::DescriptorSetLayouts;
+using namespace Entropy::Vulkan::Devices;
 
 DescriptorSetLayout::DescriptorSetLayout(
-    const std::vector<VkDescriptorSetLayoutBinding> &layoutBindings,
-    const std::vector<VkDescriptorBindingFlags> &bindingFlags) {
+    const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings,
+    const std::vector<VkDescriptorBindingFlags>& bindingFlags) {
 
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   logicalDevice_ = sl->getService<ILogicalDevice>();
 
   VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsInfo = {};

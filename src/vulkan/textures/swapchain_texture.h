@@ -23,11 +23,11 @@
 
 #include "vulkan/textures/base_texture.h"
 
-namespace Entropy::Graphics::Vulkan::Textures {
+namespace Entropy::Vulkan::Textures {
 class SwapChainTexture : public BaseTexture {
-public:
+ public:
   SwapChainTexture(uint32_t width, uint32_t height);
 };
-} // namespace Entropy::Graphics::Vulkan::Textures
+}  // namespace Entropy::Vulkan::Textures
 
-#endif // ENTROPY_VULKAN_SWAPCHAIN_TEXTURE_H
+#endif  // ENTROPY_VULKAN_SWAPCHAIN_TEXTURE_H

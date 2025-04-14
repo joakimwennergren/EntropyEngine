@@ -15,34 +15,34 @@ using namespace Entropy::ECS::Components;
 using namespace Entropy::Assets;
 
 flecs::entity* Entity_Create() {
-    LOG_INFO(logger_, "Creating entity");
-    const flecs::entity entity = ServiceLocator::GetInstance()
-                                        ->getService<Entropy::ECS::IWorld>()
-                                        ->Get()
-                                        ->entity();
-    entity.set<D2>({}); // @TODO make this more generic not only 2d..
-    return new flecs::entity(entity);
+  LOG_INFO(logger_, "Creating entity");
+  const flecs::entity entity = ServiceLocator::GetInstance()
+                                   ->getService<Entropy::ECS::IWorld>()
+                                   ->Get()
+                                   ->entity();
+  entity.set<D2>({});  // @TODO make this more generic not only 2d..
+  return new flecs::entity(entity);
 }
 
 void Entity_Destroy(const flecs::entity* entity) {
-    LOG_INFO(logger_, "PRE Destroying entity");
-    if (entity != nullptr && entity->is_valid()) {
-        LOG_INFO(logger_, "Destroying entity");
-        entity->destruct();
-        delete entity;
-    }
+  LOG_INFO(logger_, "PRE Destroying entity");
+  if (entity != nullptr && entity->is_valid()) {
+    LOG_INFO(logger_, "Destroying entity");
+    entity->destruct();
+    delete entity;
+  }
 }
 
 void Entity_AddPosition(const flecs::entity* entity, Position pos) {
-    if (entity != nullptr) {
-        (void)entity->set<Position>({pos});
-    }
+  if (entity != nullptr) {
+    (void)entity->set<Position>({pos});
+  }
 }
 
 void Entity_AddDimension(const flecs::entity* entity, Dimension dim) {
-    if (entity != nullptr) {
-        (void)entity->set<Dimension>({dim});
-    }
+  if (entity != nullptr) {
+    (void)entity->set<Dimension>({dim});
+  }
 }
 
 void Entity_AddRotation(const flecs::entity* entity, Rotation rot) {
@@ -51,11 +51,12 @@ void Entity_AddRotation(const flecs::entity* entity, Rotation rot) {
   }
 }
 
-void Entity_AddAsset(const flecs::entity* entity, IAssetManager::AssetHandle asset_handle) {
-    if (entity != nullptr) {
-        const auto asset_handles = std::vector{asset_handle};
-        entity->set<Asset>({asset_handles});
-    }
+void Entity_AddAsset(const flecs::entity* entity,
+                     IAssetManager::AssetHandle asset_handle) {
+  if (entity != nullptr) {
+    const auto asset_handles = std::vector{asset_handle};
+    entity->set<Asset>({asset_handles});
+  }
 }
 
 /*
@@ -75,7 +76,7 @@ IAssetManager::AssetHandle TextureAtlas_Create(MonoArray* paths) {
 
 void TextureAtlas_AddAndRebuild(const IAssetManager::AssetHandle& handle, MonoString *path) {
   char* utf8 = mono_string_to_utf8(path);
-  const auto atlas = static_cast<Entropy::Graphics::Vulkan::Textures::TextureAtlas*>(handle.asset);
+  const auto atlas = static_cast<Entropy::Vulkan::Textures::TextureAtlas*>(handle.asset);
   atlas->image_paths.emplace_back(utf8);
   atlas->CreateAtlas();
   mono_free(utf8);

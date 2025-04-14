@@ -26,20 +26,20 @@
 #include "vulkan/descriptorsetlayouts/descriptorset_layout.h"
 #include "vulkan/devices/ilogical_device.h"
 
-namespace Entropy::Graphics::Vulkan::DescriptorSets {
+namespace Entropy::Vulkan::DescriptorSets {
 
 class DescriptorSet {
-public:
+ public:
   explicit DescriptorSet(
       std::shared_ptr<DescriptorSetLayouts::DescriptorSetLayout> layout);
   ~DescriptorSet();
   VkDescriptorSet Get() const { return descriptorSet_; }
 
-private:
+ private:
   VkDescriptorSet descriptorSet_ = VK_NULL_HANDLE;
   std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
   std::shared_ptr<DescriptorPools::IDescriptorPool> descriptorPool_;
 };
-} // namespace Entropy::Graphics::Vulkan::DescriptorSets
+}  // namespace Entropy::Vulkan::DescriptorSets
 
-#endif // ENTROPY_VULKAN_DESCRIPTORSET_H
+#endif  // ENTROPY_VULKAN_DESCRIPTORSET_H

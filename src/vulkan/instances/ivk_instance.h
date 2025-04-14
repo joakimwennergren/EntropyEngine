@@ -24,7 +24,7 @@
 #include <vulkan/vulkan.hpp>
 #include "servicelocators/servicelocator.h"
 
-namespace Entropy::Graphics::Vulkan::Instances {
+namespace Entropy::Vulkan::Instances {
 
 /**
  * @class IVulkanInstance
@@ -44,10 +44,10 @@ namespace Entropy::Graphics::Vulkan::Instances {
  * to the application's specific requirements.
  */
 class IVulkanInstance : public IService {
-public:
+ public:
   ~IVulkanInstance() override = default;
   virtual VkInstance Get() = 0;
 };
-} // namespace Entropy::Graphics::Vulkan::Instances
+}  // namespace Entropy::Vulkan::Instances
 
-#endif // ENTROPY_VULKAN_IVKINSTANCE_H
+#endif  // ENTROPY_VULKAN_IVKINSTANCE_H

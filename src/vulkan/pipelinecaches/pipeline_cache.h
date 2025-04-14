@@ -24,7 +24,7 @@
 #include "ipipeline_cache.h"
 #include "vulkan/devices/ilogical_device.h"
 
-namespace Entropy::Graphics::Vulkan::Caches {
+namespace Entropy::Vulkan::Caches {
 /**
  * @class PipelineCache
  * @brief A final class that implements the IPipelineCache interface to manage
@@ -39,15 +39,15 @@ namespace Entropy::Graphics::Vulkan::Caches {
  * type.
  */
 class PipelineCache final : public ServiceBase<IPipelineCache> {
-public:
+ public:
   PipelineCache();
   ~PipelineCache() override;
   VkPipelineCache Get() override { return pipelineCache_; }
 
-private:
+ private:
   VkPipelineCache pipelineCache_ = VK_NULL_HANDLE;
   std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
 };
-} // namespace Entropy::Graphics::Vulkan::Caches
+}  // namespace Entropy::Vulkan::Caches
 
-#endif // ENTROPY_VULKAN_PIPELINE_CACHE_H
+#endif  // ENTROPY_VULKAN_PIPELINE_CACHE_H

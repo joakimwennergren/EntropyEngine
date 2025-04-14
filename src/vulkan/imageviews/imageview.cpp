@@ -1,12 +1,12 @@
 #include "imageview.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::ImageViews;
-using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Vulkan::ImageViews;
+using namespace Entropy::Vulkan::Devices;
 
 ImageView::ImageView(VkImage image, const VkFormat format,
                      const uint32_t flags) {
-  ServiceLocator *sl = ServiceLocator::GetInstance();
+  ServiceLocator* sl = ServiceLocator::GetInstance();
   logicalDevice_ = sl->getService<ILogicalDevice>();
 
   VkImageViewCreateInfo viewInfo{};

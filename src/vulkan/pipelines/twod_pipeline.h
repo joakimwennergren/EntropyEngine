@@ -25,14 +25,14 @@
 #include "vulkan/pipelines/base_pipeline.h"
 #include "vulkan/utilities/helpers.h"
 
-namespace Entropy::Graphics::Vulkan::Pipelines {
+namespace Entropy::Vulkan::Pipelines {
 
 class TwoDPipeline final : public BasePipeline<Data::TwoDVertex> {
-public:
+ public:
   explicit TwoDPipeline(
-      const std::shared_ptr<RenderPasses::RenderPass> &renderPass);
+      const std::shared_ptr<RenderPasses::RenderPass>& renderPass);
 };
 
-} // namespace Entropy::Graphics::Vulkan::Pipelines
+}  // namespace Entropy::Vulkan::Pipelines
 
-#endif // ENTROPY_VULKAN_TWOD_PIPELINE_H
+#endif  // ENTROPY_VULKAN_TWOD_PIPELINE_H

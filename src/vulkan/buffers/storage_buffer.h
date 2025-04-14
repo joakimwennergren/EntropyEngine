@@ -23,7 +23,7 @@
 
 #include "base_buffer.h"
 
-namespace Entropy::Graphics::Vulkan::Buffers {
+namespace Entropy::Vulkan::Buffers {
 /**
  * @class StorageBuffer
  *
@@ -59,9 +59,9 @@ namespace Entropy::Graphics::Vulkan::Buffers {
  *   to maintain a consistent state.
  */
 class StorageBuffer final : public BaseBuffer {
-public:
+ public:
   explicit StorageBuffer(VkDeviceSize bufferSize);
 };
-} // namespace Entropy::Graphics::Vulkan::Buffers
+}  // namespace Entropy::Vulkan::Buffers
 
-#endif // ENTROPY_VULKAN_STORAGE_BUFFER_H
+#endif  // ENTROPY_VULKAN_STORAGE_BUFFER_H

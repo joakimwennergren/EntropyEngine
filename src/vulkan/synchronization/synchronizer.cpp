@@ -1,8 +1,8 @@
 #include "synchronizer.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Synchronization;
-using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Vulkan::Synchronization;
+using namespace Entropy::Vulkan::Devices;
 
 Synchronizer::Synchronizer(uint32_t numObjects) {
   assert(numObjects != 0);
@@ -23,11 +23,11 @@ Synchronizer::Synchronizer(uint32_t numObjects) {
 
   for (size_t i = 0; i < numObjects_; i++) {
     VK_CHECK(vkCreateSemaphore(logicalDevice_->Get(), &semaphoreInfo, nullptr,
-      &imageSemaphores_[i]));
+                               &imageSemaphores_[i]));
     VK_CHECK(vkCreateSemaphore(logicalDevice_->Get(), &semaphoreInfo, nullptr,
-      &renderFinishedSemaphores_[i]));
-    VK_CHECK(vkCreateFence(logicalDevice_->Get(), &fenceInfo, nullptr,
-      &fences_[i]));
+                               &renderFinishedSemaphores_[i]));
+    VK_CHECK(
+        vkCreateFence(logicalDevice_->Get(), &fenceInfo, nullptr, &fences_[i]));
   }
 }
 

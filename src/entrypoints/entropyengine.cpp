@@ -50,22 +50,22 @@
 #include "servicelocators/servicelocator.h"
 
 using namespace Entropy::EntryPoints;
-using namespace Entropy::Graphics::Vulkan::Instances;
-using namespace Entropy::Graphics::Vulkan::Devices;
-using namespace Entropy::Graphics::Vulkan::Memory;
-using namespace Entropy::Graphics::Vulkan::CommandPools;
-using namespace Entropy::Graphics::Vulkan::DescriptorPools;
-using namespace Entropy::Graphics::Vulkan::Caches;
-using namespace Entropy::Graphics::Vulkan::Surfaces;
-using namespace Entropy::Graphics::Vulkan::SwapChains;
+using namespace Entropy::Vulkan::Instances;
+using namespace Entropy::Vulkan::Devices;
+using namespace Entropy::Vulkan::Memory;
+using namespace Entropy::Vulkan::CommandPools;
+using namespace Entropy::Vulkan::DescriptorPools;
+using namespace Entropy::Vulkan::Caches;
+using namespace Entropy::Vulkan::Surfaces;
+using namespace Entropy::Vulkan::SwapChains;
 using namespace Entropy::Renderers;
 using namespace Entropy::ECS;
 using namespace Entropy::Assets;
 using namespace Entropy::Cameras;
 
 #if ENTROPY_PLATFORM == IOS
-#include <vulkan/vulkan_metal.h>
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_metal.h>
 EntropyEngine::EntropyEngine(void* layer, uint32_t width, uint32_t height) {
   InitializeQuill();
   RegisterServices();
@@ -77,12 +77,10 @@ EntropyEngine::EntropyEngine(void* layer, uint32_t width, uint32_t height) {
   camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
   renderer = new VulkanRenderer(width, height);
 }
-void EntropyEngine::Run() const {
-
-}
+void EntropyEngine::Run() const {}
 #elif ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
 void EntropyEngine::OnFramebufferResize(GLFWwindow* window, const int width,
-                         const int height) {
+                                        const int height) {
   const auto sl = ServiceLocator::GetInstance();
   const auto renderer = sl->getService<IRenderer>();
   const auto world = sl->getService<IWorld>();
@@ -97,7 +95,8 @@ EntropyEngine::EntropyEngine(const uint32_t width, const uint32_t height) {
     return;
   }
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  window_ = glfwCreateWindow(width, height, "Entropy application", nullptr, nullptr);
+  window_ =
+      glfwCreateWindow(width, height, "Entropy application", nullptr, nullptr);
   if (!window_) {
     LOG_ERROR(logger_, "Could not create GLFW window.");
     glfwTerminate();
@@ -111,10 +110,14 @@ EntropyEngine::EntropyEngine(const uint32_t width, const uint32_t height) {
   const auto sl = ServiceLocator::GetInstance();
   sl->getService<ISwapChain>()->Build(
       std::make_shared<Surface>(window_),
-      VkExtent2D{static_cast<uint32_t>(width * xscale), static_cast<uint32_t>(height * yscale)}, nullptr);
+      VkExtent2D{static_cast<uint32_t>(width * xscale),
+                 static_cast<uint32_t>(height * yscale)},
+      nullptr);
   const auto camera_manager = sl->getService<ICameraManager>();
   camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
-  sl->RegisterService<IRenderer>(std::make_shared<VulkanRenderer>(static_cast<uint32_t>(width * xscale), static_cast<uint32_t>(height * yscale)));
+  sl->RegisterService<IRenderer>(
+      std::make_shared<VulkanRenderer>(static_cast<uint32_t>(width * xscale),
+                                       static_cast<uint32_t>(height * yscale)));
 }
 void EntropyEngine::Run() const {
   const auto sl = ServiceLocator::GetInstance();

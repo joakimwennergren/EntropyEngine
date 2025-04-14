@@ -1,11 +1,11 @@
 #include "commandpool.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::CommandPools;
-using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Vulkan::CommandPools;
+using namespace Entropy::Vulkan::Devices;
 
 CommandPool::CommandPool() {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   logicalDevice_ = sl->getService<ILogicalDevice>();
 
   VkCommandPoolCreateInfo poolInfo{};

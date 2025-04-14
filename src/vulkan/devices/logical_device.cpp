@@ -1,10 +1,10 @@
 #include "logical_device.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Vulkan::Devices;
 
 LogicalDevice::LogicalDevice() {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   const auto physicalDevice = sl->getService<IPhysicalDevice>();
 
   uint32_t idx = 0;
@@ -63,7 +63,9 @@ LogicalDevice::LogicalDevice() {
   vkGetDeviceQueue(logicalDevice_, queueFamiliyIndex, 0, &graphicsQueue_);
 }
 
-LogicalDevice::~LogicalDevice() { vkDestroyDevice(logicalDevice_, nullptr); }
+LogicalDevice::~LogicalDevice() {
+  vkDestroyDevice(logicalDevice_, nullptr);
+}
 
 /*
 

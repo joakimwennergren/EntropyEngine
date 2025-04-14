@@ -24,7 +24,7 @@
 #include <vulkan/vulkan.hpp>
 #include "vulkan/devices/ilogical_device.h"
 
-namespace Entropy::Graphics::Vulkan::Shaders {
+namespace Entropy::Vulkan::Shaders {
 
 /**
  * @class Shader
@@ -41,8 +41,8 @@ namespace Entropy::Graphics::Vulkan::Shaders {
  * applications requiring custom shader functionality.
  */
 class Shader {
-public:
-  Shader(const std::string &vert, const std::string &frag);
+ public:
+  Shader(const std::string& vert, const std::string& frag);
   ~Shader();
 
   [[nodiscard]] VkShaderModule GetVertShaderModule() const {
@@ -52,9 +52,9 @@ public:
     return shaderModuleFrag_;
   }
 
-private:
+ private:
   static std::vector<char> ReadFile(std::string filename);
-  [[nodiscard]] VkShaderModule BuildShader(const std::vector<char> &code) const;
+  [[nodiscard]] VkShaderModule BuildShader(const std::vector<char>& code) const;
   // @TODO find another way for android..
   // VkShaderModule BuildShader(const uint32_t *code, uint32_t size) const;
 
@@ -64,6 +64,6 @@ private:
   VkShaderModule shaderModuleFrag_ = VK_NULL_HANDLE;
   std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
 };
-} // namespace Entropy::Graphics::Vulkan::Shaders
+}  // namespace Entropy::Vulkan::Shaders
 
-#endif // ENTROPY_VULKAN_SHADER_H
+#endif  // ENTROPY_VULKAN_SHADER_H

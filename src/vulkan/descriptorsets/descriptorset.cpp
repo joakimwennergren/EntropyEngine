@@ -1,13 +1,14 @@
 #include "descriptorset.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::DescriptorSets;
-using namespace Entropy::Graphics::Vulkan::Devices;
-using namespace Entropy::Graphics::Vulkan::DescriptorPools;
-using namespace Entropy::Graphics::Vulkan::DescriptorSetLayouts;
+using namespace Entropy::Vulkan::DescriptorSets;
+using namespace Entropy::Vulkan::Devices;
+using namespace Entropy::Vulkan::DescriptorPools;
+using namespace Entropy::Vulkan::DescriptorSetLayouts;
 
-DescriptorSet::DescriptorSet(const std::shared_ptr<DescriptorSetLayout> layout) {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+DescriptorSet::DescriptorSet(
+    const std::shared_ptr<DescriptorSetLayout> layout) {
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   logicalDevice_ = sl->getService<ILogicalDevice>();
   descriptorPool_ = sl->getService<IDescriptorPool>();
 
@@ -20,9 +21,10 @@ DescriptorSet::DescriptorSet(const std::shared_ptr<DescriptorSetLayout> layout) 
   allocInfo.pSetLayouts = layouts.data();
 
   VK_CHECK(vkAllocateDescriptorSets(logicalDevice_->Get(), &allocInfo,
-    &descriptorSet_));
+                                    &descriptorSet_));
 }
 
-DescriptorSet::~DescriptorSet(){
-  vkFreeDescriptorSets(logicalDevice_->Get(), descriptorPool_->Get(), 1, &descriptorSet_);
+DescriptorSet::~DescriptorSet() {
+  vkFreeDescriptorSets(logicalDevice_->Get(), descriptorPool_->Get(), 1,
+                       &descriptorSet_);
 }

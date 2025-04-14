@@ -24,19 +24,19 @@
 #include <vulkan/vulkan.hpp>
 #include "vulkan/devices/ilogical_device.h"
 
-namespace Entropy::Graphics::Vulkan::ImageViews {
+namespace Entropy::Vulkan::ImageViews {
 
 class ImageView {
-public:
+ public:
   ImageView(VkImage image, VkFormat format,
             uint32_t flags = VK_IMAGE_ASPECT_COLOR_BIT);
   ~ImageView();
   [[nodiscard]] VkImageView Get() const { return imageView_; }
 
-private:
+ private:
   VkImageView imageView_ = VK_NULL_HANDLE;
   std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
 };
-} // namespace Entropy::Graphics::Vulkan::ImageViews
+}  // namespace Entropy::Vulkan::ImageViews
 
-#endif // ENTROPY_IMAGEVIEW_H
+#endif  // ENTROPY_IMAGEVIEW_H

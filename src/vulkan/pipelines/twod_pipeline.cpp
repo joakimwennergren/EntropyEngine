@@ -23,7 +23,7 @@ static std::string GetProjectBasePath() {
 }
 #endif
 
-using namespace Entropy::Graphics::Vulkan::Pipelines;
+using namespace Entropy::Vulkan::Pipelines;
 
 TwoDPipeline::TwoDPipeline(
     const std::shared_ptr<RenderPasses::RenderPass>& renderPass)
@@ -44,12 +44,12 @@ TwoDPipeline::TwoDPipeline(
   samplerLayoutBinding.pImmutableSamplers = nullptr;
   samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-  const std::vector bindings = {uboLayoutBinding,
-                                samplerLayoutBinding};
+  const std::vector bindings = {uboLayoutBinding, samplerLayoutBinding};
 
   // const std::vector bindings2 = {samplerLayoutBinding};
 
-  const std::vector<VkDescriptorBindingFlags> bindingFlags0 = {0, VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT};
+  const std::vector<VkDescriptorBindingFlags> bindingFlags0 = {
+      0, VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT};
   // const std::vector<VkDescriptorBindingFlags> bindingFlags1 = {};
 
   descriptorSetLayouts_.push_back(

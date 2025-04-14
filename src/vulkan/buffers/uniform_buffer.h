@@ -23,7 +23,7 @@
 
 #include "base_buffer.h"
 
-namespace Entropy::Graphics::Vulkan::Buffers {
+namespace Entropy::Vulkan::Buffers {
 /**
  * @class UniformBuffer
  * @brief Represents a GPU uniform buffer object used for efficiently updating
@@ -49,9 +49,9 @@ namespace Entropy::Graphics::Vulkan::Buffers {
  * before use.
  */
 class UniformBuffer final : public BaseBuffer {
-public:
+ public:
   explicit UniformBuffer(VkDeviceSize bufferSize);
 };
-} // namespace Entropy::Graphics::Vulkan::Buffers
+}  // namespace Entropy::Vulkan::Buffers
 
-#endif // ENTROPY_VULKAN_UNIFORM_BUFFER_H
+#endif  // ENTROPY_VULKAN_UNIFORM_BUFFER_H

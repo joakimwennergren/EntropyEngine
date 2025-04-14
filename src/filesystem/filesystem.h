@@ -18,27 +18,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_VULKAN_QUEUEFAMILY_H
-#define ENTROPY_VULKAN_QUEUEFAMILY_H
+#ifndef ENTROPY_FILESYSTEM_FILESYSTEM_H
+#define ENTROPY_FILESYSTEM_FILESYSTEM_H
 
-#include <optional>
-#include <vulkan/vulkan.hpp>
+#include "config.h"
 
-namespace Entropy::Vulkan::QueueFamilies {
+#if ENTROPY_PLATFORM == IOS
+#include <CoreFoundation/CoreFoundation.h>
 
-struct QueueFamilyIndices {
-  std::optional<uint32_t> graphicsFamily;
-  std::optional<uint32_t> presentFamily;
-  [[nodiscard]] bool isComplete() const {
-    return graphicsFamily.has_value() && presentFamily.has_value();
+static std::string GetProjectBasePath() {
+  const CFURLRef resourceURL =
+      CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+  if (char resourcePath[PATH_MAX]; CFURLGetFileSystemRepresentation(
+          resourceURL, true, reinterpret_cast<UInt8*>(resourcePath),
+          PATH_MAX)) {
+    if (resourceURL != nullptr) {
+      CFRelease(resourceURL);
+    }
+    return resourcePath;
   }
-};
+  return "";
+}
+#endif
 
-class QueueFamily {
- public:
-  static QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device,
-                                              VkSurfaceKHR surface);
-};
-}  // namespace Entropy::Vulkan::QueueFamilies
-
-#endif  // ENTROPY_VULKAN_QUEUEFAMILY_H
+#endif  // ENTROPY_FILESYSTEM_FILESYSTEM_H

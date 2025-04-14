@@ -1,9 +1,9 @@
 #include "base_buffer.h"
 #include "servicelocators/servicelocator.h"
-#include "vulkan/utilities/helpers.h"
 #include "vulkan/devices/ilogical_device.h"
+#include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Buffers;
+using namespace Entropy::Vulkan::Buffers;
 
 BaseBuffer::~BaseBuffer() {
   vkDeviceWaitIdle(logicalDevice_->Get());
@@ -13,7 +13,7 @@ BaseBuffer::~BaseBuffer() {
 void BaseBuffer::CreateBuffer(const VkDeviceSize size,
                               const VkBufferUsageFlags usage,
                               const VmaAllocationCreateFlags flags) {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   allocator_ = sl->getService<Memory::IAllocator>();
   logicalDevice_ = sl->getService<Devices::ILogicalDevice>();
 

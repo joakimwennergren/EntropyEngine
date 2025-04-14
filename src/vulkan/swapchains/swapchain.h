@@ -26,7 +26,7 @@
 #include "vulkan/devices/ilogical_device.h"
 #include "vulkan/devices/iphysical_device.h"
 
-namespace Entropy::Graphics::Vulkan::SwapChains {
+namespace Entropy::Vulkan::SwapChains {
 
 struct SwapChainSupportDetails {
   VkSurfaceCapabilitiesKHR capabilities{};
@@ -53,7 +53,7 @@ struct SwapChainSupportDetails {
  * and display efficiently.
  */
 class SwapChain final : public ServiceBase<ISwapChain> {
-public:
+ public:
   SwapChain();
   ~SwapChain() override;
 
@@ -64,16 +64,15 @@ public:
 
   VkSwapchainKHR Get() override { return swapChain_; };
 
-private:
+ private:
   static VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
-      const std::vector<VkSurfaceFormatKHR> &availableFormats);
+      const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
   static VkPresentModeKHR ChooseSwapPresentMode(
-      const std::vector<VkPresentModeKHR> &availablePresentModes);
+      const std::vector<VkPresentModeKHR>& availablePresentModes);
 
-  static VkExtent2D
-  ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities,
-                   VkExtent2D frame);
+  static VkExtent2D ChooseSwapExtent(
+      const VkSurfaceCapabilitiesKHR& capabilities, VkExtent2D frame);
 
   static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device,
                                                        VkSurfaceKHR surface);
@@ -82,6 +81,6 @@ private:
   std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
   std::shared_ptr<Surfaces::Surface> surface_;
 };
-} // namespace Entropy::Graphics::Vulkan::SwapChains
+}  // namespace Entropy::Vulkan::SwapChains
 
-#endif // ENTROPY_VULKAN_SWAPCHAIN_H
+#endif  // ENTROPY_VULKAN_SWAPCHAIN_H

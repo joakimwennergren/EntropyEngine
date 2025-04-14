@@ -23,18 +23,20 @@
 
 #include "base_texture.h"
 
-namespace Entropy::Graphics::Vulkan::Textures {
+namespace Entropy::Vulkan::Textures {
 class Texture final : public BaseTexture {
-public:
+ public:
   explicit Texture(int32_t width, int32_t height);
-  explicit Texture(const std::vector<uint8_t> &data, int width, int height);
-  explicit Texture(const std::string &path);
-  static std::vector<uint8_t> LoadAndResize(const std::string &path, uint32_t targetWidth, uint32_t targetHeight);
+  explicit Texture(const std::vector<uint8_t>& data, int width, int height);
+  explicit Texture(const std::string& path);
+  static std::vector<uint8_t> LoadAndResize(const std::string& path,
+                                            uint32_t targetWidth,
+                                            uint32_t targetHeight);
   // Texture(const FT_Bitmap &bitmap);
-private:
+ private:
   void Create(int width, int height);
   void CreateTextureSampler();
 };
-} // namespace Entropy::Graphics::Vulkan::Textures
+}  // namespace Entropy::Vulkan::Textures
 
-#endif // ENTROPY_VULKAN_TEXTURE_H
+#endif  // ENTROPY_VULKAN_TEXTURE_H

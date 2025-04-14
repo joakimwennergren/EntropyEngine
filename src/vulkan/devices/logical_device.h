@@ -27,50 +27,48 @@
 #include "ilogical_device.h"
 #include "iphysical_device.h"
 
-namespace Entropy::Graphics::Vulkan::Devices {
+namespace Entropy::Vulkan::Devices {
 
 class LogicalDevice final : public ServiceBase<ILogicalDevice> {
-public:
+ public:
   LogicalDevice();
   ~LogicalDevice() override;
   VkDevice Get() override { return logicalDevice_; }
   VkQueue GetGraphicQueue() override { return graphicsQueue_; }
 
-private:
+ private:
   VkDevice logicalDevice_ = VK_NULL_HANDLE;
   VkQueue graphicsQueue_ = VK_NULL_HANDLE;
 
-
 #if ENTROPY_PLATFORM == MACOS
-  std::vector<const char *> deviceExtensions_ = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME,
-    "VK_KHR_portability_subset"};
+  std::vector<const char*> deviceExtensions_ = {
+      VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+      VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME,
+      "VK_KHR_portability_subset"};
 #endif
 
 #if ENTROPY_PLATFORM == IOS
-  std::vector<const char *> deviceExtensions_ = {VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+  std::vector<const char*> deviceExtensions_ = {VK_KHR_SWAPCHAIN_EXTENSION_NAME,
                                                 "VK_KHR_portability_subset",
                                                 "VK_EXT_metal_objects"};
 #endif
 
 #if ENTROPY_PLATFORM == WINDOWS
-  std::vector<const char *> deviceExtensions_ = {
+  std::vector<const char*> deviceExtensions_ = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 #endif
 
 #if ENTROPY_PLATFORM == LINUX
-  std::vector<const char *> deviceExtensions_ = {
+  std::vector<const char*> deviceExtensions_ = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 #endif
 
 #if ENTROPY_PLATFORM == ANDROID
-  std::vector<const char *> deviceExtensions_ = {
+  std::vector<const char*> deviceExtensions_ = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 #endif
-
 };
 
-} // namespace Entropy::Graphics::Vulkan::Devices
+}  // namespace Entropy::Vulkan::Devices
 
-#endif // ENTROPY_VULKAN_LOGICAL_DEVICE_H
+#endif  // ENTROPY_VULKAN_LOGICAL_DEVICE_H

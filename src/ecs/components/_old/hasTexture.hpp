@@ -1,14 +1,14 @@
 #pragma once
 
-#include "graphics/vulkan/textures/texture.hpp"
 #include <graphics/primitives/2d/line.hpp>
+#include "graphics/vulkan/textures/texture.hpp"
 
-using namespace Entropy::Graphics::Primitives;
+using namespace Entropy::Primitives;
 
 namespace Entropy {
 namespace Components {
 struct HasTexture {
   std::shared_ptr<Texture> texture;
 };
-} // namespace Components
-} // namespace Entropy
+}  // namespace Components
+}  // namespace Entropy

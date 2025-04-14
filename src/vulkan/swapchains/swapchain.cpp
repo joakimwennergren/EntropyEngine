@@ -2,24 +2,24 @@
 
 #include <iostream>
 
+#include "config.h"
+#include "vulkan/imageviews/imageview.h"
 #include "vulkan/queuefamilies/queuefamily.h"
 #include "vulkan/utilities/helpers.h"
-#include "vulkan/imageviews/imageview.h"
-#include "config.h"
 
-using namespace Entropy::Graphics::Vulkan::SwapChains;
-using namespace Entropy::Graphics::Vulkan::ImageViews;
-using namespace Entropy::Graphics::Vulkan::QueueFamilies;
-using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Vulkan::SwapChains;
+using namespace Entropy::Vulkan::ImageViews;
+using namespace Entropy::Vulkan::QueueFamilies;
+using namespace Entropy::Vulkan::Devices;
 
 SwapChain::SwapChain() {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   physicalDevice_ = sl->getService<IPhysicalDevice>();
   logicalDevice_ = sl->getService<ILogicalDevice>();
 }
 
 SwapChain::~SwapChain() {
-    vkDestroySwapchainKHR(logicalDevice_->Get(), swapChain_, nullptr);
+  vkDestroySwapchainKHR(logicalDevice_->Get(), swapChain_, nullptr);
 }
 
 void SwapChain::Build(const std::shared_ptr<Surfaces::Surface> surface,
@@ -114,8 +114,8 @@ void SwapChain::RecreateSwapChain(const uint32_t width, const uint32_t height) {
 }
 
 VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(
-    const std::vector<VkSurfaceFormatKHR> &availableFormats) {
-  for (const auto &availableFormat : availableFormats) {
+    const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+  for (const auto& availableFormat : availableFormats) {
     if (availableFormat.format == COLOR_FORMAT &&
         availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
       return availableFormat;
@@ -125,8 +125,8 @@ VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(
 }
 
 VkPresentModeKHR SwapChain::ChooseSwapPresentMode(
-    const std::vector<VkPresentModeKHR> &availablePresentModes) {
-  for (const auto &availablePresentMode : availablePresentModes) {
+    const std::vector<VkPresentModeKHR>& availablePresentModes) {
+  for (const auto& availablePresentMode : availablePresentModes) {
     if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
       return availablePresentMode;
     }
@@ -135,8 +135,8 @@ VkPresentModeKHR SwapChain::ChooseSwapPresentMode(
   return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D
-SwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, const VkExtent2D frame) {
+VkExtent2D SwapChain::ChooseSwapExtent(
+    const VkSurfaceCapabilitiesKHR& capabilities, const VkExtent2D frame) {
   if (capabilities.currentExtent.width !=
       std::numeric_limits<uint32_t>::max()) {
     return capabilities.currentExtent;
@@ -151,9 +151,8 @@ SwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities, const 
   return actualExtent;
 }
 
-SwapChainSupportDetails
-SwapChain::QuerySwapChainSupport(VkPhysicalDevice device,
-                                 VkSurfaceKHR surface) {
+SwapChainSupportDetails SwapChain::QuerySwapChainSupport(
+    VkPhysicalDevice device, VkSurfaceKHR surface) {
   SwapChainSupportDetails details;
 
   VK_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface,

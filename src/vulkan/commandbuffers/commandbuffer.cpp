@@ -1,12 +1,12 @@
 #include "commandbuffer.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::CommandBuffers;
-using namespace Entropy::Graphics::Vulkan::CommandPools;
-using namespace Entropy::Graphics::Vulkan::Devices;
+using namespace Entropy::Vulkan::CommandBuffers;
+using namespace Entropy::Vulkan::CommandPools;
+using namespace Entropy::Vulkan::Devices;
 
 CommandBuffer::CommandBuffer(const VkCommandBufferLevel level) {
-  const ServiceLocator *sl = ServiceLocator::GetInstance();
+  const ServiceLocator* sl = ServiceLocator::GetInstance();
   logicalDevice_ = sl->getService<ILogicalDevice>();
   commandPool_ = sl->getService<ICommandPool>();
 

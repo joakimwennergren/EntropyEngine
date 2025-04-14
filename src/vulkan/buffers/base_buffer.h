@@ -26,7 +26,7 @@
 #include "vulkan/devices/ilogical_device.h"
 #include "vulkan/memory/allocator.h"
 
-namespace Entropy::Graphics::Vulkan::Buffers {
+namespace Entropy::Vulkan::Buffers {
 
 /**
  * @class BaseBuffer
@@ -41,14 +41,17 @@ namespace Entropy::Graphics::Vulkan::Buffers {
  * classes that implement specific behaviors.
  */
 class BaseBuffer {
-public:
+ public:
   ~BaseBuffer();
   [[nodiscard]] VkBuffer GetVulkanBuffer() const { return buffer_; };
-  [[nodiscard]] void *GetMappedMemory() const { return allocationInfo_.pMappedData; };
+  [[nodiscard]] void* GetMappedMemory() const {
+    return allocationInfo_.pMappedData;
+  };
   [[nodiscard]] VmaAllocation GetVmaAllocation() const { return allocation_; };
 
-protected:
-  void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VmaAllocationCreateFlags flags);
+ protected:
+  void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
+                    VmaAllocationCreateFlags flags);
 
   VkBuffer buffer_ = VK_NULL_HANDLE;
   VkDeviceMemory bufferMemory_ = VK_NULL_HANDLE;
@@ -57,6 +60,6 @@ protected:
   std::shared_ptr<Memory::IAllocator> allocator_;
   std::shared_ptr<Devices::ILogicalDevice> logicalDevice_;
 };
-} // namespace Entropy::Graphics::Vulkan::Buffers
+}  // namespace Entropy::Vulkan::Buffers
 
-#endif // ENTROPY_VULKAN_BASE_BUFFER_H
+#endif  // ENTROPY_VULKAN_BASE_BUFFER_H

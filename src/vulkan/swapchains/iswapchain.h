@@ -23,14 +23,14 @@
 
 #include <vulkan/vulkan.hpp>
 
-#include "vulkan/imageviews/imageview.h"
 #include "servicelocators/servicelocator.h"
+#include "vulkan/imageviews/imageview.h"
 #include "vulkan/surfaces/surface.h"
 
-namespace Entropy::Graphics::Vulkan::SwapChains {
+namespace Entropy::Vulkan::SwapChains {
 
 class ISwapChain : public IService {
-public:
+ public:
   ~ISwapChain() override = default;
   virtual VkSwapchainKHR Get() = 0;
   virtual void Build(std::shared_ptr<Surfaces::Surface> surface,
@@ -42,6 +42,6 @@ public:
   std::vector<std::shared_ptr<ImageViews::ImageView>> swapChainImageViews;
   std::vector<VkImage> swapChainImages;
 };
-} // namespace Entropy::Graphics::Vulkan::SwapChains
+}  // namespace Entropy::Vulkan::SwapChains
 
-#endif // ENTROPY_VULKAN_ISWAPCHAIN_H
+#endif  // ENTROPY_VULKAN_ISWAPCHAIN_H

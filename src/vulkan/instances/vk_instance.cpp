@@ -3,8 +3,8 @@
 #include "config.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::Instances;
-using namespace Entropy::Graphics::Vulkan::ValidationLayers;
+using namespace Entropy::Vulkan::Instances;
+using namespace Entropy::Vulkan::ValidationLayers;
 
 VulkanInstance::VulkanInstance() {
   VkApplicationInfo appInfo{};

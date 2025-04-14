@@ -24,7 +24,7 @@
 #include "base_buffer.h"
 #include "vulkan/data/vertex.h"
 
-namespace Entropy::Graphics::Vulkan::Buffers {
+namespace Entropy::Vulkan::Buffers {
 
 /**
  * @class VertexBuffer
@@ -46,11 +46,12 @@ namespace Entropy::Graphics::Vulkan::Buffers {
  * This class ensures proper interaction with graphical APIs (e.g., OpenGL,
  * Vulkan) by abstracting low-level buffer operations.
  */
-template <class T> class VertexBuffer final : public BaseBuffer {
-public:
+template <class T>
+class VertexBuffer final : public BaseBuffer {
+ public:
   explicit VertexBuffer(VkDeviceSize size);
   void Update(std::vector<T> vertices);
 };
-} // namespace Entropy::Graphics::Vulkan::Buffers
+}  // namespace Entropy::Vulkan::Buffers
 
-#endif // ENTROPY_VULKAN_VERTEX_BUFFER_H
+#endif  // ENTROPY_VULKAN_VERTEX_BUFFER_H

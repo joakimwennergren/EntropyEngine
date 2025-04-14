@@ -23,7 +23,7 @@
 
 #include "base_buffer.h"
 
-namespace Entropy::Graphics::Vulkan::Buffers {
+namespace Entropy::Vulkan::Buffers {
 
 /**
  * @class IndexBuffer
@@ -41,11 +41,12 @@ namespace Entropy::Graphics::Vulkan::Buffers {
  * rendering workflows that require indexed drawing, such as rendering
  * triangles, lines, or other primitives.
  */
-template <class T> class IndexBuffer final : public BaseBuffer {
-public:
+template <class T>
+class IndexBuffer final : public BaseBuffer {
+ public:
   explicit IndexBuffer(VkDeviceSize size);
   void Update(std::vector<T> indices);
 };
-} // namespace Entropy::Graphics::Vulkan::Buffers
+}  // namespace Entropy::Vulkan::Buffers
 
-#endif // ENTROPY_VULKAN_INDEX_BUFFER_H
+#endif  // ENTROPY_VULKAN_INDEX_BUFFER_H

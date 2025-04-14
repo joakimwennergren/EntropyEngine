@@ -5,10 +5,10 @@
 #include "config.h"
 #include "vulkan/utilities/helpers.h"
 
-using namespace Entropy::Graphics::Vulkan::RenderPasses;
-using namespace Entropy::Graphics::Vulkan::Textures;
-using namespace Entropy::Graphics::Vulkan::Devices;
-using namespace Entropy::Graphics::Vulkan::SwapChains;
+using namespace Entropy::Vulkan::RenderPasses;
+using namespace Entropy::Vulkan::Textures;
+using namespace Entropy::Vulkan::Devices;
+using namespace Entropy::Vulkan::SwapChains;
 
 RenderPass::RenderPass() {
   const ServiceLocator* sl = ServiceLocator::GetInstance();

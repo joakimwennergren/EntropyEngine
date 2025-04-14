@@ -90,7 +90,7 @@
 
 #include "config.h"
 
-using namespace Entropy::Graphics::Vulkan;
+using namespace Entropy::Vulkan;
 
 class Dut : public ::testing::Test {
  protected:
@@ -170,7 +170,7 @@ TEST_F(Dut, CreateStagingBuffer) {
 
 TEST_F(Dut, CreateVertexBuffer) {
   /*
-  std::vector<Graphics::Vulkan::Data::TwoDVertex> vertices = {
+  std::vector<Vulkan::Data::TwoDVertex> vertices = {
     {{-1.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},
     {{1.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
     {{1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},

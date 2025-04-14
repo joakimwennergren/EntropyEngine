@@ -23,7 +23,7 @@
 
 #include <glm/glm.hpp>
 
-namespace Entropy::Graphics::Vulkan::Data {
+namespace Entropy::Vulkan::Data {
 
 struct UBOData {
   glm::mat4 projection;
@@ -38,6 +38,6 @@ struct InstanceDataTwoD {
   glm::vec4 atlasCoords;
 };
 
-} // namespace Entropy::Graphics::Vulkan::Data
+}  // namespace Entropy::Vulkan::Data
 
-#endif // ENTROPY_VULKAN_DATA_H
+#endif  // ENTROPY_VULKAN_DATA_H
