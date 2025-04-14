@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using Entropy.Bindings;
 
 namespace Entropy.ECS
 {
@@ -8,7 +9,6 @@ namespace Entropy.ECS
         private IntPtr entityPtr;
         public Entity()
         {
-            Console.WriteLine("FROM ENTITY C#");
             entityPtr = NativeBindings.EntityCreate();
         }
         public void Dispose()
@@ -19,11 +19,5 @@ namespace Entropy.ECS
                 entityPtr = IntPtr.Zero;
             }
         }
-        /*
-        public void AddComponent(IComponent component)
-        {
-            component.AddTo(nativePtr);
-        }
-        */
     }
 }

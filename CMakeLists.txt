@@ -244,13 +244,13 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 )
 
 file(CREATE_LINK
-    "${CMAKE_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_vert.spv"
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_vert.spv"
     "${CMAKE_BINARY_DIR}/2dshader_vert.spv"
     SYMBOLIC
 )
 
 file(CREATE_LINK
-    "${CMAKE_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_frag.spv"
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_frag.spv"
     "${CMAKE_BINARY_DIR}/2dshader_frag.spv"
     SYMBOLIC
 )
