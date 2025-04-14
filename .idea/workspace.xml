@@ -36,38 +36,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e43dc507-4345-4cff-a853-b925a9eb6ab9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/scripting/entropy/NativeBinding.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripting/entropy/asset.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripting/entropy/textureatlas.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Entropy-Engine.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripting/entropy/component.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scripting/entropy/component.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripting/entropy/texture_old.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripting/test.cs" beforeDir="false" afterPath="$PROJECT_DIR$/scripting/test.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/2dshader/2dshader.vert" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/2dshader/2dshader.vert" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/compiled/2dshader/2dshader_vert.spv" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/compiled/2dshader/2dshader_vert.spv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/asset_manager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/asset_manager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/asset_manager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/asset_manager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/iasset_manager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/iasset_manager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ecs/components/dimension.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ecs/components/dimension.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ecs/components/position.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ecs/components/position.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ecs/components/rotation.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ecs/components/rotation.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ecs/world.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ecs/world.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderers/vulkan_renderer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderers/vulkan_renderer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderers/vulkan_renderer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderers/vulkan_renderer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scripting/scripting.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/scripting/scripting.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vulkan/textures/textureatlas.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/vulkan/textures/textureatlas.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vulkan/textures/textureatlas.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/vulkan/textures/textureatlas.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -131,6 +101,11 @@
     </key>
   </component>
   <component name="RunManager" selected="CMake Application.Entropy">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Entropy" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Entropy" TARGET_NAME="Entropy" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Entropy" RUN_TARGET_NAME="Entropy">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -183,6 +158,7 @@
       <workItem from="1744519490818" duration="3428000" />
       <workItem from="1744523273296" duration="1058000" />
       <workItem from="1744524345309" duration="907000" />
+      <workItem from="1744609474690" duration="1496000" />
     </task>
     <servers />
   </component>

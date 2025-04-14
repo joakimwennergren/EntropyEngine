@@ -3,67 +3,32 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
+  <a href="https://github.com/joakimwennergren/EntropyEngine">
     <img src="https://github.com/joakimwennergren/EntropyEngine/blob/main/.github/images/entropy.png" alt="Logo" width="240" height="240">
   </a>
+<h3 align="center">Entropy Engine</h3>
+<h4>Graphics engine with vulkan backend</h4>
 
-<h3 align="center">Entropy</h3>
-
-
-  <p align="center">
-    Graphics engine with vulkan backend
-    <br />
-    <!-- <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>-->
-  </p>
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/joakimwennergren/EntropyEngine/cmake-multi-platform.yml?branch=main&style=for-the-badge)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](https://github.com/joakimwennergren/EntropyEngine/blob/main/LICENSE.txt)
 </div>
-
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-        <li><a href="#build-status">Build Status</a></li>
-      </ul>
-    </li>
-    <li><a href="#getting-started">Getting Started</a></li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
-
-
 
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+Entropy Engine is a custom game engine built from the ground up with performance and modularity in mind. It leverages the Vulkan graphics API for high-efficiency rendering and uses the Flecs Entity Component System (ECS) to enable flexible and scalable game architecture.
 
-### Built With
-
-![Vulkan](https://a11ybadges.com/badge?logo=vulkan)
+The engine is written primarily in C++, and designed for developers who want low-level control over systems while still benefiting from modern scripting workflows.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Build Status
+## Built With
 
-[![CMake on multiple platforms](https://github.com/joakimwennergren/EntropyEngine/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/joakimwennergren/EntropyEngine/actions/workflows/cmake-multi-platform.yml)
+![Vulkan](https://a11ybadges.com/badge?logo=vulkan)<br />
+<a href="https://github.com/SanderMertens/flecs"><img src="https://github.com/SanderMertens/flecs/raw/master/docs/img/logo.png" alt="Logo" width="155" height="32"></a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- GETTING STARTED -->
 
 ## Getting Started
 
@@ -72,12 +37,6 @@
 <!-- USAGE EXAMPLES -->
 
 ## Usage
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- ROADMAP -->
-
-## Roadmap
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
