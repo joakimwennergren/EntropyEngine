@@ -6,7 +6,7 @@
   <a href="https://github.com/joakimwennergren/EntropyEngine">
     <img src="https://github.com/joakimwennergren/EntropyEngine/blob/main/.github/images/entropy.png" alt="Logo" width="240" height="240">
   </a>
-<h2>Entropy Engine</h2>
+<h3>Entropy Engine</h3>
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/joakimwennergren/EntropyEngine/cmake-multi-platform.yml?branch=main&style=for-the-badge)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](https://github.com/joakimwennergren/EntropyEngine/blob/main/LICENSE.txt)
