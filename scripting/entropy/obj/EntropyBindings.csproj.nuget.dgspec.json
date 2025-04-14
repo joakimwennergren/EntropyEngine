@@ -71,14 +71,6 @@
           "warn": true,
           "downloadDependencies": [
             {
-              "name": "Microsoft.AspNetCore.App.Runtime.osx-arm64",
-              "version": "[9.0.3, 9.0.3]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Runtime.NativeAOT.osx-arm64",
-              "version": "[9.0.3, 9.0.3]"
-            },
-            {
               "name": "runtime.osx-arm64.Microsoft.DotNet.ILCompiler",
               "version": "[9.0.3, 9.0.3]"
             }
@@ -89,11 +81,6 @@
             }
           },
           "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.202/PortableRuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "osx-arm64": {
-          "#import": []
         }
       }
     }
