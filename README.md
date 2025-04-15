@@ -24,11 +24,38 @@ The engine is written primarily in C++, and designed for developers who want low
 
 ## Getting Started
 
+### Prerequisites
+* A C++17-compatible compiler (e.g. Clang or GCC)
+* CMake (version 3.16 or higher recommended)
+* Ninja (optional, for faster builds)
+* Git
+
+#### Clone the Repository
+```console
+git clone https://github.com/joakimwennergren/EntropyEngine.git
+cd EntropyEngine
+```
+#### Generate Build Files With Ninja (Recommended):
+```console
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+```
+
+#### Or with Unix Makefiles:
+```console
+cmake -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
+```
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
 
 ## Usage
+
+### Running Tests
+```console
+cd build
+ctest
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
