@@ -5,14 +5,13 @@
 #define ENTROPY_VERSION_MAJOR 1
 #define ENTROPY_VERSION_MINOR 0
 #define ENTROPY_VERSION_PATCH 0
-
-// Combined version as a single integer (e.g., 10003)
 #define ENTROPY_VERSION_NUMBER                                       \
   ((PROJECT_VERSION_MAJOR * 10000) + (PROJECT_VERSION_MINOR * 100) + \
    PROJECT_VERSION_PATCH)
 
-#define ARM64 (1)
-#define X86_64 (2)
+#define ARM64 (10)
+#define X86_64 (20)
+#define X86_32 (30)
 
 #define MACOS (1)
 #define LINUX (2)
@@ -22,7 +21,7 @@
 #define ANDROID (6)
 
 #define ENTROPY_PLATFORM MACOS
-#define ENTROPY_ARCH ARM64
+#define ENTROPY_ARCH 
 
 #define USE_VALIDATION_LAYERS 1
 #define CONCURRENT_FRAMES_IN_FLIGHT (3)

@@ -5,14 +5,13 @@
 #define ENTROPY_VERSION_MAJOR @ENTROPY_VERSION_MAJOR@
 #define ENTROPY_VERSION_MINOR @ENTROPY_VERSION_MINOR@
 #define ENTROPY_VERSION_PATCH @ENTROPY_VERSION_PATCH@
-
-// Combined version as a single integer (e.g., 10003)
 #define ENTROPY_VERSION_NUMBER                                       \
   ((PROJECT_VERSION_MAJOR * 10000) + (PROJECT_VERSION_MINOR * 100) + \
    PROJECT_VERSION_PATCH)
 
-#define ARM64 (1)
-#define X86_64 (2)
+#define ARM64 (10)
+#define X86_64 (20)
+#define X86_32 (30)
 
 #define MACOS (1)
 #define LINUX (2)
