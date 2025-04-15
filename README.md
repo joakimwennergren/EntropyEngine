@@ -28,6 +28,7 @@ The engine is written primarily in C++, and designed for developers who want low
 * A C++17-compatible compiler (e.g. Clang or GCC)
 * CMake (version 3.16 or higher recommended)
 * Git
+* Vulkan SDK 1.3.275.0
 
 #### Clone the Repository
 ```console
