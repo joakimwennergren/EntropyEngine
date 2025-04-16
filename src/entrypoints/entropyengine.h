@@ -21,8 +21,8 @@
 #ifndef ENTROPY_ENTRYPOINTS_ENTROPY_H
 #define ENTROPY_ENTRYPOINTS_ENTROPY_H
 
-#include "renderers/vulkan_renderer.h"
 #include "config.h"
+#include "renderers/vulkan_renderer.h"
 
 namespace Entropy::EntryPoints {
 
@@ -41,13 +41,15 @@ class EntropyEngine {
   ~EntropyEngine();
 #if ENTROPY_PLATFORM == IOS
   EntropyEngine(void* layer, uint32_t width, uint32_t height);
+  std::shared_ptr<Entropy::Renderers::IRenderer> renderer;
 #elif ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
   EntropyEngine(uint32_t width, uint32_t height);
-private:
+
+ private:
   static void OnFramebufferResize(GLFWwindow* window, int width, int height);
   GLFWwindow* window_;
 #endif
-private:
+ private:
   static void RegisterServices();
   static void UnRegisterServices();
 };

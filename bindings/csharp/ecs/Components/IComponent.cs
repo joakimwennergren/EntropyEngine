@@ -4,6 +4,6 @@ namespace Entropy.ECS
 {
     public interface IComponent
     {
-        void AddTo(IntPtr entity);
+        void AddTo(ulong entityId);
     }
 }

@@ -23,8 +23,8 @@ public struct Position : IComponent
         this.z = 0;
     }
 
-    public void AddTo(IntPtr entity)
+    public void AddTo(ulong entityId)
     {
-        NativeBindings.EntityAddPosition(entity, this);
+        NativeBindings.EntityAddPosition(entityId, this);
     }
 }

@@ -37,7 +37,7 @@ macro(fetch_dependencies platform)
 
     # Flecs
     FetchContent_MakeAvailable(quill)
-        FetchContent_Declare(flecs
+    FetchContent_Declare(flecs
         GIT_REPOSITORY https://github.com/SanderMertens/flecs.git
         GIT_TAG master
     )
@@ -61,28 +61,86 @@ macro(fetch_dependencies platform)
     FetchContent_MakeAvailable(vma)
 endmacro()
 
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+
 # IOS
 if(IOS)
     find_package(Vulkan REQUIRED COMPONENTS MoltenVK)
+
     set(ENTROPY_PLATFORM IOS)
     fetch_dependencies(IOS)
-    set(ENTROPY_LINK_LIBS Vulkan::MoltenVK flecs::flecs_static GPUOpen::VulkanMemoryAllocator glm::glm quill)    
-# MacOS
+
+    add_library(${PROJECT_NAME} SHARED ${SOURCES})
+
+    target_link_libraries(${PROJECT_NAME} PUBLIC
+        "-framework foundation"
+        "-framework metal"
+        "-framework metalkit"
+        "-framework uikit"
+        "-framework iosurface"
+        "-framework coregraphics"
+        "-framework quartzcore"
+        "-framework coreaudio"
+        "-framework audiotoolbox"
+        "-framework avfoundation"
+        "-framework coretext"
+    )
+
+    # Include directories
+    target_include_directories(${PROJECT_NAME} INTERFACE
+        ${vma_SOURCE_DIR}/include
+        ${quill_SOURCE_DIR}/include
+        ${glfw3_SOURCE_DIR}/include
+        ${flecs_SOURCE_DIR}/include
+        ${glm_SOURCE_DIR}
+    )
+
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        ${Vulkan_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+    )
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        Vulkan::MoltenVK flecs::flecs_static GPUOpen::VulkanMemoryAllocator glm::glm quill
+    )
+    # MacOS
 elseif(APPLE AND NOT IOS)
     set(ENTROPY_PLATFORM MACOS)
     fetch_dependencies(MACOS)
-    set(ENTROPY_LINK_LIBS ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill)
-# Linux
+    add_library(${PROJECT_NAME} SHARED ${SOURCES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
+    )
+    # Linux
 elseif(UNIX AND NOT APPLE)
     set(ENTROPY_PLATFORM LINUX)
     fetch_dependencies(LINUX)
-    set(ENTROPY_LINK_LIBS ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill)
-# Windows
+    add_library(${PROJECT_NAME} SHARED ${SOURCES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
+    )
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        -Wno-undef
+        -Wno-unused-parameter
+        -Wno-nested-anon-types
+        -Wno-nullability-completeness
+        -Wno-sign-conversion
+        -Wno-unused-variable
+        -Wno-missing-field-initializers
+        -Wno-nullability-extension
+        -Wdeprecated-declarations
+        -Wno-deprecated-declarations
+    )
+    # Windows
 elseif(WIN32)
     set(ENTROPY_PLATFORM WINDOWS)
     fetch_dependencies(WINDOWS)
-    set(ENTROPY_LINK_LIBS ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill)
-# Android
+    add_library(${PROJECT_NAME} SHARED ${SOURCES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
+    )
+    # Android
 elseif(ANDROID)
     # @TODO: Add Android support
     message(FATAL_ERROR "-- Android build not supported yet")
@@ -106,18 +164,13 @@ if(ENTROPY_TESTS)
 
     target_link_libraries(${PROJECT_NAME}_test PRIVATE
         GTest::gtest_main
-        ${PROJECT_NAME} 
+        ${PROJECT_NAME}
     )
 
     include(GoogleTest)
     gtest_add_tests(TARGET ${PROJECT_NAME}_test AUTO)
-endif() 
+endif()
 
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-
-add_library(${PROJECT_NAME} SHARED ${SOURCES})
-
-# Include directories
 target_include_directories(${PROJECT_NAME} INTERFACE
     ${vma_SOURCE_DIR}/include
     ${quill_SOURCE_DIR}/include
@@ -132,23 +185,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${ENTROPY_LINK_LIBS}
-)
-
-target_compile_options(${PROJECT_NAME} PRIVATE
-    -Wno-undef
-    -Wno-unused-parameter
-    -Wno-nested-anon-types
-    -Wno-nullability-completeness
-    -Wno-sign-conversion
-    -Wno-unused-variable
-    -Wno-missing-field-initializers
-    -Wno-nullability-extension
-    -Wdeprecated-declarations
-    -Wno-deprecated-declarations
-)
-
 file(CREATE_LINK
     "${CMAKE_CURRENT_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_vert.spv"
     "${CMAKE_BINARY_DIR}/2dshader_vert.spv"
@@ -161,16 +197,5 @@ file(CREATE_LINK
     SYMBOLIC
 )
 
-# set(ENTROPY_INCLUDE_DIRS
-# ${CMAKE_CURRENT_SOURCE_DIR}/include
-# ${CMAKE_CURRENT_SOURCE_DIR}/src
-# ${vma_SOURCE_DIR}/include
-# ${quill_SOURCE_DIR}/include
-# ${glfw3_SOURCE_DIR}/include
-# ${flecs_SOURCE_DIR}/include
-# ${glm_SOURCE_DIR}
-# PARENT_SCOPE
-# )
-
 # Build config file
-configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/config.h @ONLY)
+configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h @ONLY)

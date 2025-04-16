@@ -6,6 +6,7 @@
 #include "stb/stb_image_write.h"
 #include "vulkan/buffers/staging_buffer.h"
 #include "vulkan/utilities/helpers.h"
+#include "filesystem/filesystem.h"
 
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb/stb_image_resize2.h"

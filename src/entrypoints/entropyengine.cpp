@@ -71,11 +71,13 @@ EntropyEngine::EntropyEngine(void* layer, uint32_t width, uint32_t height) {
   RegisterServices();
   const auto sl = ServiceLocator::GetInstance();
   sl->getService<ISwapChain>()->Build(
-      std::make_shared<Surface>((__bridge CAMetalLayer*)layer),
+      std::make_shared<Surface>((CAMetalLayer*)layer),
       VkExtent2D{width, height}, nullptr);
   const auto camera_manager = sl->getService<ICameraManager>();
   camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
-  renderer = new VulkanRenderer(width, height);
+  sl->RegisterService<IRenderer>(
+      std::make_shared<VulkanRenderer>(width, height));
+  renderer = sl->getService<IRenderer>();
 }
 void EntropyEngine::Run() const {}
 #elif ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
