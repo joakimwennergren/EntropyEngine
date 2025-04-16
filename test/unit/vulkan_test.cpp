@@ -38,6 +38,7 @@
 #include "vulkan/textures/depthbuffer_texture.h"
 #include "vulkan/textures/swapchain_texture.h"
 #include "vulkan/textures/texture.h"
+#include "vulkan/textures/textureatlas.h"
 
 // Shader
 #include "vulkan/shaders/shader.h"
@@ -169,13 +170,6 @@ TEST_F(Dut, CreateStagingBuffer) {
 }
 
 TEST_F(Dut, CreateVertexBuffer) {
-  /*
-  std::vector<Vulkan::Data::TwoDVertex> vertices = {
-    {{-1.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},
-    {{1.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
-    {{1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-    {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f}}};
-  */
   auto vertex_buffer =
       VertexBuffer<::Data::TwoDVertex>(4 * sizeof(::Data::TwoDVertex));
   ASSERT_TRUE(vertex_buffer.GetVulkanBuffer() != nullptr);
@@ -196,7 +190,7 @@ TEST_F(Dut, CreateCommandBuffer) {
   ASSERT_TRUE(command_buf.Get() != nullptr);
 }
 
-TEST_F(Dut, CreateMaxImageSamplersDescriptorSets) {
+TEST_F(Dut, CreateImageSamplersDescriptorSet) {
   VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
   instanceLayoutBinding.binding = 0;
   instanceLayoutBinding.descriptorType =
@@ -251,3 +245,13 @@ TEST_F(Dut, CreateTwoDPipeline) {
   auto two_d_pipeline = Pipelines::TwoDPipeline(render_pass);
   ASSERT_TRUE(two_d_pipeline.GetPipeline() != nullptr);
 }
+
+/*
+TEST_F(Dut, CreateTextureAtlas) {
+  auto paths =
+      std::vector<std::string>({"toppmurkla.png", "svavelmusseron.png"});
+  auto atlas = Textures::TextureAtlas(paths);
+  atlas.Create();
+  atlas.Save("atlas1");
+}
+  */

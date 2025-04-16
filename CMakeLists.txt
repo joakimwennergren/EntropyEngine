@@ -68,7 +68,7 @@ if(IOS)
     find_package(Vulkan REQUIRED COMPONENTS MoltenVK)
 
     set(ENTROPY_PLATFORM IOS)
-    fetch_dependencies(IOS)
+    fetch_dependencies("IOS")
 
     add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -107,7 +107,7 @@ if(IOS)
     # MacOS
 elseif(APPLE AND NOT IOS)
     set(ENTROPY_PLATFORM MACOS)
-    fetch_dependencies(MACOS)
+    fetch_dependencies("MACOS")
     add_library(${PROJECT_NAME} SHARED ${SOURCES})
     target_link_libraries(${PROJECT_NAME} PRIVATE
         ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
@@ -115,27 +115,15 @@ elseif(APPLE AND NOT IOS)
     # Linux
 elseif(UNIX AND NOT APPLE)
     set(ENTROPY_PLATFORM LINUX)
-    fetch_dependencies(LINUX)
+    fetch_dependencies("LINUX")
     add_library(${PROJECT_NAME} SHARED ${SOURCES})
     target_link_libraries(${PROJECT_NAME} PRIVATE
         ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
     )
-    target_compile_options(${PROJECT_NAME} PRIVATE
-        -Wno-undef
-        -Wno-unused-parameter
-        -Wno-nested-anon-types
-        -Wno-nullability-completeness
-        -Wno-sign-conversion
-        -Wno-unused-variable
-        -Wno-missing-field-initializers
-        -Wno-nullability-extension
-        -Wdeprecated-declarations
-        -Wno-deprecated-declarations
-    )
     # Windows
 elseif(WIN32)
     set(ENTROPY_PLATFORM WINDOWS)
-    fetch_dependencies(WINDOWS)
+    fetch_dependencies("WINDOWS")
     add_library(${PROJECT_NAME} SHARED ${SOURCES})
     target_link_libraries(${PROJECT_NAME} PRIVATE
         ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
@@ -170,6 +158,19 @@ if(ENTROPY_TESTS)
     include(GoogleTest)
     gtest_add_tests(TARGET ${PROJECT_NAME}_test AUTO)
 endif()
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+    -Wno-undef
+    -Wno-unused-parameter
+    -Wno-nested-anon-types
+    -Wno-nullability-completeness
+    -Wno-sign-conversion
+    -Wno-unused-variable
+    -Wno-missing-field-initializers
+    -Wno-nullability-extension
+    -Wdeprecated-declarations
+    -Wno-deprecated-declarations
+)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     ${vma_SOURCE_DIR}/include

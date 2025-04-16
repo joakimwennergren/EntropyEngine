@@ -18,26 +18,77 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_VULKAN_TEXTURE_ATLAS_H
-#define ENTROPY_VULKAN_TEXTURE_ATLAS_H
+#ifndef ENTROPY_VULKAN_TEXTURES_ATLAS_H
+#define ENTROPY_VULKAN_TEXTURES_ATLAS_H
 
 #include "texture.h"
 
 namespace Entropy::Vulkan::Textures {
+/**
+ * @class TextureAtlas
+ * @brief Represents a texture atlas that combines multiple textures into a single texture.
+ * 
+ * The TextureAtlas class is responsible for loading multiple textures from file paths,
+ * combining them into a single texture, and providing texture regions for each individual
+ * texture within the atlas. This is useful for optimizing rendering by reducing the number
+ * of texture bindings.
+ * 
+ * @note This class is marked as `final`, meaning it cannot be inherited.
+ * 
+ * @details
+ * - The `TextureAtlas` constructor takes a vector of file paths to load textures.
+ * - The `Create` method generates the texture atlas from the provided textures.
+ * - The `Save` method allows saving the generated texture atlas to a file.
+ * - The `TextureRegion` struct defines the UV coordinates for each texture in the atlas.
+ * 
+ * @example
+ * ```
+ * std::vector<std::string> texturePaths = {"texture1.png", "texture2.png"};
+ * TextureAtlas atlas(texturePaths);
+ * if (atlas.Create()) {
+ *     atlas.Save("atlas.png");
+ * }
+ * ```
+ */
 class TextureAtlas final {
  public:
+  TextureAtlas(std::vector<std::string>& paths);
   struct TextureRegion {
-    float uMin, vMin, uMax, vMax;
+    float uMin{};
+    float vMin{};
+    float uMax{};
+    float vMax{};
   };
-  explicit TextureAtlas();
-  bool CreateAtlas();
-  void DebugPrint(const std::string& name) const;
-  std::shared_ptr<Texture> texture_;
-  std::vector<TextureRegion> textureRegions;
-  std::vector<std::string> image_paths;
-  std::vector<unsigned char> atlas_;
+  /**
+   * @brief Creates and initializes the texture atlas.
+   * 
+   * This function is responsible for setting up the texture atlas,
+   * allocating necessary resources, and preparing it for use in
+   * rendering operations. It ensures that the texture atlas is
+   * properly initialized before being accessed.
+   * 
+   * @return true if the texture atlas was successfully created and initialized.
+   * @return false if there was an error during the creation process.
+   */
+  bool Create();
+  /**
+   * @brief Saves the texture atlas to a file.
+   * 
+   * This function writes the texture atlas data to a file with the specified name.
+   * The file can later be used to reload the texture atlas.
+   * 
+   * @param name The name of the file to save the texture atlas to.
+   */
+  void Save(const std::string& name) const;
+
+  std::shared_ptr<Texture> texture;
+  std::vector<TextureRegion> regions;
+
+ private:
+  std::vector<std::string> paths_;
+  std::vector<uint8_t> atlas_;
   int width_, height_;
 };
 }  // namespace Entropy::Vulkan::Textures
 
-#endif  // ENTROPY_VULKAN_TEXTURE_ATLAS_H
+#endif  // ENTROPY_VULKAN_TEXTURES_ATLAS_H

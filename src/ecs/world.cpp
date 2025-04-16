@@ -46,8 +46,8 @@ World::World() {
         const auto renderer = sl_->getService<Renderers::IRenderer>();
         renderer->GetFrame()->data[d2.index - 1].rot = glm::radians(rot.angle);
       });
-
-  gameWorld_->system<Tags::D2, Components::Asset>("Texture").each(
+  /*
+    gameWorld_->system<Tags::D2, Components::Asset>("Texture").each(
       [this](const Tags::D2& d2, const Components::Asset& asset) {
         static uint32_t old_atlas_size;
         const auto renderer = sl_->getService<Renderers::IRenderer>();
@@ -82,4 +82,5 @@ World::World() {
             glm::vec4(uMin, vMin, uMax, vMax);
         old_atlas_size = atlas->image_paths.size();
       });
+  */
 }
