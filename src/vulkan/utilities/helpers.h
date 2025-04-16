@@ -24,7 +24,18 @@
 #include <vulkan/vulkan.h>
 #include "loggers/logger.h"
 
-inline std::string VkResultToString(const VkResult result) {
+/**
+ * @brief Converts a Vulkan VkResult enumeration value to its corresponding string representation.
+ *
+ * This function takes a VkResult value and returns a human-readable string
+ * that represents the Vulkan result code. It is useful for debugging and
+ * logging Vulkan API calls.
+ *
+ * @param result The VkResult value to convert.
+ * @return A string representation of the VkResult value. If the result code
+ *         is not recognized, "UNKNOWN_VK_RESULT" is returned.
+ */
+static std::string VkResultToString(const VkResult result) {
   switch (result) {
     case VK_SUCCESS:
       return "VK_SUCCESS";

@@ -1,4 +1,5 @@
 #include "validationlayer.h"
+#include "vulkan/utilities/helpers.h"
 
 using namespace Entropy::Vulkan::ValidationLayers;
 
@@ -6,10 +7,11 @@ bool ValidationLayer::CheckValidationLayerSupport(
     const std::vector<const char*>& validationLayers) {
 
   uint32_t layerCount;
-  vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+  VK_CHECK(vkEnumerateInstanceLayerProperties(&layerCount, nullptr));
 
   std::vector<VkLayerProperties> availableLayers(layerCount);
-  vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+  VK_CHECK(
+      vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data()));
 
   for (const char* layerName : validationLayers) {
     bool layerFound = false;

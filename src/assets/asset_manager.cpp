@@ -56,6 +56,7 @@ std::vector<IAssetManager::AssetHandle> AssetManager::LoadTextureAsync(
 
 std::vector<IAssetManager::AssetHandle> AssetManager::LoadTextureAtlas(
     const std::vector<std::string>& paths) {
+  /*
 
   const std::string key = "TextureAtlas" + std::to_string(asset_index);
 
@@ -64,17 +65,19 @@ std::vector<IAssetManager::AssetHandle> AssetManager::LoadTextureAtlas(
   }
 
   auto* atlas = new TextureAtlas();
-  atlas->image_paths = paths;
+  atlas->paths = paths;
 
   for (const auto& path : paths) {
     LOG_INFO(logger_, "Adding image path to atlas: {}", path);
   }
 
   atlas->CreateAtlas();
-  atlas->DebugPrint(key);
+  //atlas->DebugPrint(key);
 
   assets_[key] = AssetHandle{atlas, asset_index++, "", false, kTextureAtlas};
   return {assets_[key]};
+  */
+  return {};
 }
 
 std::vector<IAssetManager::AssetHandle> AssetManager::LoadTextureAtlasAsync(

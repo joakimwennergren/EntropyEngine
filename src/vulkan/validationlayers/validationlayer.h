@@ -26,7 +26,7 @@
 
 namespace Entropy::Vulkan::ValidationLayers {
 
-class ValidationLayer {
+class ValidationLayer final {
  public:
   /**
  * @brief Checks if the required validation layers are supported by the Vulkan instance.
