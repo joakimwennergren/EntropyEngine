@@ -58,7 +58,7 @@ bool TextureAtlas::CreateAtlas() {
   for (int32_t i = 0; i < image_paths.size(); ++i) {
     int w, h, c;
 #if ENTROPY_PLATFORM == IOS
-    images[i] = stbi_load((GetProjectBasePath() + "/" + imagePaths[i]).c_str(),
+      images[i] = stbi_load((GetProjectBasePath() + "/" + image_paths[i]).c_str(),
                           &w, &h, &c, 4);  // Force RGBA
 #else
     images[i] = stbi_load(image_paths[i].c_str(), &w, &h, &c, 4);  // Force RGBA

@@ -11,145 +11,144 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Define an option to choose between executable or library
 option(ENTROPY_TESTS "Build Entropy Tests" ON)
 
-if(IOS)
-    message("BUILDING FOR IOS!!!")
-    set(ENTROPY_PLATFORM IOS)
-    set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
-    set(CMAKE_XCODE_SCHEME_ENABLE_GPU_API_VALIDATION FALSE)
-    set(CMAKE_XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE DISABLED)
-    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
-    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
+macro(fetch_dependencies platform)
+    if(${platform} STREQUAL "MACOS" OR ${platform} STREQUAL "LINUX" OR ${platform} STREQUAL "WINDOWS")
+        # Find Vulkan
+        find_package(Vulkan REQUIRED)
 
-    # Find vulkan
+        # GLFW3
+        FetchContent_Declare(glfw3
+            GIT_REPOSITORY https://github.com/glfw/glfw.git
+            GIT_TAG master
+        )
+        set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+        set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
+        set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+        FetchContent_MakeAvailable(glfw3)
+    endif()
+
+    # Quill
+    FetchContent_Declare(quill
+        GIT_REPOSITORY https://github.com/odygrd/quill.git
+        GIT_TAG master
+    )
+
+    # Flecs
+    FetchContent_MakeAvailable(quill)
+    FetchContent_Declare(flecs
+        GIT_REPOSITORY https://github.com/SanderMertens/flecs.git
+        GIT_TAG master
+    )
+    set(FLECS_SHARED OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(flecs)
+
+    # GLM
+    FetchContent_Declare(glm
+        GIT_REPOSITORY https://github.com/g-truc/glm.git
+        GIT_TAG master
+    )
+    FetchContent_MakeAvailable(glm)
+
+    # Vulkan Memory Allocator
+    FetchContent_Declare(vma
+        GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+        GIT_TAG master
+    )
+    set(VMA_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+    set(VMA_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(vma)
+endmacro()
+
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+
+# IOS
+if(IOS)
     find_package(Vulkan REQUIRED COMPONENTS MoltenVK)
 
-    # Libraries to link with
-    set(ENTROPY_LINK_LIBS
-        Vulkan::MoltenVK
-        flecs::flecs_static
-        GPUOpen::VulkanMemoryAllocator
-        glm::glm
-        quill
+    set(ENTROPY_PLATFORM IOS)
+    fetch_dependencies(IOS)
+
+    add_library(${PROJECT_NAME} SHARED ${SOURCES})
+
+    target_link_libraries(${PROJECT_NAME} PUBLIC
+        "-framework foundation"
+        "-framework metal"
+        "-framework metalkit"
+        "-framework uikit"
+        "-framework iosurface"
+        "-framework coregraphics"
+        "-framework quartzcore"
+        "-framework coreaudio"
+        "-framework audiotoolbox"
+        "-framework avfoundation"
+        "-framework coretext"
     )
 
-    if(${CMAKE_OSX_SYSROOT} MATCHES "iphonesimulator")
-        set(ENTROPY_PLATFORM IOS) # @TODO change this to simulator
-        message("-- iOS Build for simulator")
+    # Include directories
+    target_include_directories(${PROJECT_NAME} INTERFACE
+        ${vma_SOURCE_DIR}/include
+        ${quill_SOURCE_DIR}/include
+        ${glfw3_SOURCE_DIR}/include
+        ${flecs_SOURCE_DIR}/include
+        ${glm_SOURCE_DIR}
+    )
 
-        if(${CMAKE_OSX_ARCHITECTURES} MATCHES "arm64")
-            message("-- iOS Build for simulator arm64")
-            set(ENTROPY_ARCH ARM64)
-        elseif(${CMAKE_OSX_ARCHITECTURES} MATCHES "x86_64")
-            message("-- iOS Build for simulator x86_64")
-            set(ENTROPY_ARCH X86_64)
-        endif()
-    elseif(${CMAKE_OSX_SYSROOT} MATCHES "iphoneos")
-        message("-- iOS Build for iphone")
-        set(ENTROPY_PLATFORM IOS)
-    else()
-        # message(FATAL_ERROR"-- iOS undefined build")
-    endif()
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        ${Vulkan_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+    )
 
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        Vulkan::MoltenVK flecs::flecs_static GPUOpen::VulkanMemoryAllocator glm::glm quill
+    )
+    # MacOS
 elseif(APPLE AND NOT IOS)
-    message("BUILDING FOR MACOS!!")
-    find_package(Vulkan REQUIRED)
-    FetchContent_Declare(glfw3
-        GIT_REPOSITORY https://github.com/glfw/glfw.git
-        GIT_TAG master
-    )
-    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
-    set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(glfw3)
-
     set(ENTROPY_PLATFORM MACOS)
-    set(ENTROPY_LINK_LIBS
-        ${Vulkan_LIBRARIES}
-        flecs::flecs_static
-        GPUOpen::VulkanMemoryAllocator
-        glfw
-        glm::glm
-        quill
+    fetch_dependencies(MACOS)
+    add_library(${PROJECT_NAME} SHARED ${SOURCES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
     )
-
-    if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
-        message("-- MacOS Build for x86_64")
-        set(ENTROPY_ARCH X86_64)
-    elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64")
-        message("-- MacOS Build for arm64")
-        set(ENTROPY_ARCH ARM64)
-    else()
-        message(FATAL_ERROR "-- MacOS undefined build")
-    endif()
+    # Linux
 elseif(UNIX AND NOT APPLE)
-    message("-- Linux Build")
-    find_package(Vulkan REQUIRED)
-    FetchContent_Declare(glfw3
-        GIT_REPOSITORY https://github.com/glfw/glfw.git
-        GIT_TAG master
-    )
-    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
-    set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(glfw3)
-
     set(ENTROPY_PLATFORM LINUX)
-    set(ENTROPY_LINK_LIBS
-        ${Vulkan_LIBRARIES}
-        flecs::flecs_static
-        GPUOpen::VulkanMemoryAllocator
-        glfw
-        glm::glm
-        quill
+    fetch_dependencies(LINUX)
+    add_library(${PROJECT_NAME} SHARED ${SOURCES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
     )
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        -Wno-undef
+        -Wno-unused-parameter
+        -Wno-nested-anon-types
+        -Wno-nullability-completeness
+        -Wno-sign-conversion
+        -Wno-unused-variable
+        -Wno-missing-field-initializers
+        -Wno-nullability-extension
+        -Wdeprecated-declarations
+        -Wno-deprecated-declarations
+    )
+    # Windows
+elseif(WIN32)
+    set(ENTROPY_PLATFORM WINDOWS)
+    fetch_dependencies(WINDOWS)
+    add_library(${PROJECT_NAME} SHARED ${SOURCES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
+    )
+    # Android
 elseif(ANDROID)
-    if(${ANDROID_ABI} STREQUAL "x86_64")
-        message("-- Android Build for x86_64")
-    elseif(${ANDROID_ABI} STREQUAL "x86")
-        message("-- Android Build for x86")
-    elseif(${ANDROID_ABI} STREQUAL "armeabi-v7a")
-        message("-- Android Build for armeabi-v7a")
-    elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
-        message("-- Android Build for arm64-v8a")
-    else()
-        message(FATAL_ERROR "-- Android undefined build")
-    endif()
+    # @TODO: Add Android support
+    message(FATAL_ERROR "-- Android build not supported yet")
 else()
-    message(FATAL_ERROR "-- Undefined build")
+    message(FATAL_ERROR "-- Platform not supported")
 endif()
 
-FetchContent_Declare(quill
-    GIT_REPOSITORY https://github.com/odygrd/quill.git
-    GIT_TAG master
-)
-FetchContent_MakeAvailable(quill)
-
-FetchContent_Declare(flecs
-    GIT_REPOSITORY https://github.com/SanderMertens/flecs.git
-    GIT_TAG master
-)
-set(FLECS_SHARED OFF CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(flecs)
-
-FetchContent_Declare(glm
-    GIT_REPOSITORY https://github.com/g-truc/glm.git
-    GIT_TAG master
-)
-FetchContent_MakeAvailable(glm)
-
-FetchContent_Declare(vma
-    GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
-    GIT_TAG master
-)
-set(VMA_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
-set(VMA_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(vma)
-
 if(ENTROPY_TESTS)
-    # Fetch GoogleTest
     FetchContent_Declare(
         googletest
         URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
@@ -165,19 +164,13 @@ if(ENTROPY_TESTS)
 
     target_link_libraries(${PROJECT_NAME}_test PRIVATE
         GTest::gtest_main
-        ${PROJECT_NAME} # Link against the core library
+        ${PROJECT_NAME}
     )
 
     include(GoogleTest)
     gtest_add_tests(TARGET ${PROJECT_NAME}_test AUTO)
-endif() 
+endif()
 
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-
-# Always build Entropy as a library
-add_library(${PROJECT_NAME} SHARED ${SOURCES})
-
-# Include directories
 target_include_directories(${PROJECT_NAME} INTERFACE
     ${vma_SOURCE_DIR}/include
     ${quill_SOURCE_DIR}/include
@@ -192,23 +185,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${ENTROPY_LINK_LIBS}
-)
-
-target_compile_options(${PROJECT_NAME} PRIVATE
-    -Wno-undef
-    -Wno-unused-parameter
-    -Wno-nested-anon-types
-    -Wno-nullability-completeness
-    -Wno-sign-conversion
-    -Wno-unused-variable
-    -Wno-missing-field-initializers
-    -Wno-nullability-extension
-    -Wdeprecated-declarations
-    -Wno-deprecated-declarations
-)
-
 file(CREATE_LINK
     "${CMAKE_CURRENT_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_vert.spv"
     "${CMAKE_BINARY_DIR}/2dshader_vert.spv"
@@ -221,16 +197,5 @@ file(CREATE_LINK
     SYMBOLIC
 )
 
-# set(ENTROPY_INCLUDE_DIRS
-# ${CMAKE_CURRENT_SOURCE_DIR}/include
-# ${CMAKE_CURRENT_SOURCE_DIR}/src
-# ${vma_SOURCE_DIR}/include
-# ${quill_SOURCE_DIR}/include
-# ${glfw3_SOURCE_DIR}/include
-# ${flecs_SOURCE_DIR}/include
-# ${glm_SOURCE_DIR}
-# PARENT_SCOPE
-# )
-
 # Build config file
-configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/config.h @ONLY)
+configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h @ONLY)

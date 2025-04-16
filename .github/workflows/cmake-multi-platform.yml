@@ -56,14 +56,14 @@ jobs:
     - uses: ConorMacBride/install-package@v1
       with:
         apt: xorg-dev
-
+        
     - name: Prepare Vulkan SDK
       uses: humbletim/setup-vulkan-sdk@v1.2.1
       with:
-        vulkan-query-version: latest
+        vulkan-query-version: 1.3.275.0
         vulkan-components: Vulkan-Headers, Vulkan-Loader
         vulkan-use-cache: true
-
+    
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       id: strings
