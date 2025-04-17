@@ -21,49 +21,63 @@
 #ifndef ENTROPY_ASSETS_IASSET_MANAGER_H
 #define ENTROPY_ASSETS_IASSET_MANAGER_H
 
+#include <functional>
+#include <future>
+#include <mutex>
+#include <string>
+#include <unordered_map>
+#include "iasset.h"
 #include "servicelocators/servicelocator.h"
-#include "vulkan/textures/texture.h"
 
 namespace Entropy::Assets {
 class IAssetManager : public IService {
  public:
-  enum AssetType {
-    kTexture,
-    kTextureAtlas,
-    kUnknown,
-  };
-  struct AssetHandle {
-    void* asset;
-    int32_t index;
-    const char* path;
-    bool is_async;
-    uint32_t type;
-  };
-  enum LoadOperation {
-    kLoadTextureSync,
-    kLoadTextureAsync,
-    kLoadTextureAtlasSync,
-    kLoadTextureAtlasAsync,
-  };
-  std::vector<AssetHandle> Load(const std::vector<std::string> &paths, const LoadOperation operation) {
-    if (operation == kLoadTextureSync) {
-      return LoadTexture(paths);
-    }
-    if (operation == kLoadTextureAsync) {
-      return LoadTextureAsync(paths);
-    }
-    if (operation == kLoadTextureAtlasSync) {
-      return LoadTextureAtlas(paths);
-    }
-    return {};
+  template <typename T>
+  using LoaderFunc = std::function<std::shared_ptr<T>(const std::string& path)>;
+
+  template <typename T>
+  void RegisterLoader(const LoaderFunc<T>& loader) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    loaders_[typeid(T).hash_code()] =
+        [loader](const std::string& path) -> std::shared_ptr<IAsset> {
+      return loader(path);
+    };
   }
-  ~IAssetManager() override = default;
- protected:
-  virtual std::vector<AssetHandle> LoadTexture(const std::vector<std::string> &paths) = 0;
-  virtual std::vector<AssetHandle> LoadTextureAsync(const std::vector<std::string> &paths) = 0;
-  virtual std::vector<AssetHandle> LoadTextureAtlas(const std::vector<std::string> &paths) = 0;
-  virtual std::vector<AssetHandle> LoadTextureAtlasAsync(const std::vector<std::string> &paths) = 0;
+
+  template <typename T>
+  std::shared_ptr<T> Load(const std::string& name, const std::string& path) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto& map = assets_[typeid(T).hash_code()];
+    auto it = map.find(name);
+    if (it != map.end()) {
+      return std::static_pointer_cast<T>(it->second);
+    }
+
+    auto loaderIt = loaders_.find(typeid(T).hash_code());
+    if (loaderIt == loaders_.end()) {
+      throw std::runtime_error("No loader registered for this asset type");
+    }
+
+    auto asset = std::static_pointer_cast<T>(loaderIt->second(path));
+    map[name] = asset;
+    return asset;
+  }
+
+  template <typename T>
+  std::future<std::shared_ptr<T>> LoadAsync(const std::string& name,
+                                            const std::string& path) {
+    return std::async(std::launch::async,
+                      [=]() { return this->Load<T>(name, path); });
+  }
+
+ private:
+  std::unordered_map<size_t,
+                     std::function<std::shared_ptr<IAsset>(const std::string&)>>
+      loaders_;
+  std::unordered_map<size_t,
+                     std::unordered_map<std::string, std::shared_ptr<IAsset>>>
+      assets_;
+  std::mutex mutex_;
 };
 }  // namespace Entropy::Assets
-
 #endif  // ENTROPY_ASSETS_IASSET_MANAGER_H

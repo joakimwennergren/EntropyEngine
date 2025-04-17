@@ -1,7 +1,6 @@
 #ifndef ENTROPY_CONFIG_H
 #define ENTROPY_CONFIG_H
 
-// Version information
 #define ENTROPY_VERSION_MAJOR 1
 #define ENTROPY_VERSION_MINOR 0
 #define ENTROPY_VERSION_PATCH 0
