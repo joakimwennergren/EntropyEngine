@@ -18,14 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_ECS_COMPONENT_TEXTURE_H
-#define ENTROPY_ECS_COMPONENT_TEXTURE_H
+#ifndef ENTROPY_ASSETS_IASSET_H
+#define ENTROPY_ASSETS_IASSET_H
 
-#include "assets/iasset_manager.h"
-namespace Entropy::ECS::Components {
-struct Asset {
-  //std::vector<Assets::IAssetManager::AssetHandle> handles;
+#include <string>
+
+namespace Entropy::Assets {
+class IAsset {
+ public:
+  virtual ~IAsset() = default;
+  virtual const std::string& GetName() const = 0;
 };
-}  // namespace Entropy::ECS::Components
+}  // namespace Entropy::Assets
 
-#endif  // ENTROPY_ECS_COMPONENT_TEXTURE_H
+#endif  // ENTROPY_ASSETS_IASSET_H

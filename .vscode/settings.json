@@ -15,7 +15,8 @@
             }
         }
     ],
-    "files.associations": {
-        "config.h.in": "plaintext"
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.configureSettings": {
+        "CMAKE_PROJECT_NAME": "EntropyEngine"
     }
 }

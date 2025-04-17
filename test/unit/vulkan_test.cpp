@@ -93,7 +93,7 @@
 
 using namespace Entropy::Vulkan;
 
-class Dut : public ::testing::Test {
+class VulkanTest : public ::testing::Test {
  protected:
   void SetUp() override {
     InitializeQuill();
@@ -121,76 +121,76 @@ class Dut : public ::testing::Test {
   }
 };
 
-TEST_F(Dut, CreateVulkanInstance) {
+TEST_F(VulkanTest, CreateVulkanInstance) {
   auto instance = ::Instances::VulkanInstance();
   ASSERT_TRUE(instance.Get() != nullptr);
 }
 
-TEST_F(Dut, CreatePhysicalDevice) {
+TEST_F(VulkanTest, CreatePhysicalDevice) {
   auto phy_device = ::Devices::PhysicalDevice();
   ASSERT_TRUE(phy_device.Get() != nullptr);
 }
 
-TEST_F(Dut, CreateLogicalDevice) {
+TEST_F(VulkanTest, CreateLogicalDevice) {
   auto log_device = ::Devices::LogicalDevice();
   ASSERT_TRUE(log_device.Get() != nullptr);
 }
 
-TEST_F(Dut, CreateAllocator) {
+TEST_F(VulkanTest, CreateAllocator) {
   auto allocator = ::Memory::Allocator();
   ASSERT_TRUE(allocator.Get() != nullptr);
 }
 
-TEST_F(Dut, CreateCommandPool) {
+TEST_F(VulkanTest, CreateCommandPool) {
   auto command_pool = ::CommandPools::CommandPool();
   ASSERT_TRUE(command_pool.Get() != nullptr);
 }
 
-TEST_F(Dut, CreateDescriptorPool) {
+TEST_F(VulkanTest, CreateDescriptorPool) {
   auto descriptor_pool = ::DescriptorPools::DescriptorPool();
   ASSERT_TRUE(descriptor_pool.Get() != nullptr);
 }
 
-TEST_F(Dut, CreatePipelineCache) {
+TEST_F(VulkanTest, CreatePipelineCache) {
   auto pipeline_cache = ::Caches::PipelineCache();
   ASSERT_TRUE(pipeline_cache.Get() != nullptr);
 }
 
-TEST_F(Dut, CreateIndexBuffer) {
+TEST_F(VulkanTest, CreateIndexBuffer) {
   //const std::vector<uint32_t> data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   auto index_buffer = IndexBuffer<uint32_t>(10);
   ASSERT_TRUE(index_buffer.GetVulkanBuffer() != nullptr);
 }
 
-TEST_F(Dut, CreateStagingBuffer) {
+TEST_F(VulkanTest, CreateStagingBuffer) {
   const uint8_t uint8_data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   auto staging_buffer = StagingBuffer(sizeof(uint8_data), uint8_data,
                                       VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
   ASSERT_TRUE(staging_buffer.GetVulkanBuffer() != nullptr);
 }
 
-TEST_F(Dut, CreateVertexBuffer) {
+TEST_F(VulkanTest, CreateVertexBuffer) {
   auto vertex_buffer =
       VertexBuffer<::Data::TwoDVertex>(4 * sizeof(::Data::TwoDVertex));
   ASSERT_TRUE(vertex_buffer.GetVulkanBuffer() != nullptr);
 }
 
-TEST_F(Dut, CreateStorageBuffer) {
+TEST_F(VulkanTest, CreateStorageBuffer) {
   auto storage_buffer = StorageBuffer(100);
   ASSERT_TRUE(storage_buffer.GetVulkanBuffer() != nullptr);
 }
 
-TEST_F(Dut, CreateUniformBuffer) {
+TEST_F(VulkanTest, CreateUniformBuffer) {
   auto uniform_buffer = UniformBuffer(100);
   ASSERT_TRUE(uniform_buffer.GetVulkanBuffer() != nullptr);
 }
 
-TEST_F(Dut, CreateCommandBuffer) {
+TEST_F(VulkanTest, CreateCommandBuffer) {
   auto command_buf = CommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   ASSERT_TRUE(command_buf.Get() != nullptr);
 }
 
-TEST_F(Dut, CreateImageSamplersDescriptorSet) {
+TEST_F(VulkanTest, CreateImageSamplersDescriptorSet) {
   VkDescriptorSetLayoutBinding instanceLayoutBinding = {};
   instanceLayoutBinding.binding = 0;
   instanceLayoutBinding.descriptorType =
@@ -208,46 +208,46 @@ TEST_F(Dut, CreateImageSamplersDescriptorSet) {
   ASSERT_TRUE(descriptor_set.Get() != nullptr);
 }
 
-TEST_F(Dut, CreateShader) {
+TEST_F(VulkanTest, CreateShader) {
   auto shader = Shaders::Shader("2dshader_vert.spv", "2dshader_frag.spv");
   ASSERT_TRUE(shader.GetVertShaderModule() != nullptr);
 }
 
-TEST_F(Dut, CreateBlankTexture) {
+TEST_F(VulkanTest, CreateBlankTexture) {
   auto texture = Textures::Texture(1, 1);
   ASSERT_TRUE(texture.GetImageView() != nullptr);
 }
 
-TEST_F(Dut, CreateDepthBufferTexture) {
+TEST_F(VulkanTest, CreateDepthBufferTexture) {
   auto depth_texture = Textures::DepthBufferTexture(640, 640);
   ASSERT_TRUE(depth_texture.GetImageView() != nullptr);
 }
 
-TEST_F(Dut, CreateSwapChainTexture) {
+TEST_F(VulkanTest, CreateSwapChainTexture) {
   auto swapchain_texture = Textures::SwapChainTexture(640, 640);
   ASSERT_TRUE(swapchain_texture.GetImageView() != nullptr);
 }
 
-TEST_F(Dut, CreateRenderPass) {
+TEST_F(VulkanTest, CreateRenderPass) {
   auto render_pass = RenderPasses::RenderPass();
   render_pass.RecreateDepthBuffer(640, 640);
   render_pass.CreateFrameBuffers(640, 640);
   ASSERT_TRUE(render_pass.Get() != nullptr);
 }
 
-TEST_F(Dut, CreateSynchronizer) {
+TEST_F(VulkanTest, CreateSynchronizer) {
   auto sync = Synchronization::Synchronizer(3);
   ASSERT_TRUE(sync.GetImageSemaphores().size() == 3);
 }
 
-TEST_F(Dut, CreateTwoDPipeline) {
+TEST_F(VulkanTest, CreateTwoDPipeline) {
   auto render_pass = std::make_shared<RenderPasses::RenderPass>();
   auto two_d_pipeline = Pipelines::TwoDPipeline(render_pass);
   ASSERT_TRUE(two_d_pipeline.GetPipeline() != nullptr);
 }
 
 /*
-TEST_F(Dut, CreateTextureAtlas) {
+TEST_F(VulkanTest, CreateTextureAtlas) {
   auto paths =
       std::vector<std::string>({"toppmurkla.png", "svavelmusseron.png"});
   auto atlas = Textures::TextureAtlas(paths);

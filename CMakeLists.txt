@@ -14,7 +14,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(ENTROPY_TESTS "Build Entropy Tests" ON)
 
 macro(fetch_dependencies platform)
-    if(${platform} STREQUAL "MACOS" OR ${platform} STREQUAL "LINUX" OR ${platform} STREQUAL "WINDOWS")
+    if("${platform}" STREQUAL "MACOS" OR "${platform}" STREQUAL "LINUX" OR "${platform}" STREQUAL "WINDOWS")
         # Find Vulkan
         find_package(Vulkan REQUIRED)
 
@@ -24,7 +24,7 @@ macro(fetch_dependencies platform)
             GIT_TAG master
         )
         set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-        set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
+        set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE) # sudo apt-get install libwayland-dev
         set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
         FetchContent_MakeAvailable(glfw3)
     endif()
@@ -86,7 +86,6 @@ if(IOS)
         "-framework coretext"
     )
 
-    # Include directories
     target_include_directories(${PROJECT_NAME} INTERFACE
         ${vma_SOURCE_DIR}/include
         ${quill_SOURCE_DIR}/include
