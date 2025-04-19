@@ -21,7 +21,10 @@
 #ifndef ENTROPY_VULKAN_TEXTURES_ATLAS_H
 #define ENTROPY_VULKAN_TEXTURES_ATLAS_H
 
+#include <ft2build.h>
 #include "texture.h"
+#include FT_FREETYPE_H
+#include "stb/stb_rect_pack.h"
 
 namespace Entropy::Vulkan::Textures {
 /**
@@ -53,6 +56,16 @@ namespace Entropy::Vulkan::Textures {
 class TextureAtlas final {
  public:
   TextureAtlas(std::vector<std::string>& paths);
+  TextureAtlas(std::vector<FT_Bitmap>& bitmaps);
+  /**
+   * @struct TextureRegion
+   * @brief Represents a rectangular region within a texture atlas.
+   *
+   * This structure defines the UV coordinates of a specific region in a texture atlas.
+   * The UV coordinates are normalized values ranging from 0.0 to 1.0, where:
+   * - uMin and vMin represent the top-left corner of the region.
+   * - uMax and vMax represent the bottom-right corner of the region.
+   */
   struct TextureRegion {
     float uMin{};
     float vMin{};
@@ -86,7 +99,10 @@ class TextureAtlas final {
 
  private:
   std::vector<std::string> paths_;
+  std::vector<uint8_t*> pixel_buffers_;
+  std::vector<stbrp_rect> rects_;
   std::vector<uint8_t> atlas_;
+  stbrp_context packer_;
   int width_, height_;
 };
 }  // namespace Entropy::Vulkan::Textures

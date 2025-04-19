@@ -246,12 +246,10 @@ TEST_F(VulkanTest, CreateTwoDPipeline) {
   ASSERT_TRUE(two_d_pipeline.GetPipeline() != nullptr);
 }
 
-/*
 TEST_F(VulkanTest, CreateTextureAtlas) {
   auto paths =
       std::vector<std::string>({"toppmurkla.png", "svavelmusseron.png"});
   auto atlas = Textures::TextureAtlas(paths);
   atlas.Create();
-  atlas.Save("atlas1");
+  atlas.Save("test_atlas");
 }
-  */

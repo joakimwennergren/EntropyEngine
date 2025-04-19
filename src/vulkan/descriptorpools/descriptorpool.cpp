@@ -7,7 +7,7 @@ using namespace Entropy::Vulkan::Devices;
 
 DescriptorPool::DescriptorPool() {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  logicalDevice_ = sl->getService<ILogicalDevice>();
+  logicalDevice_ = sl->GetService<ILogicalDevice>();
 
   std::array<VkDescriptorPoolSize, 2> poolSizes{};
 

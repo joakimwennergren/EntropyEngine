@@ -7,7 +7,7 @@ using namespace Entropy::Vulkan::Devices;
 Synchronizer::Synchronizer(uint32_t numObjects) {
   assert(numObjects != 0);
 
-  logicalDevice_ = ServiceLocator::GetInstance()->getService<ILogicalDevice>();
+  logicalDevice_ = ServiceLocator::GetInstance()->GetService<ILogicalDevice>();
   numObjects_ = numObjects;
 
   imageSemaphores_.resize(numObjects);

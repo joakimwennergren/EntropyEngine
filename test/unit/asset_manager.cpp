@@ -23,7 +23,7 @@ class AssetManagerTest : public ::testing::Test {
 
 TEST_F(AssetManagerTest, LoadTexture) {
   auto assetManager =
-      ServiceLocator::GetInstance()->getService<IAssetManager>();
+      ServiceLocator::GetInstance()->GetService<IAssetManager>();
 
   assetManager->RegisterLoader<TextureAsset>(
       [](const std::string& path) -> std::shared_ptr<TextureAsset> {

@@ -5,9 +5,9 @@ using namespace Entropy::Vulkan::Textures;
 
 BaseTexture::BaseTexture() {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  physicalDevice_ = sl->getService<Devices::IPhysicalDevice>();
-  logicalDevice_ = sl->getService<Devices::ILogicalDevice>();
-  allocator_ = sl->getService<Memory::IAllocator>();
+  physicalDevice_ = sl->GetService<Devices::IPhysicalDevice>();
+  logicalDevice_ = sl->GetService<Devices::ILogicalDevice>();
+  allocator_ = sl->GetService<Memory::IAllocator>();
 }
 
 BaseTexture::~BaseTexture() {
@@ -19,11 +19,12 @@ BaseTexture::~BaseTexture() {
 
 void BaseTexture::TransitionImageLayout(const VkImage image,
                                         const VkImageLayout oldLayout,
-                                        const VkImageLayout newLayout) {
+                                        const VkImageLayout newLayout,
+                                        uint32_t layerCount) {
   // Assert on parameters
   assert(image != VK_NULL_HANDLE);
-  commandBuffer_ =
-      std::make_unique<CommandBuffer>(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  //commandBuffer_ =
+  //    std::make_unique<CommandBuffer>(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   commandBuffer_->RecordOnce();
 
   // Create pipeline barrier
@@ -38,7 +39,7 @@ void BaseTexture::TransitionImageLayout(const VkImage image,
   barrier.subresourceRange.baseMipLevel = 0;
   barrier.subresourceRange.levelCount = 1;
   barrier.subresourceRange.baseArrayLayer = 0;
-  barrier.subresourceRange.layerCount = 1;
+  barrier.subresourceRange.layerCount = layerCount;
 
   VkPipelineStageFlags sourceStage = 0;
   VkPipelineStageFlags destinationStage = 0;
@@ -88,8 +89,8 @@ void BaseTexture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
   assert(height != 0);
 
   // Create a new command buffer and start one-time recording
-  commandBuffer_ =
-      std::make_unique<CommandBuffer>(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+  //commandBuffer_ =
+  //    std::make_unique<CommandBuffer>(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
   commandBuffer_->RecordOnce();
 
   // Make the actual copy

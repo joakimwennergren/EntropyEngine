@@ -10,7 +10,7 @@ using namespace Entropy::Vulkan::Shaders;
 using namespace Entropy::Vulkan::Devices;
 
 Shader::Shader(const std::string& vert, const std::string& frag) {
-  logicalDevice_ = ServiceLocator::GetInstance()->getService<ILogicalDevice>();
+  logicalDevice_ = ServiceLocator::GetInstance()->GetService<ILogicalDevice>();
   vertCode_ = ReadFile(vert);
   fragCode_ = ReadFile(frag);
   if (!vertCode_.empty() && !fragCode_.empty()) {

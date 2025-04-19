@@ -77,8 +77,8 @@ struct TwoDVertex {
 
     attributeDescriptions[5].binding = 1;
     attributeDescriptions[5].location = 5;
-    attributeDescriptions[5].format = VK_FORMAT_R32_SINT;
-    attributeDescriptions[5].offset = sizeof(int32_t) * 5;
+    attributeDescriptions[5].format = VK_FORMAT_R32_SFLOAT;
+    attributeDescriptions[5].offset = sizeof(float) * 5;
 
     attributeDescriptions[6].binding = 1;
     attributeDescriptions[6].location = 6;

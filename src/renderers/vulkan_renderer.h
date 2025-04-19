@@ -35,6 +35,7 @@
 #include "vulkan/renderpasses/renderpass.h"
 #include "vulkan/swapchains/iswapchain.h"
 #include "vulkan/synchronization/synchronizer.h"
+#include "vulkan/textures/texture.h"
 
 namespace Entropy::Renderers {
 class VulkanRenderer final : public ServiceBase<IRenderer> {
@@ -52,6 +53,9 @@ class VulkanRenderer final : public ServiceBase<IRenderer> {
   void End() override;
 
  private:
+  // @TODO TEMPORARY
+  std::unique_ptr<Vulkan::Textures::Texture> tex;
+
   uint32_t currentFrame_{};
   uint32_t imageIndex_{};
 

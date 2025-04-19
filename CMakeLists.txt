@@ -59,6 +59,13 @@ macro(fetch_dependencies platform)
     set(VMA_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
     set(VMA_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(vma)
+
+    # Freetype
+    FetchContent_Declare(freetype
+        GIT_REPOSITORY https://github.com/freetype/freetype.git
+        GIT_TAG master
+    )
+    FetchContent_MakeAvailable(freetype)
 endmacro()
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -101,7 +108,7 @@ if(IOS)
     )
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
-        Vulkan::MoltenVK flecs::flecs_static GPUOpen::VulkanMemoryAllocator glm::glm quill
+        Vulkan::MoltenVK flecs::flecs_static GPUOpen::VulkanMemoryAllocator glm::glm quill freetype
     )
     # MacOS
 elseif(APPLE AND NOT IOS)
@@ -109,7 +116,7 @@ elseif(APPLE AND NOT IOS)
     fetch_dependencies("MACOS")
     add_library(${PROJECT_NAME} SHARED ${SOURCES})
     target_link_libraries(${PROJECT_NAME} PRIVATE
-        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
+        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill freetype
     )
     # Linux
 elseif(UNIX AND NOT APPLE)
@@ -117,7 +124,7 @@ elseif(UNIX AND NOT APPLE)
     fetch_dependencies("LINUX")
     add_library(${PROJECT_NAME} SHARED ${SOURCES})
     target_link_libraries(${PROJECT_NAME} PRIVATE
-        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
+        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill freetype
     )
     # Windows
 elseif(WIN32)
@@ -125,7 +132,7 @@ elseif(WIN32)
     fetch_dependencies("WINDOWS")
     add_library(${PROJECT_NAME} SHARED ${SOURCES})
     target_link_libraries(${PROJECT_NAME} PRIVATE
-        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill
+        ${Vulkan_LIBRARIES} flecs::flecs_static GPUOpen::VulkanMemoryAllocator glfw glm::glm quill freetype
     )
     # Android
 elseif(ANDROID)
@@ -176,6 +183,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
     ${quill_SOURCE_DIR}/include
     ${glfw3_SOURCE_DIR}/include
     ${flecs_SOURCE_DIR}/include
+    ${freetype_SOURCE_DIR}/include
     ${glm_SOURCE_DIR}
 )
 
@@ -197,5 +205,4 @@ file(CREATE_LINK
     SYMBOLIC
 )
 
-# Build config file
 configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h @ONLY)

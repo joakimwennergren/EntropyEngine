@@ -1,15 +1,17 @@
 #version 460
-//layout(set = 0, binding = 2) uniform sampler2DArray textures;
-layout(set = 0, binding = 2) uniform sampler2D atlas;
+// layout(set = 0, binding = 2) uniform sampler2DArray textures;
+// layout(set = 0, binding = 2) uniform sampler2D atlas;
+layout(set = 0, binding = 2) uniform sampler2DArray textures;
 
-layout (location = 2) in vec2 inUV;
+layout (location = 2) in vec3 inUV;
 layout (location = 3) in vec4 inAtlasCoords;
 
 layout(location = 0) out vec4 outColor;
 
 void main()
 {
-    outColor = texture(atlas, mix(inAtlasCoords.xy, inAtlasCoords.zw, inUV)) * vec4(1.0, 1.0, 1.0, 1.0);
+    // outColor = texture(atlas, mix(inAtlasCoords.xy, inAtlasCoords.zw, inUV.xy)) * vec4(1.0, 1.0, 1.0, 1.0);
+    outColor = texture(textures, vec3(inUV.xy, 1)) * vec4(1.0, 1.0, 1.0, 1.0);
     /*
     switch (instanceBuffer.objects[PushConstants.instanceIndex].type) {
 

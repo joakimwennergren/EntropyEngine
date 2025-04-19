@@ -22,51 +22,54 @@
 #define ENTROPY_SERVICE_LOCATOR_H
 
 #include <map>
-#include <mutex>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <typeindex>
 
 class IService {
-public:
+ public:
   virtual ~IService() = default;
   [[nodiscard]] virtual std::type_index getTypeIndex() const = 0;
 };
 
-template <typename T> class ServiceBase : public T {
-public:
+template <typename T>
+class ServiceBase : public T {
+ public:
   [[nodiscard]] std::type_index getTypeIndex() const override {
     return std::type_index(typeid(T));
   }
 };
 
 class ServiceLocator {
-public:
+ public:
   std::map<std::type_index, std::shared_ptr<IService>> services;
   mutable std::mutex mutex;
 
-protected:
+ protected:
   ServiceLocator() {}
-  static ServiceLocator *_instance;
+  static ServiceLocator* _instance;
 
-public:
-  ServiceLocator(ServiceLocator &other) = delete;
-  void operator=(const ServiceLocator &) = delete;
-  static ServiceLocator *GetInstance();
+ public:
+  ServiceLocator(ServiceLocator& other) = delete;
+  void operator=(const ServiceLocator&) = delete;
+  static ServiceLocator* GetInstance();
 
-  template <typename T> void RegisterService(std::shared_ptr<T> service) {
+  template <typename T>
+  void RegisterService(std::shared_ptr<T> service) {
     static_assert(std::is_base_of_v<IService, T>,
                   "T must inherit from IService");
     std::lock_guard lock(mutex);
     const std::type_index typeIndex =
-        service->getTypeIndex(); // Use base class type index
+        service->getTypeIndex();  // Use base class type index
     if (services.find(typeIndex) != services.end()) {
       throw std::runtime_error("Service already registered");
     }
     services[typeIndex] = service;
   }
 
-  template <typename T> void UnregisterService() {
+  template <typename T>
+  void UnregisterService() {
     std::lock_guard lock(mutex);
     const auto typeIndex = std::type_index(typeid(T));
     if (services.find(typeIndex) == services.end()) {
@@ -75,7 +78,8 @@ public:
     services.erase(typeIndex);
   }
 
-  template <typename T> std::shared_ptr<T> getService() const {
+  template <typename T>
+  std::shared_ptr<T> GetService() const {
     std::lock_guard lock(mutex);
     const auto typeIndex = std::type_index(typeid(T));
     const auto it = services.find(typeIndex);
@@ -86,4 +90,4 @@ public:
   }
 };
 
-#endif // ENTROPY_SERVICE_LOCATOR_H
+#endif  // ENTROPY_SERVICE_LOCATOR_H

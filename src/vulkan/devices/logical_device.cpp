@@ -5,7 +5,7 @@ using namespace Entropy::Vulkan::Devices;
 
 LogicalDevice::LogicalDevice() {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto physicalDevice = sl->getService<IPhysicalDevice>();
+  const auto physicalDevice = sl->GetService<IPhysicalDevice>();
 
   uint32_t idx = 0;
   uint32_t queueFamilyPropertyCount;

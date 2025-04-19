@@ -18,7 +18,7 @@ using namespace Entropy::Assets;
 uint64_t Entity_Create() {
   LOG_INFO(logger_, "Creating entity");
   const flecs::entity entity = ServiceLocator::GetInstance()
-                                   ->getService<Entropy::ECS::IWorld>()
+                                   ->GetService<Entropy::ECS::IWorld>()
                                    ->Get()
                                    ->entity();
   // @TODO TEMP!! remove this
@@ -29,7 +29,7 @@ uint64_t Entity_Create() {
 
 void Entity_Destroy(const uint64_t entity_id) {
   auto entity =
-      ServiceLocator::GetInstance()->getService<IWorld>()->Get()->entity(
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
           entity_id);
   if (entity.is_valid()) {
     entity.destruct();
@@ -38,7 +38,7 @@ void Entity_Destroy(const uint64_t entity_id) {
 
 void Entity_AddPosition(const uint64_t entity_id, Position pos) {
   auto entity =
-      ServiceLocator::GetInstance()->getService<IWorld>()->Get()->entity(
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
           entity_id);
   if (entity.is_valid()) {
     (void)entity.set<Position>({pos});
@@ -47,7 +47,7 @@ void Entity_AddPosition(const uint64_t entity_id, Position pos) {
 
 void Entity_AddDimension(const uint64_t entity_id, Dimension dim) {
   auto entity =
-      ServiceLocator::GetInstance()->getService<IWorld>()->Get()->entity(
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
           entity_id);
   if (entity.is_valid()) {
     (void)entity.set<Dimension>({dim});
@@ -56,7 +56,7 @@ void Entity_AddDimension(const uint64_t entity_id, Dimension dim) {
 
 void Entity_AddRotation(const uint64_t entity_id, Rotation rot) {
   auto entity =
-      ServiceLocator::GetInstance()->getService<IWorld>()->Get()->entity(
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
           entity_id);
   if (entity.is_valid()) {
     (void)entity.set<Rotation>({rot});
@@ -85,7 +85,7 @@ IAssetManager::AssetHandle TextureAtlas_Create(MonoArray* paths) {
         mono_free(utf8);
     }
     const ServiceLocator* sl = ServiceLocator::GetInstance();
-    const auto asset_handles = sl->getService<IAssetManager>()->Load(stringPaths, IAssetManager::kLoadTextureAtlasSync);
+    const auto asset_handles = sl->GetService<IAssetManager>()->Load(stringPaths, IAssetManager::kLoadTextureAtlasSync);
     return asset_handles[0];
 }
 

@@ -34,7 +34,7 @@ struct InstanceDataTwoD {
   glm::vec2 pos;
   glm::vec2 dim;
   float rot;
-  int32_t textureIndex;
+  float textureIndex;
   glm::vec4 atlasCoords;
 };
 

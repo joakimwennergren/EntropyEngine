@@ -17,12 +17,12 @@ using namespace Entropy::Renderers;
 VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height)
     : frame_(nullptr) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  world_ = sl->getService<ECS::IWorld>();
-  allocator_ = sl->getService<IAllocator>();
-  logicalDevice_ = sl->getService<ILogicalDevice>();
-  swapChain_ = sl->getService<ISwapChain>();
-  cameraManager_ = sl->getService<ICameraManager>();
-  assetManager_ = sl->getService<IAssetManager>();
+  world_ = sl->GetService<ECS::IWorld>();
+  allocator_ = sl->GetService<IAllocator>();
+  logicalDevice_ = sl->GetService<ILogicalDevice>();
+  swapChain_ = sl->GetService<ISwapChain>();
+  cameraManager_ = sl->GetService<ICameraManager>();
+  assetManager_ = sl->GetService<IAssetManager>();
 
   renderPass_ = std::make_shared<RenderPass>();
   renderPass_->RecreateDepthBuffer(width, height);
@@ -65,6 +65,10 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height)
 
   vkUpdateDescriptorSets(logicalDevice_->Get(), descriptorWrites.size(),
                          descriptorWrites.data(), 0, nullptr);
+
+  std::vector<std::string> textureNames = {"toppmurkla.png", "tegelsopp.png"};
+  tex = std::unique_ptr<Vulkan::Textures::Texture>(
+      new Vulkan::Textures::Texture(textureNames, 512, 512));
 }
 
 VulkanRenderer::~VulkanRenderer() {
@@ -95,6 +99,22 @@ void VulkanRenderer::End() {
 }
 
 void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
+
+  VkWriteDescriptorSet descriptorWrite{};
+  VkDescriptorImageInfo imageInfo;
+  imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  imageInfo.imageView = tex->GetImageView()->Get();
+  imageInfo.sampler = tex->GetSampler();
+  descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  descriptorWrite.dstSet = two_d_pipeline_->descriptorSet;
+  descriptorWrite.dstBinding = 2;
+  descriptorWrite.dstArrayElement = 0;
+  descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  descriptorWrite.descriptorCount = 1;
+  descriptorWrite.pImageInfo = &imageInfo;
+  vkUpdateDescriptorSets(logicalDevice_->Get(), 1, &descriptorWrite, 0,
+                         nullptr);
+
   const auto currentFence = synchronizer_->GetFences()[currentFrame_];
   VK_CHECK(vkWaitForFences(logicalDevice_->Get(), 1, &currentFence, VK_TRUE,
                            UINT64_MAX));

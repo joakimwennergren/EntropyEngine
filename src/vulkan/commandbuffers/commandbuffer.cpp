@@ -7,8 +7,8 @@ using namespace Entropy::Vulkan::Devices;
 
 CommandBuffer::CommandBuffer(const VkCommandBufferLevel level) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  logicalDevice_ = sl->getService<ILogicalDevice>();
-  commandPool_ = sl->getService<ICommandPool>();
+  logicalDevice_ = sl->GetService<ILogicalDevice>();
+  commandPool_ = sl->GetService<ICommandPool>();
 
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
