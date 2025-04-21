@@ -14,8 +14,8 @@ void BaseBuffer::CreateBuffer(const VkDeviceSize size,
                               const VkBufferUsageFlags usage,
                               const VmaAllocationCreateFlags flags) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  allocator_ = sl->getService<Memory::IAllocator>();
-  logicalDevice_ = sl->getService<Devices::ILogicalDevice>();
+  allocator_ = sl->GetService<Memory::IAllocator>();
+  logicalDevice_ = sl->GetService<Devices::ILogicalDevice>();
 
   assert(size != 0);
   assert(usage != 0);

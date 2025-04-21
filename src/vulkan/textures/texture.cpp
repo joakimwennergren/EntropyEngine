@@ -1,12 +1,13 @@
 #include "texture.h"
 #include <vulkan/vulkan.h>
+#include <algorithm>
 #include <iostream>
 #include "config.h"
+#include "filesystem/filesystem.h"
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 #include "vulkan/buffers/staging_buffer.h"
 #include "vulkan/utilities/helpers.h"
-#include "filesystem/filesystem.h"
 
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb/stb_image_resize2.h"
@@ -30,15 +31,20 @@ void write_callback(void* context, void* data, int size) {
 }
 
 Texture::Texture(const int32_t width, const int32_t height) {
-  // Define the pixel data for the 1x1 transparent image (RGBA)
-  constexpr uint8_t image_data[4] = {255, 255, 255, 0};
+  std::vector<uint8_t> image_data(width * height * 4, 0);
+  for (int i = 0; i < width * height; ++i) {
+    image_data[i * 4 + 0] = 255;  // R
+    image_data[i * 4 + 1] = 255;  // G
+    image_data[i * 4 + 2] = 255;  // B
+    image_data[i * 4 + 3] = 255;  // A (opaque)
+  }
 
   // Allocate a stbi_uc* buffer to hold the PNG data (initially empty)
   stbi_uc* pixels = nullptr;
 
   // Create the PNG in memory (1x1 image, 3 channels, RGB color)
-  stbi_write_png_to_func(write_callback, &pixels, width, height, 4, image_data,
-                         0);
+  stbi_write_png_to_func(write_callback, &pixels, width, height, 4,
+                         image_data.data(), 0);
 
   const VkDeviceSize imageSize = width * height * 4;
   assert(pixels != nullptr);
@@ -48,7 +54,6 @@ Texture::Texture(const int32_t width, const int32_t height) {
 
   // Create a buffer and free pixels
   free(pixels);
-
   Create(width, height);
 }
 
@@ -84,7 +89,6 @@ Texture::Texture(const std::string& path) {
 
   // Create a buffer and free pixels
   stbi_image_free(pixels);
-
   Create(texWidth, texHeight);
 }
 
@@ -127,21 +131,154 @@ void Texture::Create(const int width, const int height) {
   // @TODO why is this not the same as in getColorFormat?
   constexpr VkFormat colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 
+  // Create a new command buffer and start one-time recording
+  commandBuffer_ =
+      std::make_unique<CommandBuffer>(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+
   CreateImage(width, height, colorFormat, VK_IMAGE_TILING_OPTIMAL,
               VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
               textureImage_);
 
   TransitionImageLayout(textureImage_, VK_IMAGE_LAYOUT_UNDEFINED,
-                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
 
   CopyBufferToImage(stagingBuffer_->GetVulkanBuffer(), textureImage_,
                     static_cast<uint32_t>(width),
                     static_cast<uint32_t>(height));
 
   TransitionImageLayout(textureImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
 
   imageView_ = std::make_shared<ImageView>(textureImage_, colorFormat);
+
+  CreateTextureSampler();
+}
+
+Texture::Texture(std::vector<std::string>& paths, uint32_t targetWidth,
+                 uint32_t targetHeight) {
+
+  stbi_set_flip_vertically_on_load(true);
+  std::vector<std::vector<uint8_t>> pixel_buffers;
+  std::vector<VkBufferImageCopy> bufferCopyRegions;
+
+  for (uint32_t i = 0; i < paths.size(); ++i) {
+
+    auto it = std::find(loaded_paths_.begin(), loaded_paths_.end(), paths[i]);
+    if (it != loaded_paths_.end()) {
+      LOG_WARNING(logger_, "Texture already loaded: {}", paths[i]);
+      continue;
+    }
+
+    int texWidth, texHeight, texChannels;
+    uint8_t* loaded =
+        stbi_load(paths[i].c_str(), &texWidth, &texHeight, &texChannels, 4);
+    if (!loaded) {
+      // handle error
+      continue;
+    }
+
+    std::vector<uint8_t> buffer(targetWidth * targetHeight * 4);  // RGBA
+
+    bool success =
+        stbir_resize_uint8_linear(loaded, texWidth, texHeight, 0, buffer.data(),
+                                  targetWidth, targetHeight, 0, STBIR_RGBA);
+    loaded_paths_.push_back(paths[i]);
+    stbi_image_free(loaded);
+
+    if (!success) {
+      // handle resize failure
+      continue;
+    }
+
+    pixel_buffers.push_back(buffer);
+  }
+
+  std::vector<uint8_t> flat_pixels;
+  flat_pixels.reserve(pixel_buffers.size() * targetWidth * targetHeight * 4);
+
+  for (const auto& buffer : pixel_buffers) {
+    flat_pixels.insert(flat_pixels.end(), buffer.begin(), buffer.end());
+  }
+
+  // ✅ Use the flattened data here:
+  stagingBuffer_ = std::make_unique<StagingBuffer>(
+      flat_pixels.size(), flat_pixels.data(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+
+  // @TODO why is this not the same as in getColorFormat?
+  constexpr VkFormat colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+
+  VmaAllocationCreateInfo allocCreateInfo = {};
+  allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
+  allocCreateInfo.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+
+  VkImageCreateInfo imageInfo{};
+  imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+  imageInfo.imageType = VK_IMAGE_TYPE_2D;
+  imageInfo.extent.width = targetWidth;
+  imageInfo.extent.height = targetHeight;
+  imageInfo.extent.depth = 1;
+  imageInfo.mipLevels = 1;
+  imageInfo.arrayLayers = pixel_buffers.size();
+  imageInfo.format = colorFormat;
+  imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+  imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  imageInfo.usage =
+      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+  imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+  imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+  // Create the image
+  VK_CHECK(vmaCreateImage(allocator_->Get(), &imageInfo, &allocCreateInfo,
+                          &textureImage_, &allocation_, nullptr));
+
+  // Create a new command buffer and start one-time recording
+  commandBuffer_ =
+      std::make_unique<CommandBuffer>(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+
+  TransitionImageLayout(textureImage_, VK_IMAGE_LAYOUT_UNDEFINED,
+                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                        pixel_buffers.size());
+
+  for (uint32_t i = 0; i < pixel_buffers.size(); ++i) {
+    VkDeviceSize layerSize = targetWidth * targetHeight * 4;
+    VkBufferImageCopy region{};
+    region.bufferOffset = i * layerSize;
+    region.bufferImageHeight = 0;
+    region.bufferRowLength = 0;
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = i;
+    region.imageSubresource.layerCount = 1;
+    region.imageOffset = {0, 0, 0};
+    region.imageExtent = {targetWidth, targetHeight, 1};
+    bufferCopyRegions.push_back(region);
+  }
+
+  commandBuffer_->RecordOnce();
+  vkCmdCopyBufferToImage(commandBuffer_->Get(),
+                         stagingBuffer_->GetVulkanBuffer(), textureImage_,
+                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                         bufferCopyRegions.size(), bufferCopyRegions.data());
+
+  commandBuffer_->EndRecordingOnce();
+  const auto cmdBuf = commandBuffer_->Get();
+  VkSubmitInfo submitInfo{};
+  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &cmdBuf;
+  VK_CHECK(vkQueueSubmit(logicalDevice_->GetGraphicQueue(), 1, &submitInfo,
+                         nullptr));
+
+  // @todo remove this wait
+  VK_CHECK(vkDeviceWaitIdle(logicalDevice_->Get()));
+
+  TransitionImageLayout(textureImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                        pixel_buffers.size());
+
+  imageView_ = std::make_shared<ImageView>(
+      textureImage_, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT,
+      VK_IMAGE_VIEW_TYPE_2D_ARRAY, pixel_buffers.size());
 
   CreateTextureSampler();
 }

@@ -21,14 +21,12 @@
 #ifndef ENTROPY_ECS_COMPONENT_DIMENSION_H
 #define ENTROPY_ECS_COMPONENT_DIMENSION_H
 
-#include <glm/glm.hpp>
-
 namespace Entropy::ECS::Components {
-  struct Dimension {
-    float x{};
-    float y{};
-    float z{};
-  };
-}
+struct Dimension {
+  float x{};
+  float y{};
+  float z{};
+};
+}  // namespace Entropy::ECS::Components
 
-#endif // ENTROPY_ECS_COMPONENT_DIMENSION_H
+#endif  // ENTROPY_ECS_COMPONENT_DIMENSION_H

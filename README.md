@@ -37,7 +37,9 @@ cd EntropyEngine
 ```
 #### Generate Build Files
 ```console
-cmake -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug
+mkdir build
+cd build
+cmake .. 
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

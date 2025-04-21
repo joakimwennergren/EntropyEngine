@@ -11,7 +11,7 @@ using namespace Entropy::Vulkan::Instances;
 #if ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
 Surface::Surface(GLFWwindow* window) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  instance_ = sl->getService<IVulkanInstance>();
+  instance_ = sl->GetService<IVulkanInstance>();
   VK_CHECK(
       glfwCreateWindowSurface(instance_->Get(), window, nullptr, &surface_));
 }
@@ -20,7 +20,7 @@ Surface::Surface(GLFWwindow* window) {
 Surface::Surface(CAMetalLayer* layer) {
 
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  instance_ = sl->getService<IVulkanInstance>();
+  instance_ = sl->GetService<IVulkanInstance>();
 
   VkMetalSurfaceCreateInfoEXT createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
@@ -35,7 +35,7 @@ Surface::Surface(CAMetalLayer* layer) {
 #else
 Surface::Surface(VkSurfaceKHR surface) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  instance_ = sl->getService<IVulkanInstance>();
+  instance_ = sl->GetService<IVulkanInstance>();
   surface_ = surface;
 }
 #endif
@@ -46,7 +46,7 @@ Surface::Surface(GLFWwindow *window) {
 
 
   const ServiceLocator *sl = ServiceLocator::GetInstance();
-  instance_ = sl->getService<IVulkanInstance>();
+  instance_ = sl->GetService<IVulkanInstance>();
 
 
   VkWin32SurfaceCreateInfoKHR createInfo{};

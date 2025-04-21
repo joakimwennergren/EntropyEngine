@@ -1,15 +1,24 @@
 #version 460
-//layout(set = 0, binding = 2) uniform sampler2DArray textures;
-layout(set = 0, binding = 2) uniform sampler2D atlas;
 
-layout (location = 2) in vec2 inUV;
+layout(set = 0, binding = 2) uniform sampler2DArray textures;
+
+// Instanced attributes
+layout (location = 2) in vec3 inUV;
 layout (location = 3) in vec4 inAtlasCoords;
+layout (location = 4) in vec4 inColor;
 
 layout(location = 0) out vec4 outColor;
 
 void main()
 {
-    outColor = texture(atlas, mix(inAtlasCoords.xy, inAtlasCoords.zw, inUV)) * vec4(1.0, 1.0, 1.0, 1.0);
+    // outColor = texture(atlas, mix(inAtlasCoords.xy, inAtlasCoords.zw, inUV.xy)) * vec4(1.0, 1.0, 1.0, 1.0);
+
+    if(inUV.z == -1.0f){
+        outColor = inColor;
+    } else {
+        outColor = texture(textures, inUV) * inColor; 
+    }
+
     /*
     switch (instanceBuffer.objects[PushConstants.instanceIndex].type) {
 

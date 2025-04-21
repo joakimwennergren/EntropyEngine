@@ -1,4 +1,5 @@
 #include "entropyengine.h"
+#include <chrono>
 
 // Cameras
 #include "cameras/camera_manager.h"
@@ -70,26 +71,25 @@ EntropyEngine::EntropyEngine(void* layer, uint32_t width, uint32_t height) {
   InitializeQuill();
   RegisterServices();
   const auto sl = ServiceLocator::GetInstance();
-  sl->getService<ISwapChain>()->Build(
+  sl->GetService<ISwapChain>()->Build(
       std::make_shared<Surface>((CAMetalLayer*)layer),
       VkExtent2D{width, height}, nullptr);
-  const auto camera_manager = sl->getService<ICameraManager>();
+  const auto camera_manager = sl->GetService<ICameraManager>();
   camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
   sl->RegisterService<IRenderer>(
       std::make_shared<VulkanRenderer>(width, height));
-  renderer = sl->getService<IRenderer>();
+  renderer = sl->GetService<IRenderer>();
 }
 void EntropyEngine::Run() const {}
 #elif ENTROPY_PLATFORM == MACOS || ENTROPY_PLATFORM == LINUX
 void EntropyEngine::OnFramebufferResize(GLFWwindow* window, const int width,
                                         const int height) {
   const auto sl = ServiceLocator::GetInstance();
-  const auto renderer = sl->getService<IRenderer>();
-  const auto world = sl->getService<IWorld>();
+  const auto renderer = sl->GetService<IRenderer>();
+  const auto world = sl->GetService<IWorld>();
   renderer->Resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
   (void)world->Get()->progress();
   renderer->Render(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
-  renderer->End();
 }
 EntropyEngine::EntropyEngine(const uint32_t width, const uint32_t height) {
   if (!glfwInit()) {
@@ -110,29 +110,37 @@ EntropyEngine::EntropyEngine(const uint32_t width, const uint32_t height) {
   InitializeQuill();
   RegisterServices();
   const auto sl = ServiceLocator::GetInstance();
-  sl->getService<ISwapChain>()->Build(
+  sl->GetService<ISwapChain>()->Build(
       std::make_shared<Surface>(window_),
       VkExtent2D{static_cast<uint32_t>(width * xscale),
                  static_cast<uint32_t>(height * yscale)},
       nullptr);
-  const auto camera_manager = sl->getService<ICameraManager>();
+  const auto camera_manager = sl->GetService<ICameraManager>();
   camera_manager->SetCurrentCamera(std::make_shared<OrthographicCamera>());
   sl->RegisterService<IRenderer>(
       std::make_shared<VulkanRenderer>(static_cast<uint32_t>(width * xscale),
                                        static_cast<uint32_t>(height * yscale)));
+  sl->RegisterService(std::make_shared<World>());
 }
-void EntropyEngine::Run() const {
+void EntropyEngine::Run(
+    std::function<void(float, int32_t, int32_t)> onUpdateCb) {
+  using clock = std::chrono::high_resolution_clock;
   const auto sl = ServiceLocator::GetInstance();
-  const auto renderer = sl->getService<IRenderer>();
-  const auto world = sl->getService<IWorld>();
+  const auto renderer = sl->GetService<IRenderer>();
+  const auto world = sl->GetService<IWorld>();
+  auto lastTime = clock::now();
   while (!glfwWindowShouldClose(window_)) {
+    auto currentTime = clock::now();
+    std::chrono::duration<float> delta = currentTime - lastTime;
+    lastTime = currentTime;
+    float deltaTime = delta.count();
     int width, height;
     glfwGetFramebufferSize(window_, &width, &height);
     // @TODO handle bool return
     (void)world->Get()->progress();
     renderer->Render(static_cast<uint32_t>(width),
                      static_cast<uint32_t>(height));
-    renderer->End();
+    onUpdateCb(deltaTime, width, height);
     glfwPollEvents();
   }
 }
@@ -155,7 +163,6 @@ void EntropyEngine::RegisterServices() {
   sl->RegisterService(std::make_shared<DescriptorPool>());
   sl->RegisterService(std::make_shared<PipelineCache>());
   sl->RegisterService(std::make_shared<SwapChain>());
-  sl->RegisterService(std::make_shared<World>());
   sl->RegisterService(std::make_shared<AssetManager>());
   sl->RegisterService(std::make_shared<CameraManager>());
 }
@@ -163,9 +170,9 @@ void EntropyEngine::RegisterServices() {
 void EntropyEngine::UnRegisterServices() {
   ServiceLocator* sl = ServiceLocator::GetInstance();
   sl->UnregisterService<IRenderer>();
+  sl->UnregisterService<IWorld>();
   sl->UnregisterService<ICameraManager>();
   sl->UnregisterService<IAssetManager>();
-  sl->UnregisterService<IWorld>();
   sl->UnregisterService<ISwapChain>();
   sl->UnregisterService<IPipelineCache>();
   sl->UnregisterService<IDescriptorPool>();

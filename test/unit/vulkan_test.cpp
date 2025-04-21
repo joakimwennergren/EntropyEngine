@@ -15,7 +15,6 @@
 #include "assets/iasset_manager.h"
 
 // ECS
-#include "ecs/components/2d_quad.h"
 #include "ecs/components/dimension.h"
 #include "ecs/components/position.h"
 #include "ecs/iworld.h"
@@ -246,12 +245,10 @@ TEST_F(VulkanTest, CreateTwoDPipeline) {
   ASSERT_TRUE(two_d_pipeline.GetPipeline() != nullptr);
 }
 
-/*
 TEST_F(VulkanTest, CreateTextureAtlas) {
   auto paths =
       std::vector<std::string>({"toppmurkla.png", "svavelmusseron.png"});
   auto atlas = Textures::TextureAtlas(paths);
   atlas.Create();
-  atlas.Save("atlas1");
+  atlas.Save("test_atlas");
 }
-  */

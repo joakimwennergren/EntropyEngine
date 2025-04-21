@@ -22,9 +22,7 @@
 #define ENTROPY_ECS_TAGS_TWOD_H
 
 namespace Entropy::ECS::Tags {
-  struct D2 {
-    uint32_t index = 0;
-  };
-}
+struct D2 {};
+}  // namespace Entropy::ECS::Tags
 
-#endif // ENTROPY_ECS_TAGS_TWOD_H
+#endif  // ENTROPY_ECS_TAGS_TWOD_H

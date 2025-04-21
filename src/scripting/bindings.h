@@ -23,9 +23,11 @@
 
 #include <flecs.h>
 #include "assets/iasset_manager.h"
+#include "ecs/components/color.h"
 #include "ecs/components/dimension.h"
 #include "ecs/components/position.h"
 #include "ecs/components/rotation.h"
+#include "ecs/components/texture.h"
 
 extern "C" {
 // Entity creation & destruction
@@ -39,6 +41,10 @@ void Entity_AddDimension(const uint64_t entity_id,
                          Entropy::ECS::Components::Dimension dim);
 void Entity_AddRotation(const uint64_t entity_id,
                         Entropy::ECS::Components::Rotation rot);
+void Entity_AddColor(const uint64_t entity_id,
+                     Entropy::ECS::Components::Color col);
+void Entity_AddTexture(const uint64_t entity_id,
+                       Entropy::ECS::Components::TextureComponent* tex);
 //void Entity_AddAsset(const uint64_t entity_id,
 //                     Entropy::Assets::IAssetManager::AssetHandle asset_handle);
 
@@ -52,13 +58,13 @@ extern "C" void Texture_Create(MonoString* path) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
   std::vector<std::string> paths;
   paths.emplace_back(mono_string_to_utf8(path));
-  const auto handle = sl->getService<IAssetManager>()->Load(paths, IAssetManager::kLoadTextureSync);
+  const auto handle = sl->GetService<IAssetManager>()->Load(paths, IAssetManager::kLoadTextureSync);
 }
 
 extern "C" void Texture_Destroy(const int32_t textureId) {
   // Your texture destruction logic
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  //sl->getService<IAssetManager>()->Unload<Texture>(textureId);
+  //sl->GetService<IAssetManager>()->Unload<Texture>(textureId);
 }
 */
 
@@ -90,7 +96,7 @@ extern "C" void Entity_AddTexture(const flecs::entity* entity,
     const ServiceLocator* sl = ServiceLocator::GetInstance();
     std::vector<std::string> paths;
     paths.emplace_back(mono_string_to_utf8(path));
-    const auto asset_handles = sl->getService<IAssetManager>()->Load(
+    const auto asset_handles = sl->GetService<IAssetManager>()->Load(
         paths, IAssetManager::kLoadTextureAtlasSync);
     entity->set<Components::Asset>({asset_handles});
     const auto num_textures =
@@ -128,7 +134,7 @@ AssetHandleC TextureAtlas_Create(MonoArray* paths) {
   }
 
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto asset_handles_vec = sl->getService<Entropy::Assets::IAssetManager>()->Load(
+  const auto asset_handles_vec = sl->GetService<Entropy::Assets::IAssetManager>()->Load(
       stringPaths, Entropy::Assets::IAssetManager::kLoadTextureAtlasSync);
   // Allocate memory on heap
   return AssetHandleC{asset_handles_vec[0].asset, asset_handles_vec[0].index,

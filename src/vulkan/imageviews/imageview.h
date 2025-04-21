@@ -29,7 +29,9 @@ namespace Entropy::Vulkan::ImageViews {
 class ImageView {
  public:
   ImageView(VkImage image, VkFormat format,
-            uint32_t flags = VK_IMAGE_ASPECT_COLOR_BIT);
+            uint32_t flags = VK_IMAGE_ASPECT_COLOR_BIT,
+            VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D,
+            uint32_t layerCount = 1);
   ~ImageView();
   [[nodiscard]] VkImageView Get() const { return imageView_; }
 

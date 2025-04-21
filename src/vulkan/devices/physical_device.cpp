@@ -8,7 +8,7 @@ using namespace Entropy::Vulkan::Instances;
 
 PhysicalDevice::PhysicalDevice() {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto vulkanInstance = sl->getService<IVulkanInstance>();
+  const auto vulkanInstance = sl->GetService<IVulkanInstance>();
 
   uint32_t deviceCount;
   std::vector<VkPhysicalDevice> physicalDevices;

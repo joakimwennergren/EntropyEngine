@@ -37,7 +37,7 @@ namespace Entropy::EntryPoints {
  */
 class EntropyEngine {
  public:
-  void Run() const;
+  void Run(std::function<void(float, int32_t, int32_t)> onUpdateCb);
   ~EntropyEngine();
 #if ENTROPY_PLATFORM == IOS
   EntropyEngine(void* layer, uint32_t width, uint32_t height);

@@ -22,8 +22,11 @@
 #define ENTROPY_ECS_WORLD_H
 
 #include <flecs.h>
+#include "assets/iasset_manager.h"
+#include "assets/texture_asset.h"
 #include "iworld.h"
-#include "vulkan/data/frame.h"
+#include "renderers/irenderer.h"
+#include "vulkan/data/entity.h"
 #include "vulkan/data/vertex.h"
 
 namespace Entropy::ECS {
@@ -33,10 +36,9 @@ class World final : public ServiceBase<IWorld> {
   std::shared_ptr<flecs::world> Get() override { return gameWorld_; }
 
  private:
-  Vulkan::Data::FrameData<Vulkan::Data::TwoDVertex, uint16_t,
-                          Vulkan::Data::InstanceDataTwoD>
-      frame_;
-  ServiceLocator* sl_ = nullptr;
+  std::shared_ptr<Renderers::IRenderer> renderer_;
+  std::shared_ptr<Vulkan::Devices::ILogicalDevice> logicalDevice_;
+  std::shared_ptr<Assets::IAssetManager> assetManager_;
   std::shared_ptr<flecs::world> gameWorld_;
 };
 }  // namespace Entropy::ECS

@@ -14,15 +14,12 @@ using namespace Entropy::Cameras;
 using namespace Entropy::Assets;
 using namespace Entropy::Renderers;
 
-VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height)
-    : frame_(nullptr) {
+VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  world_ = sl->getService<ECS::IWorld>();
-  allocator_ = sl->getService<IAllocator>();
-  logicalDevice_ = sl->getService<ILogicalDevice>();
-  swapChain_ = sl->getService<ISwapChain>();
-  cameraManager_ = sl->getService<ICameraManager>();
-  assetManager_ = sl->getService<IAssetManager>();
+  allocator_ = sl->GetService<IAllocator>();
+  logicalDevice_ = sl->GetService<ILogicalDevice>();
+  swapChain_ = sl->GetService<ISwapChain>();
+  cameraManager_ = sl->GetService<ICameraManager>();
 
   renderPass_ = std::make_shared<RenderPass>();
   renderPass_->RecreateDepthBuffer(width, height);
@@ -43,17 +40,23 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height)
 
   instanceDataBuffer_ = std::make_unique<VertexBuffer<InstanceDataTwoD>>(
       MAX_INSTANCE_COUNT * sizeof(InstanceDataTwoD));
+
   indexDataBuffer_ =
       std::make_unique<IndexBuffer<uint16_t>>(MAX_INSTANCE_COUNT);
 
-  frame_ = new FrameData<TwoDVertex, uint16_t, InstanceDataTwoD>();
+  blankTexture_ = std::make_unique<Vulkan::Textures::Texture>(1, 1);
 
-  std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
+  std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
   VkDescriptorBufferInfo uboInfo{};
   uboInfo.buffer = UBO_->GetVulkanBuffer();
   uboInfo.offset = 0;
   uboInfo.range = sizeof(UBOData);
+
+  VkDescriptorImageInfo imageInfo;
+  imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  imageInfo.imageView = blankTexture_->GetImageView()->Get();
+  imageInfo.sampler = blankTexture_->GetSampler();
 
   descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
   descriptorWrites[0].dstSet = two_d_pipeline_->descriptorSet;
@@ -63,12 +66,17 @@ VulkanRenderer::VulkanRenderer(const uint32_t width, const uint32_t height)
   descriptorWrites[0].descriptorCount = 1;
   descriptorWrites[0].pBufferInfo = &uboInfo;
 
+  descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  descriptorWrites[1].dstSet = two_d_pipeline_->descriptorSet;
+  descriptorWrites[1].dstBinding = 2;
+  descriptorWrites[1].dstArrayElement = 0;
+  descriptorWrites[1].descriptorType =
+      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  descriptorWrites[1].descriptorCount = 1;
+  descriptorWrites[1].pImageInfo = &imageInfo;
+
   vkUpdateDescriptorSets(logicalDevice_->Get(), descriptorWrites.size(),
                          descriptorWrites.data(), 0, nullptr);
-}
-
-VulkanRenderer::~VulkanRenderer() {
-  //delete frame_;
 }
 
 void VulkanRenderer::Resize(const uint32_t width, const uint32_t height) {
@@ -78,23 +86,8 @@ void VulkanRenderer::Resize(const uint32_t width, const uint32_t height) {
   renderPass_->RecreateFrameBuffers(width, height);
 }
 
-uint32_t VulkanRenderer::Frame(
-    FrameData<TwoDVertex, uint16_t, InstanceDataTwoD>* frame) {
-  frame_ = frame;
-  return frame_->data.size();
-}
-
-FrameData<TwoDVertex, uint16_t, InstanceDataTwoD>* VulkanRenderer::GetFrame() {
-  return frame_;
-}
-
-void VulkanRenderer::End() {
-  frame_->indices.clear();
-  frame_->vertices.clear();
-  frame_->data.clear();
-}
-
 void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
+
   const auto currentFence = synchronizer_->GetFences()[currentFrame_];
   VK_CHECK(vkWaitForFences(logicalDevice_->Get(), 1, &currentFence, VK_TRUE,
                            UINT64_MAX));
@@ -141,9 +134,9 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
       commandBuffers_[currentFrame_]->Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
       two_d_pipeline_->GetPipelineLayout(), 0, 1, &ds0, 0, nullptr);
 
-  vertexDataBuffer_->Update(frame_->vertices);
-  indexDataBuffer_->Update(frame_->indices);
-  instanceDataBuffer_->Update(frame_->data);
+  vertexDataBuffer_->Update(entityData.vertices);
+  indexDataBuffer_->Update(entityData.indices);
+  instanceDataBuffer_->Update(entityData.data);
 
   const auto vertexBuffer = vertexDataBuffer_->GetVulkanBuffer();
   const auto instanceBuffer = instanceDataBuffer_->GetVulkanBuffer();
@@ -157,7 +150,7 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
                        VK_INDEX_TYPE_UINT16);
 
   vkCmdDrawIndexed(commandBuffers_[currentFrame_]->Get(),
-                   frame_->indices.size(), frame_->data.size(), 0, 0, 0);
+                   entityData.indices.size(), entityData.data.size(), 0, 0, 0);
 
   RenderPass::End(commandBuffers_[currentFrame_]);
   commandBuffers_[currentFrame_]->EndRecording();

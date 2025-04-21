@@ -14,8 +14,8 @@ using namespace Entropy::Vulkan::Devices;
 
 SwapChain::SwapChain() {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  physicalDevice_ = sl->getService<IPhysicalDevice>();
-  logicalDevice_ = sl->getService<ILogicalDevice>();
+  physicalDevice_ = sl->GetService<IPhysicalDevice>();
+  logicalDevice_ = sl->GetService<ILogicalDevice>();
 }
 
 SwapChain::~SwapChain() {

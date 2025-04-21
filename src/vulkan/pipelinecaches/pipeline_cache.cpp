@@ -6,7 +6,7 @@ using namespace Entropy::Vulkan::Devices;
 
 PipelineCache::PipelineCache() {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  logicalDevice_ = sl->getService<ILogicalDevice>();
+  logicalDevice_ = sl->GetService<ILogicalDevice>();
 
   VkPipelineCacheCreateInfo pipelineCacheCreateInfo{};
   pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;

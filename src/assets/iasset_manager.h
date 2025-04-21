@@ -45,10 +45,10 @@ class IAssetManager : public IService {
   }
 
   template <typename T>
-  std::shared_ptr<T> Load(const std::string& name, const std::string& path) {
+  std::shared_ptr<T> Load(const char* name, const char* path) {
     std::lock_guard<std::mutex> lock(mutex_);
     auto& map = assets_[typeid(T).hash_code()];
-    auto it = map.find(name);
+    auto it = map.find(std::string(name));
     if (it != map.end()) {
       return std::static_pointer_cast<T>(it->second);
     }
@@ -58,7 +58,8 @@ class IAssetManager : public IService {
       throw std::runtime_error("No loader registered for this asset type");
     }
 
-    auto asset = std::static_pointer_cast<T>(loaderIt->second(path));
+    auto asset =
+        std::static_pointer_cast<T>(loaderIt->second(std::string(path)));
     map[name] = asset;
     return asset;
   }
@@ -68,6 +69,17 @@ class IAssetManager : public IService {
                                             const std::string& path) {
     return std::async(std::launch::async,
                       [=]() { return this->Load<T>(name, path); });
+  }
+
+  template <typename T>
+  std::shared_ptr<T> Get(const std::string& name) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto& map = assets_[typeid(T).hash_code()];
+    auto it = map.find(name);
+    if (it != map.end()) {
+      return std::static_pointer_cast<T>(it->second);
+    }
+    return nullptr;
   }
 
  private:

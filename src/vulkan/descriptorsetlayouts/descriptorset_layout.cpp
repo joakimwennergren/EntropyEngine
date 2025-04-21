@@ -9,7 +9,7 @@ DescriptorSetLayout::DescriptorSetLayout(
     const std::vector<VkDescriptorBindingFlags>& bindingFlags) {
 
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  logicalDevice_ = sl->getService<ILogicalDevice>();
+  logicalDevice_ = sl->GetService<ILogicalDevice>();
 
   VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsInfo = {};
   bindingFlagsInfo.sType =

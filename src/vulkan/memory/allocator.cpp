@@ -12,9 +12,9 @@ using namespace Entropy::Vulkan::Devices;
 
 Allocator::Allocator() {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  const auto vulkanInstance = sl->getService<IVulkanInstance>();
-  const auto physicalDevice = sl->getService<IPhysicalDevice>();
-  const auto logicalDevice = sl->getService<ILogicalDevice>();
+  const auto vulkanInstance = sl->GetService<IVulkanInstance>();
+  const auto physicalDevice = sl->GetService<IPhysicalDevice>();
+  const auto logicalDevice = sl->GetService<ILogicalDevice>();
 
   VmaVulkanFunctions vulkanFunctions = {};
   vulkanFunctions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;

@@ -6,7 +6,7 @@ using namespace Entropy::Vulkan::Devices;
 
 CommandPool::CommandPool() {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  logicalDevice_ = sl->getService<ILogicalDevice>();
+  logicalDevice_ = sl->GetService<ILogicalDevice>();
 
   VkCommandPoolCreateInfo poolInfo{};
   poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

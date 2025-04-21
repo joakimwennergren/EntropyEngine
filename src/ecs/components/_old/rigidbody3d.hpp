@@ -9,33 +9,28 @@
 
 #include <physics/3d/physics3d.hpp>
 
-namespace Entropy
-{
-    namespace Components
-    {
-        struct RigidBody3D
-        {
-        public:
-            void Initialize(flecs::entity entity)
-            {
-                // _entity = entity;
-                // auto physics3d = _serviceLocator->GetService<Physics::Physics3D>();
+namespace Entropy {
+namespace Components {
+struct RigidBody3D {
+ public:
+  void Initialize(flecs::entity entity) {
+    // _entity = entity;
+    // auto physics3d = _serviceLocator->GetService<Physics::Physics3D>();
 
-                // if (entity.has<Entropy::Components::BoxCollisionShape3D>())
-                // {
-                //     auto boxcollider = entity.get_ref<Entropy::Components::BoxCollisionShape3D>();
-                //     if (boxcollider.get() != nullptr)
-                //     {
-                //         body = new btRigidBody(btRigidBody::btRigidBodyConstructionInfo(btScalar(0.0f), boxcollider->box_motion_state, boxcollider->boxShape, btVector3(0, 0, 0)));
-                //         body->setUserPointer(&_entity);
-                //         physics3d->GetWorld()->addRigidBody(body);
-                //     }
-                // }
-            }
+    // if (entity.has<Entropy::Components::BoxCollisionShape3D>())
+    // {
+    //     auto boxcollider = entity.get_ref<Entropy::Components::BoxCollisionShape3D>();
+    //     if (boxcollider.get() != nullptr)
+    //     {
+    //         body = new btRigidBody(btRigidBody::btRigidBodyConstructionInfo(btScalar(0.0f), boxcollider->box_motion_state, boxcollider->boxShape, btVector3(0, 0, 0)));
+    //         body->setUserPointer(&_entity);
+    //         physics3d->GetWorld()->addRigidBody(body);
+    //     }
+    // }
+  }
 
-            void SetPosition()
-            {
-                /*
+  void SetPosition() {
+    /*
                 auto model = _entity.get<Entropy::Components::Model>()->model;
                 auto pos = _entity.get<Entropy::Components::Position>()->pos;
 
@@ -58,12 +53,12 @@ namespace Entropy
 
                 body->setMotionState(motionState);
                  */
-            }
+  }
 
-        private:
-            btTransform boxTransform;
-            btRigidBody *body;
-            flecs::entity _entity;
-        };
-    }
-}
+ private:
+  btTransform boxTransform;
+  btRigidBody* body;
+  flecs::entity _entity;
+};
+}  // namespace Components
+}  // namespace Entropy

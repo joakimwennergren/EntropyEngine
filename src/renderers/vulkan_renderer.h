@@ -35,41 +35,31 @@
 #include "vulkan/renderpasses/renderpass.h"
 #include "vulkan/swapchains/iswapchain.h"
 #include "vulkan/synchronization/synchronizer.h"
+#include "vulkan/textures/texture.h"
 
 namespace Entropy::Renderers {
 class VulkanRenderer final : public ServiceBase<IRenderer> {
  public:
   VulkanRenderer(uint32_t width, uint32_t height);
-  ~VulkanRenderer() override;
+
   void Render(uint32_t width, uint32_t height) override;
   void Resize(uint32_t width, uint32_t height) override;
-  uint32_t Frame(
-      Vulkan::Data::FrameData<Vulkan::Data::TwoDVertex, uint16_t,
-                              Vulkan::Data::InstanceDataTwoD>* frame) override;
-  Vulkan::Data::FrameData<Vulkan::Data::TwoDVertex, uint16_t,
-                          Vulkan::Data::InstanceDataTwoD>*
-  GetFrame() override;
-  void End() override;
 
  private:
   uint32_t currentFrame_{};
   uint32_t imageIndex_{};
 
-  Vulkan::Data::FrameData<Vulkan::Data::TwoDVertex, uint16_t,
-                          Vulkan::Data::InstanceDataTwoD>* frame_{};
-
   std::vector<std::shared_ptr<CommandBuffer>> commandBuffers_;
+
+  std::unique_ptr<Vulkan::Textures::Texture> blankTexture_;
   std::unique_ptr<UniformBuffer> UBO_;
-
   std::unique_ptr<VertexBuffer<Vulkan::Data::TwoDVertex>> vertexDataBuffer_;
-
   std::unique_ptr<VertexBuffer<Vulkan::Data::InstanceDataTwoD>>
       instanceDataBuffer_;
   std::unique_ptr<IndexBuffer<uint16_t>> indexDataBuffer_;
   std::unique_ptr<Vulkan::Synchronization::Synchronizer> synchronizer_;
 
   std::shared_ptr<Vulkan::RenderPasses::RenderPass> renderPass_;
-  std::shared_ptr<ECS::IWorld> world_;
   std::shared_ptr<Vulkan::Memory::IAllocator> allocator_;
   std::shared_ptr<Vulkan::Devices::ILogicalDevice> logicalDevice_;
   std::shared_ptr<Vulkan::SwapChains::ISwapChain> swapChain_;

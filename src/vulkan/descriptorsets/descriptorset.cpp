@@ -9,8 +9,8 @@ using namespace Entropy::Vulkan::DescriptorSetLayouts;
 DescriptorSet::DescriptorSet(
     const std::shared_ptr<DescriptorSetLayout> layout) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  logicalDevice_ = sl->getService<ILogicalDevice>();
-  descriptorPool_ = sl->getService<IDescriptorPool>();
+  logicalDevice_ = sl->GetService<ILogicalDevice>();
+  descriptorPool_ = sl->GetService<IDescriptorPool>();
 
   const std::array<VkDescriptorSetLayout, 1> layouts = {layout->Get()};
 

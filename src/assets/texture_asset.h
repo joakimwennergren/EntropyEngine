@@ -23,15 +23,30 @@
 
 #include <string>
 #include "iasset.h"
+#include "loggers/logger.h"
+#include "vulkan/textures/texture.h"
 
 namespace Entropy::Assets {
 class TextureAsset : public IAsset {
  public:
-  TextureAsset(const std::string& name) : name_(name) {}
+  TextureAsset() {
+    texture = std::make_shared<Entropy::Vulkan::Textures::Texture>();
+  }
+
+  void AddLayer(const std::string& path) {
+    paths_.emplace_back(path);
+    texture = std::make_shared<Entropy::Vulkan::Textures::Texture>(paths_, 2048,
+                                                                   2048);
+    index++;
+  }
+
   const std::string& GetName() const override { return name_; }
+  std::shared_ptr<Entropy::Vulkan::Textures::Texture> texture;
+  int32_t index = -1;
 
  private:
   std::string name_;
+  std::vector<std::string> paths_;
 };
 }  // namespace Entropy::Assets
 

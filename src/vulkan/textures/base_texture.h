@@ -50,7 +50,7 @@ class BaseTexture {
   ~BaseTexture();
 
   void TransitionImageLayout(VkImage image, VkImageLayout oldLayout,
-                             VkImageLayout newLayout);
+                             VkImageLayout newLayout, uint32_t layerCount);
 
   void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
                          uint32_t height);

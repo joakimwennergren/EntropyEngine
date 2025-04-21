@@ -15,10 +15,10 @@ template <class T>
 BasePipeline<T>::BasePipeline(const std::shared_ptr<RenderPass>& renderPass)
     : descriptorSet(nullptr) {
   const ServiceLocator* sl = ServiceLocator::GetInstance();
-  logicalDevice_ = sl->getService<ILogicalDevice>();
-  swapChain_ = sl->getService<ISwapChain>();
-  descriptorPool_ = sl->getService<IDescriptorPool>();
-  pipelineCache_ = sl->getService<Caches::IPipelineCache>();
+  logicalDevice_ = sl->GetService<ILogicalDevice>();
+  swapChain_ = sl->GetService<ISwapChain>();
+  descriptorPool_ = sl->GetService<IDescriptorPool>();
+  pipelineCache_ = sl->GetService<Caches::IPipelineCache>();
   renderPass_ = renderPass;
 }
 

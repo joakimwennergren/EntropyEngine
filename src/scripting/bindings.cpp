@@ -1,14 +1,11 @@
 #include "bindings.h"
-
-#include <vulkan/textures/textureatlas.h>
-
-#include <iostream>
-
+#include "assets/texture_asset.h"
 #include "ecs/components/asset.h"
 #include "ecs/iworld.h"
 #include "ecs/tags/2d.h"
 #include "loggers/logger.h"
 #include "servicelocators/servicelocator.h"
+#include "vulkan/textures/textureatlas.h"
 
 using namespace Entropy::ECS;
 using namespace Entropy::ECS::Tags;
@@ -16,20 +13,18 @@ using namespace Entropy::ECS::Components;
 using namespace Entropy::Assets;
 
 uint64_t Entity_Create() {
-  LOG_INFO(logger_, "Creating entity");
   const flecs::entity entity = ServiceLocator::GetInstance()
-                                   ->getService<Entropy::ECS::IWorld>()
+                                   ->GetService<Entropy::ECS::IWorld>()
                                    ->Get()
                                    ->entity();
   // @TODO TEMP!! remove this
-  entity.set<D2>({});
-
+  entity.add<Tags::D2>();
   return entity.id();
 }
 
 void Entity_Destroy(const uint64_t entity_id) {
   auto entity =
-      ServiceLocator::GetInstance()->getService<IWorld>()->Get()->entity(
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
           entity_id);
   if (entity.is_valid()) {
     entity.destruct();
@@ -38,7 +33,7 @@ void Entity_Destroy(const uint64_t entity_id) {
 
 void Entity_AddPosition(const uint64_t entity_id, Position pos) {
   auto entity =
-      ServiceLocator::GetInstance()->getService<IWorld>()->Get()->entity(
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
           entity_id);
   if (entity.is_valid()) {
     (void)entity.set<Position>({pos});
@@ -47,7 +42,7 @@ void Entity_AddPosition(const uint64_t entity_id, Position pos) {
 
 void Entity_AddDimension(const uint64_t entity_id, Dimension dim) {
   auto entity =
-      ServiceLocator::GetInstance()->getService<IWorld>()->Get()->entity(
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
           entity_id);
   if (entity.is_valid()) {
     (void)entity.set<Dimension>({dim});
@@ -56,10 +51,31 @@ void Entity_AddDimension(const uint64_t entity_id, Dimension dim) {
 
 void Entity_AddRotation(const uint64_t entity_id, Rotation rot) {
   auto entity =
-      ServiceLocator::GetInstance()->getService<IWorld>()->Get()->entity(
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
           entity_id);
   if (entity.is_valid()) {
     (void)entity.set<Rotation>({rot});
+  }
+}
+
+void Entity_AddColor(const uint64_t entity_id, Color col) {
+  auto entity =
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
+          entity_id);
+  if (entity.is_valid()) {
+    (void)entity.set<Color>({col});
+  }
+}
+
+void Entity_AddTexture(const uint64_t entity_id,
+                       Entropy::ECS::Components::TextureComponent* tex) {
+  const auto sl = ServiceLocator::GetInstance();
+  auto entity = sl->GetService<IWorld>()->Get()->entity(entity_id);
+  if (entity.is_valid()) {
+    auto texture_asset = sl->GetService<IAssetManager>()->Load<TextureAsset>(
+        tex->name, tex->path);
+    tex->index = texture_asset->index;
+    (void)entity.set<TextureComponent>(*tex);
   }
 }
 
@@ -85,7 +101,7 @@ IAssetManager::AssetHandle TextureAtlas_Create(MonoArray* paths) {
         mono_free(utf8);
     }
     const ServiceLocator* sl = ServiceLocator::GetInstance();
-    const auto asset_handles = sl->getService<IAssetManager>()->Load(stringPaths, IAssetManager::kLoadTextureAtlasSync);
+    const auto asset_handles = sl->GetService<IAssetManager>()->Load(stringPaths, IAssetManager::kLoadTextureAtlasSync);
     return asset_handles[0];
 }
 
