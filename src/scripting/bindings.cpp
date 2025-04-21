@@ -22,8 +22,7 @@ uint64_t Entity_Create() {
                                    ->Get()
                                    ->entity();
   // @TODO TEMP!! remove this
-  entity.set<D2>({});
-
+  entity.add<Tags::D2>();
   return entity.id();
 }
 
@@ -60,6 +59,15 @@ void Entity_AddRotation(const uint64_t entity_id, Rotation rot) {
           entity_id);
   if (entity.is_valid()) {
     (void)entity.set<Rotation>({rot});
+  }
+}
+
+void Entity_AddColor(const uint64_t entity_id, Color col) {
+  auto entity =
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
+          entity_id);
+  if (entity.is_valid()) {
+    (void)entity.set<Color>({col});
   }
 }
 

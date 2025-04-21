@@ -68,6 +68,19 @@ macro(fetch_dependencies platform)
     FetchContent_MakeAvailable(freetype)
 endmacro()
 
+macro(copy_shader name)
+    file(CREATE_LINK
+        "${CMAKE_CURRENT_SOURCE_DIR}/shaders/compiled/${name}/${name}_vert.spv"
+        "${CMAKE_BINARY_DIR}/${name}_vert.spv"
+        SYMBOLIC
+    )
+    file(CREATE_LINK
+        "${CMAKE_CURRENT_SOURCE_DIR}/shaders/compiled/${name}/${name}_frag.spv"
+        "${CMAKE_BINARY_DIR}/${name}_frag.spv"
+        SYMBOLIC
+    )
+endmacro()
+
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 # IOS
@@ -136,7 +149,6 @@ elseif(WIN32)
     )
     # Android
 elseif(ANDROID)
-    # @TODO: Add Android support
     message(FATAL_ERROR "-- Android build not supported yet")
 else()
     message(FATAL_ERROR "-- Platform not supported")
@@ -193,16 +205,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-file(CREATE_LINK
-    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_vert.spv"
-    "${CMAKE_BINARY_DIR}/2dshader_vert.spv"
-    SYMBOLIC
-)
-
-file(CREATE_LINK
-    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/compiled/2dshader/2dshader_frag.spv"
-    "${CMAKE_BINARY_DIR}/2dshader_frag.spv"
-    SYMBOLIC
-)
+copy_shader("2dshader")
 
 configure_file(config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h @ONLY)

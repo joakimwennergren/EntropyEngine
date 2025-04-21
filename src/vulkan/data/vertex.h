@@ -46,9 +46,9 @@ struct TwoDVertex {
     return bindingDescriptions;
   }
 
-  static std::array<VkVertexInputAttributeDescription, 7>
+  static std::array<VkVertexInputAttributeDescription, 8>
   getAttributeDescriptions() {
-    std::array<VkVertexInputAttributeDescription, 7> attributeDescriptions{};
+    std::array<VkVertexInputAttributeDescription, 8> attributeDescriptions{};
 
     attributeDescriptions[0].binding = 0;
     attributeDescriptions[0].location = 0;
@@ -84,6 +84,11 @@ struct TwoDVertex {
     attributeDescriptions[6].location = 6;
     attributeDescriptions[6].format = VK_FORMAT_R32G32B32A32_SFLOAT;
     attributeDescriptions[6].offset = sizeof(float) * 6;
+
+    attributeDescriptions[7].binding = 1;
+    attributeDescriptions[7].location = 7;
+    attributeDescriptions[7].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+    attributeDescriptions[7].offset = sizeof(float) * 10;
 
     return attributeDescriptions;
   }

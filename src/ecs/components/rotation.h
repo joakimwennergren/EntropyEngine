@@ -21,16 +21,13 @@
 #ifndef ENTROPY_ECS_COMPONENT_ROTATION_H
 #define ENTROPY_ECS_COMPONENT_ROTATION_H
 
-#include <glm/glm.hpp>
-
 namespace Entropy::ECS::Components {
-
 struct Rotation {
   float x{};
   float y{};
   float z{};
   float angle{};
 };
-}
+}  // namespace Entropy::ECS::Components
 
-#endif // ENTROPY_ECS_COMPONENT_ROTATION_H
+#endif  // ENTROPY_ECS_COMPONENT_ROTATION_H

@@ -18,7 +18,7 @@ ImageView::ImageView(VkImage image, const VkFormat format, const uint32_t flags,
   viewInfo.subresourceRange.baseMipLevel = 0;
   viewInfo.subresourceRange.levelCount = 1;
   viewInfo.subresourceRange.baseArrayLayer = 0;
-  viewInfo.subresourceRange.layerCount = 1;
+  viewInfo.subresourceRange.layerCount = layerCount;
 
   VK_CHECK(vkCreateImageView(logicalDevice_->Get(), &viewInfo, nullptr,
                              &imageView_));

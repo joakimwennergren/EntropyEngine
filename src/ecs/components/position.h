@@ -21,13 +21,11 @@
 #ifndef ENTROPY_ECS_COMPONENT_POSITION_H
 #define ENTROPY_ECS_COMPONENT_POSITION_H
 
-#include <glm/glm.hpp>
-
 namespace Entropy::ECS::Components {
 struct Position {
   float x{};
   float y{};
   float z{};
 };
-}
-#endif // ENTROPY_ECS_COMPONENT_POSITION_H
+}  // namespace Entropy::ECS::Components
+#endif  // ENTROPY_ECS_COMPONENT_POSITION_H

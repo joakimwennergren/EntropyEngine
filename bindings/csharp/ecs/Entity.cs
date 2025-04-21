@@ -22,4 +22,9 @@ public class Entity : IDisposable
     {
         NativeBindings.EntityDestroy(entityId_);
     }
+
+    public void AddComponent(IComponent component)
+    {
+        component.AddTo(entityId_);
+    }
 }

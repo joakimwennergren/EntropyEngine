@@ -18,20 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_ECS_COMPONENT_SCRIPT_H
-#define ENTROPY_ECS_COMPONENT_SCRIPT_H
-
-#include <mono/jit/jit.h>
-#include <string>
+#ifndef ENTROPY_ECS_COMPONENT_COLOR_H
+#define ENTROPY_ECS_COMPONENT_COLOR_H
 
 namespace Entropy::ECS::Components {
-
-struct Script {
-  std::string class_name;
-  MonoObject* object = nullptr;
-  MonoMethod* startMethod = nullptr;
-  MonoMethod* updateMethod = nullptr;
+struct Color {
+  float r{};
+  float g{};
+  float b{};
+  float a{};
 };
 }  // namespace Entropy::ECS::Components
 
-#endif  // ENTROPY_ECS_COMPONENT_SCRIPT_H
+#endif  // ENTROPY_ECS_COMPONENT_COLOR_H

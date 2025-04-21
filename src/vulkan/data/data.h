@@ -36,6 +36,7 @@ struct InstanceDataTwoD {
   float rot;
   float textureIndex;
   glm::vec4 atlasCoords;
+  glm::vec4 color;
 };
 
 }  // namespace Entropy::Vulkan::Data

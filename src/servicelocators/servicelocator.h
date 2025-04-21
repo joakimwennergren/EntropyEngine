@@ -26,6 +26,7 @@
 #include <mutex>
 #include <stdexcept>
 #include <typeindex>
+#include "loggers/logger.h"
 
 class IService {
  public:
@@ -73,6 +74,7 @@ class ServiceLocator {
     std::lock_guard lock(mutex);
     const auto typeIndex = std::type_index(typeid(T));
     if (services.find(typeIndex) == services.end()) {
+      LOG_ERROR(logger_, "Service not registered");
       throw std::runtime_error("Service not registered");
     }
     services.erase(typeIndex);

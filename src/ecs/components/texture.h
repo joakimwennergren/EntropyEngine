@@ -1,3 +1,6 @@
+// Copyright 2025 Joakim Wennergren
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -15,18 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <vector>
+#ifndef ENTROPY_ECS_COMPONENT_TEXTURE_H
+#define ENTROPY_ECS_COMPONENT_TEXTURE_H
 
-#ifndef ENTROPY_VULKAN_DATA_FRAME_H
-#define ENTROPY_VULKAN_DATA_FRAME_H
+#include <glm/glm.hpp>
 
-namespace Entropy::Vulkan::Data {
-template <typename V, typename I, typename D>
-struct FrameData {
-  std::vector<V> vertices;
-  std::vector<I> indices;
-  std::vector<D> data;
+namespace Entropy::ECS::Components {
+struct Texture {
+  float texture_index{};
+  glm::vec4 atlas_coords{0.0f};
+  bool is_atlas = false;
 };
-}  // namespace Entropy::Vulkan::Data
-
-#endif  // ENTROPY_VULKAN_DATA_FRAME_H
+}  // namespace Entropy::ECS::Components
+#endif  // ENTROPY_ECS_COMPONENT_TEXTURE_H

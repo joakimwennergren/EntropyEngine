@@ -70,6 +70,22 @@ class IAssetManager : public IService {
                       [=]() { return this->Load<T>(name, path); });
   }
 
+  template <typename T>
+  std::shared_ptr<T> Get(const std::string& name) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto typeHash = typeid(T).hash_code();
+    auto assetMapIt = assets_.find(typeHash);
+    if (assetMapIt == assets_.end())
+      return nullptr;
+
+    auto& map = assetMapIt->second;
+    auto it = map.find(name);
+    if (it == map.end())
+      return nullptr;
+
+    return std::static_pointer_cast<T>(it->second);
+  }
+
  private:
   std::unordered_map<size_t,
                      std::function<std::shared_ptr<IAsset>(const std::string&)>>

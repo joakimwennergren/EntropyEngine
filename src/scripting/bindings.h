@@ -23,6 +23,7 @@
 
 #include <flecs.h>
 #include "assets/iasset_manager.h"
+#include "ecs/components/color.h"
 #include "ecs/components/dimension.h"
 #include "ecs/components/position.h"
 #include "ecs/components/rotation.h"
@@ -39,6 +40,8 @@ void Entity_AddDimension(const uint64_t entity_id,
                          Entropy::ECS::Components::Dimension dim);
 void Entity_AddRotation(const uint64_t entity_id,
                         Entropy::ECS::Components::Rotation rot);
+void Entity_AddColor(const uint64_t entity_id,
+                     Entropy::ECS::Components::Color col);
 //void Entity_AddAsset(const uint64_t entity_id,
 //                     Entropy::Assets::IAssetManager::AssetHandle asset_handle);
 

@@ -31,15 +31,20 @@ void write_callback(void* context, void* data, int size) {
 }
 
 Texture::Texture(const int32_t width, const int32_t height) {
-  // Define the pixel data for the 1x1 transparent image (RGBA)
-  constexpr uint8_t image_data[4] = {255, 255, 255, 0};
+  std::vector<uint8_t> image_data(width * height * 4, 0);
+  for (int i = 0; i < width * height; ++i) {
+    image_data[i * 4 + 0] = 255;  // R
+    image_data[i * 4 + 1] = 255;  // G
+    image_data[i * 4 + 2] = 255;  // B
+    image_data[i * 4 + 3] = 255;  // A (opaque)
+  }
 
   // Allocate a stbi_uc* buffer to hold the PNG data (initially empty)
   stbi_uc* pixels = nullptr;
 
   // Create the PNG in memory (1x1 image, 3 channels, RGB color)
-  stbi_write_png_to_func(write_callback, &pixels, width, height, 4, image_data,
-                         0);
+  stbi_write_png_to_func(write_callback, &pixels, width, height, 4,
+                         image_data.data(), 0);
 
   const VkDeviceSize imageSize = width * height * 4;
   assert(pixels != nullptr);
@@ -126,6 +131,10 @@ void Texture::Create(const int width, const int height) {
   // @TODO why is this not the same as in getColorFormat?
   constexpr VkFormat colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
 
+  // Create a new command buffer and start one-time recording
+  commandBuffer_ =
+      std::make_unique<CommandBuffer>(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+
   CreateImage(width, height, colorFormat, VK_IMAGE_TILING_OPTIMAL,
               VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
               textureImage_);
@@ -154,23 +163,26 @@ Texture::Texture(std::vector<std::string>& paths, uint32_t targetWidth,
 
   for (uint32_t i = 0; i < paths.size(); ++i) {
     int texWidth, texHeight, texChannels;
-    uint8_t* pixbuf =
+    uint8_t* loaded =
         stbi_load(paths[i].c_str(), &texWidth, &texHeight, &texChannels, 4);
-    std::vector<uint8_t> buffer(targetWidth * targetHeight * 4, 0);
-
-    int copyWidth = std::min(texWidth, (int)targetWidth);
-    int copyHeight = std::min(texHeight, (int)targetHeight);
-
-    int offsetX = (int(targetWidth) - copyWidth) / 2;
-    int offsetY = (int(targetHeight) - copyHeight) / 2;
-
-    for (int y = 0; y < copyHeight; ++y) {
-      uint8_t* dstRow = &buffer[(y + offsetY) * targetWidth * 4 + offsetX * 4];
-      uint8_t* srcRow = &pixbuf[y * texWidth * 4];
-      memcpy(dstRow, srcRow, copyWidth * 4);
+    if (!loaded) {
+      // handle error
+      continue;
     }
 
-    stbi_image_free(pixbuf);
+    std::vector<uint8_t> buffer(targetWidth * targetHeight * 4);  // RGBA
+
+    bool success =
+        stbir_resize_uint8_linear(loaded, texWidth, texHeight, 0, buffer.data(),
+                                  targetWidth, targetHeight, 0, STBIR_RGBA);
+
+    stbi_image_free(loaded);
+
+    if (!success) {
+      // handle resize failure
+      continue;
+    }
+
     pixel_buffers.push_back(buffer);
   }
 
@@ -236,7 +248,6 @@ Texture::Texture(std::vector<std::string>& paths, uint32_t targetWidth,
   }
 
   commandBuffer_->RecordOnce();
-
   vkCmdCopyBufferToImage(commandBuffer_->Get(),
                          stagingBuffer_->GetVulkanBuffer(), textureImage_,
                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -250,8 +261,9 @@ Texture::Texture(std::vector<std::string>& paths, uint32_t targetWidth,
   submitInfo.pCommandBuffers = &cmdBuf;
   VK_CHECK(vkQueueSubmit(logicalDevice_->GetGraphicQueue(), 1, &submitInfo,
                          nullptr));
+
   // @todo remove this wait
-  vkDeviceWaitIdle(logicalDevice_->Get());
+  VK_CHECK(vkDeviceWaitIdle(logicalDevice_->Get()));
 
   TransitionImageLayout(textureImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,

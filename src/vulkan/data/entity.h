@@ -1,6 +1,3 @@
-// Copyright 2025 Joakim Wennergren
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -18,21 +15,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_ECS_COMPONENT_TWOD_QUAD_H
-#define ENTROPY_ECS_COMPONENT_TWOD_QUAD_H
+#include <vector>
 
-#include <glm/glm.hpp>
-#include "vulkan/data/vertex.h"
+#ifndef ENTROPY_VULKAN_DATA_FRAME_H
+#define ENTROPY_VULKAN_DATA_FRAME_H
 
-namespace Entropy::ECS::Components {
-struct TwoDQuad {
-  std::vector<Vulkan::Data::TwoDVertex> vertices = {
-      {{-1.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},
-      {{1.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
-      {{1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-      {{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f}}};
-  std::vector<uint32_t> indices = {0, 1, 2, 2, 3, 0};
+namespace Entropy::Vulkan::Data {
+template <typename V, typename I, typename D>
+struct EntityData {
+  std::vector<V> vertices;
+  std::vector<I> indices;
+  std::vector<D> data;
 };
-}  // namespace Entropy::ECS::Components
+}  // namespace Entropy::Vulkan::Data
 
-#endif  // ENTROPY_ECS_COMPONENT_TWOD_QUAD_H
+#endif  // ENTROPY_VULKAN_DATA_FRAME_H

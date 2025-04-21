@@ -16,11 +16,14 @@ internal static partial class NativeBindings
     [LibraryImport("Entropy", EntryPoint = "Entity_AddPosition")]
     public static partial void EntityAddPosition(ulong entityId, Position position);
 
-    //[LibraryImport("Entropy", EntryPoint = "Entity_AddDimension")]
-    //public static partial void EntityAddDimension(ulong entityId, Dimension dimension);
+    [LibraryImport("Entropy", EntryPoint = "Entity_AddDimension")]
+    public static partial void EntityAddDimension(ulong entityId, Dimension dimension);
 
-    //[LibraryImport("Entropy", EntryPoint = "Entity_AddRotation")]
-    //public static partial void EntityAddRotation(ulong entityId, Rotation rotation);
+    [LibraryImport("Entropy", EntryPoint = "Entity_AddRotation")]
+    public static partial void EntityAddRotation(ulong entityId, Rotation rotation);
+
+    [LibraryImport("Entropy", EntryPoint = "Entity_AddColor")]
+    public static partial void EntityAddColor(ulong entityId, Color color);
     
     /*
     [UnmanagedCallersOnly(EntryPoint = "Entity_AddAsset")]

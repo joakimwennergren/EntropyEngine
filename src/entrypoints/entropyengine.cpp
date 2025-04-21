@@ -89,7 +89,6 @@ void EntropyEngine::OnFramebufferResize(GLFWwindow* window, const int width,
   renderer->Resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
   (void)world->Get()->progress();
   renderer->Render(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
-  renderer->End();
 }
 EntropyEngine::EntropyEngine(const uint32_t width, const uint32_t height) {
   if (!glfwInit()) {
@@ -120,6 +119,7 @@ EntropyEngine::EntropyEngine(const uint32_t width, const uint32_t height) {
   sl->RegisterService<IRenderer>(
       std::make_shared<VulkanRenderer>(static_cast<uint32_t>(width * xscale),
                                        static_cast<uint32_t>(height * yscale)));
+  sl->RegisterService(std::make_shared<World>());
 }
 void EntropyEngine::Run() const {
   const auto sl = ServiceLocator::GetInstance();
@@ -132,7 +132,6 @@ void EntropyEngine::Run() const {
     (void)world->Get()->progress();
     renderer->Render(static_cast<uint32_t>(width),
                      static_cast<uint32_t>(height));
-    renderer->End();
     glfwPollEvents();
   }
 }
@@ -155,7 +154,6 @@ void EntropyEngine::RegisterServices() {
   sl->RegisterService(std::make_shared<DescriptorPool>());
   sl->RegisterService(std::make_shared<PipelineCache>());
   sl->RegisterService(std::make_shared<SwapChain>());
-  sl->RegisterService(std::make_shared<World>());
   sl->RegisterService(std::make_shared<AssetManager>());
   sl->RegisterService(std::make_shared<CameraManager>());
 }
@@ -163,9 +161,9 @@ void EntropyEngine::RegisterServices() {
 void EntropyEngine::UnRegisterServices() {
   ServiceLocator* sl = ServiceLocator::GetInstance();
   sl->UnregisterService<IRenderer>();
+  sl->UnregisterService<IWorld>();
   sl->UnregisterService<ICameraManager>();
   sl->UnregisterService<IAssetManager>();
-  sl->UnregisterService<IWorld>();
   sl->UnregisterService<ISwapChain>();
   sl->UnregisterService<IPipelineCache>();
   sl->UnregisterService<IDescriptorPool>();
