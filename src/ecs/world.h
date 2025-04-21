@@ -22,6 +22,8 @@
 #define ENTROPY_ECS_WORLD_H
 
 #include <flecs.h>
+#include "assets/iasset_manager.h"
+#include "assets/texture_asset.h"
 #include "iworld.h"
 #include "renderers/irenderer.h"
 #include "vulkan/data/entity.h"
@@ -35,6 +37,8 @@ class World final : public ServiceBase<IWorld> {
 
  private:
   std::shared_ptr<Renderers::IRenderer> renderer_;
+  std::shared_ptr<Vulkan::Devices::ILogicalDevice> logicalDevice_;
+  std::shared_ptr<Assets::IAssetManager> assetManager_;
   std::shared_ptr<flecs::world> gameWorld_;
 };
 }  // namespace Entropy::ECS

@@ -36,6 +36,7 @@ class IRenderer : public IService {
   Vulkan::Data::EntityData<Vulkan::Data::TwoDVertex, uint16_t,
                            Vulkan::Data::InstanceDataTwoD>
       entityData;
+  std::unique_ptr<Vulkan::Pipelines::TwoDPipeline> two_d_pipeline_;
 };
 
 }  // namespace Entropy::Renderers

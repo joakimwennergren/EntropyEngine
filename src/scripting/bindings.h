@@ -27,6 +27,7 @@
 #include "ecs/components/dimension.h"
 #include "ecs/components/position.h"
 #include "ecs/components/rotation.h"
+#include "ecs/components/texture.h"
 
 extern "C" {
 // Entity creation & destruction
@@ -42,6 +43,8 @@ void Entity_AddRotation(const uint64_t entity_id,
                         Entropy::ECS::Components::Rotation rot);
 void Entity_AddColor(const uint64_t entity_id,
                      Entropy::ECS::Components::Color col);
+void Entity_AddTexture(const uint64_t entity_id,
+                       Entropy::ECS::Components::TextureComponent* tex);
 //void Entity_AddAsset(const uint64_t entity_id,
 //                     Entropy::Assets::IAssetManager::AssetHandle asset_handle);
 

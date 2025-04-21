@@ -162,6 +162,13 @@ Texture::Texture(std::vector<std::string>& paths, uint32_t targetWidth,
   std::vector<VkBufferImageCopy> bufferCopyRegions;
 
   for (uint32_t i = 0; i < paths.size(); ++i) {
+
+    auto it = std::find(loaded_paths_.begin(), loaded_paths_.end(), paths[i]);
+    if (it != loaded_paths_.end()) {
+      LOG_WARNING(logger_, "Texture already loaded: {}", paths[i]);
+      continue;
+    }
+
     int texWidth, texHeight, texChannels;
     uint8_t* loaded =
         stbi_load(paths[i].c_str(), &texWidth, &texHeight, &texChannels, 4);
@@ -175,7 +182,7 @@ Texture::Texture(std::vector<std::string>& paths, uint32_t targetWidth,
     bool success =
         stbir_resize_uint8_linear(loaded, texWidth, texHeight, 0, buffer.data(),
                                   targetWidth, targetHeight, 0, STBIR_RGBA);
-
+    loaded_paths_.push_back(paths[i]);
     stbi_image_free(loaded);
 
     if (!success) {

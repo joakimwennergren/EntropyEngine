@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CsharpBindings")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0e476b2ea27e8476cbf9f05445cf29a8425db0ac")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cb12eed71da5aa1234f4d28d4455ab7b763c7c90")]
 [assembly: System.Reflection.AssemblyProductAttribute("CsharpBindings")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CsharpBindings")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

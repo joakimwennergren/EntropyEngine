@@ -1,4 +1,5 @@
 #include "entropyengine.h"
+#include <chrono>
 
 // Cameras
 #include "cameras/camera_manager.h"
@@ -121,17 +122,25 @@ EntropyEngine::EntropyEngine(const uint32_t width, const uint32_t height) {
                                        static_cast<uint32_t>(height * yscale)));
   sl->RegisterService(std::make_shared<World>());
 }
-void EntropyEngine::Run() const {
+void EntropyEngine::Run(
+    std::function<void(float, int32_t, int32_t)> onUpdateCb) {
+  using clock = std::chrono::high_resolution_clock;
   const auto sl = ServiceLocator::GetInstance();
   const auto renderer = sl->GetService<IRenderer>();
   const auto world = sl->GetService<IWorld>();
+  auto lastTime = clock::now();
   while (!glfwWindowShouldClose(window_)) {
+    auto currentTime = clock::now();
+    std::chrono::duration<float> delta = currentTime - lastTime;
+    lastTime = currentTime;
+    float deltaTime = delta.count();
     int width, height;
     glfwGetFramebufferSize(window_, &width, &height);
     // @TODO handle bool return
     (void)world->Get()->progress();
     renderer->Render(static_cast<uint32_t>(width),
                      static_cast<uint32_t>(height));
+    onUpdateCb(deltaTime, width, height);
     glfwPollEvents();
   }
 }

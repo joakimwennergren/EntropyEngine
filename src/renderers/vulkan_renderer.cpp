@@ -150,7 +150,7 @@ void VulkanRenderer::Render(const uint32_t width, const uint32_t height) {
                        VK_INDEX_TYPE_UINT16);
 
   vkCmdDrawIndexed(commandBuffers_[currentFrame_]->Get(),
-                   entityData.indices.size(), 2, 0, 0, 0);
+                   entityData.indices.size(), entityData.data.size(), 0, 0, 0);
 
   RenderPass::End(commandBuffers_[currentFrame_]);
   commandBuffers_[currentFrame_]->EndRecording();

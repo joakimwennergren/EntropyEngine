@@ -24,6 +24,11 @@ internal static partial class NativeBindings
 
     [LibraryImport("Entropy", EntryPoint = "Entity_AddColor")]
     public static partial void EntityAddColor(ulong entityId, Color color);
+
+    [LibraryImport("Entropy", EntryPoint = "Entity_AddTexture")]
+    public static partial void EntityAddTexture(ulong entityId, IntPtr texture);
+
+
     
     /*
     [UnmanagedCallersOnly(EntryPoint = "Entity_AddAsset")]

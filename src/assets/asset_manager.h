@@ -21,9 +21,25 @@
 #ifndef ENTROPY_ASSETS_ASSET_MANAGER_H
 #define ENTROPY_ASSETS_ASSET_MANAGER_H
 
+#include "assets/texture_asset.h"
 #include "iasset_manager.h"
 
 namespace Entropy::Assets {
-class AssetManager final : public ServiceBase<IAssetManager> {};
+class AssetManager final : public ServiceBase<IAssetManager> {
+ public:
+  AssetManager() {
+
+    texture_ = std::make_shared<TextureAsset>();
+
+    RegisterLoader<TextureAsset>(
+        [&](const std::string& path) -> std::shared_ptr<TextureAsset> {
+          texture_->AddLayer(path);
+          return texture_;
+        });
+  }
+
+ private:
+  std::shared_ptr<TextureAsset> texture_;
+};
 }  // namespace Entropy::Assets
 #endif  // ENTROPY_ASSETS_ASSET_MANAGER_H

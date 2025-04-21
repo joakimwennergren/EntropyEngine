@@ -58,7 +58,6 @@ class VulkanRenderer final : public ServiceBase<IRenderer> {
       instanceDataBuffer_;
   std::unique_ptr<IndexBuffer<uint16_t>> indexDataBuffer_;
   std::unique_ptr<Vulkan::Synchronization::Synchronizer> synchronizer_;
-  std::unique_ptr<Vulkan::Pipelines::TwoDPipeline> two_d_pipeline_;
 
   std::shared_ptr<Vulkan::RenderPasses::RenderPass> renderPass_;
   std::shared_ptr<Vulkan::Memory::IAllocator> allocator_;

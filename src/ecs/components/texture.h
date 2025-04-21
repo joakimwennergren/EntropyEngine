@@ -18,16 +18,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef ENTROPY_ECS_COMPONENT_TEXTURE_H
-#define ENTROPY_ECS_COMPONENT_TEXTURE_H
-
-#include <glm/glm.hpp>
+#ifndef ENTROPY_ECS_COMPONENT_TEXTURE_COMPONENT_H
+#define ENTROPY_ECS_COMPONENT_TEXTURE_COMPONENT_H
 
 namespace Entropy::ECS::Components {
-struct Texture {
-  float texture_index{};
-  glm::vec4 atlas_coords{0.0f};
-  bool is_atlas = false;
+struct TextureComponent {
+  struct AtlasCoord {
+    float x, y, z, w;
+  };
+  const char* name;
+  const char* path;
+  float index = -1.0f;
+  AtlasCoord coords;
+  bool isAtlas;
 };
 }  // namespace Entropy::ECS::Components
-#endif  // ENTROPY_ECS_COMPONENT_TEXTURE_H
+#endif  // ENTROPY_ECS_COMPONENT_TEXTURE_COMPONENT_H
