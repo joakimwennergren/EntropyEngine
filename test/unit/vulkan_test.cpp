@@ -15,7 +15,6 @@
 #include "assets/iasset_manager.h"
 
 // ECS
-#include "ecs/components/2d_quad.h"
 #include "ecs/components/dimension.h"
 #include "ecs/components/position.h"
 #include "ecs/iworld.h"
