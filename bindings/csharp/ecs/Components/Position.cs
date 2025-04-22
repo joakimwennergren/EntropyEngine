@@ -27,4 +27,9 @@ public struct Position : IComponent
     {
         NativeBindings.EntityAddPosition(entityId, this);
     }
+
+    public void Update(ulong entityId)
+    {
+        NativeBindings.EntityUpdatePosition(entityId, this);
+    }
 }

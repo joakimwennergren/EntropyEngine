@@ -16,6 +16,9 @@ internal static partial class NativeBindings
     [LibraryImport("Entropy", EntryPoint = "Entity_AddPosition")]
     public static partial void EntityAddPosition(ulong entityId, Position position);
 
+    [LibraryImport("Entropy", EntryPoint = "Entity_UpdatePosition")]
+    public static partial void EntityUpdatePosition(ulong entityId, Position position);
+
     [LibraryImport("Entropy", EntryPoint = "Entity_AddDimension")]
     public static partial void EntityAddDimension(ulong entityId, Dimension dimension);
 

@@ -29,10 +29,10 @@ World::World() {
     entityData.indices = {0, 1, 2, 2, 3, 0};
     entityData.data.emplace_back(InstanceDataTwoD{
         .pos = {0.0f, 0.0f},
-        .dim = {1.0f, 1.0f},
+        .dim = {0.0f, 0.0f},
         .rot = 0.0f,
         .texture_index = -1.0f,
-        .atlasCoords = {0.0f, 0.0f, 1.0f, 1.0f},
+        .atlasCoords = {0.0f, 0.0f, 0.0f, 0.0f},
         .color = {1.0f, 1.0f, 1.0f, 1.0f},
     });
   });

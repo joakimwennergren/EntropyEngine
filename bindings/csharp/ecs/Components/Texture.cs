@@ -53,4 +53,11 @@ public struct Texture : IComponent
         NativeBindings.EntityAddTexture(entityId, texPtr);
         //FreeNative(texPtr); //@TODO: Free this after the entity is destroyed
     }
+
+    public void Update(ulong entityId)
+    {
+        //IntPtr texPtr = ToNative();
+        //NativeBindings.EntityUpdateTexture(entityId, texPtr);
+        //FreeNative(texPtr); //@TODO: Free this after the entity is destroyed
+    }
 }

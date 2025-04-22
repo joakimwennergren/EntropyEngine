@@ -27,4 +27,9 @@ public struct Dimension : IComponent
     {
         NativeBindings.EntityAddDimension(entityId, this);
     }
+
+    public void Update(ulong entityId)
+    {
+        //NativeBindings.EntityUpdateDimension(entityId, this);
+    }
 }
