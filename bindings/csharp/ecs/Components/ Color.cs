@@ -22,4 +22,9 @@ public struct Color : IComponent
     {
         NativeBindings.EntityAddColor(entityId, this);
     }
+
+    public void Update(ulong entityId)
+    {
+        //NativeBindings.EntityUpdateColor(entityId, this);
+    }
 }

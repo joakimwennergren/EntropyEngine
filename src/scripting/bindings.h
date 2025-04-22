@@ -30,13 +30,15 @@
 #include "ecs/components/texture.h"
 
 extern "C" {
-// Entity creation & destruction
+
 uint64_t Entity_Create();
 void Entity_Destroy(const uint64_t entity_id);
 
-// Adding components
 void Entity_AddPosition(const uint64_t entity_id,
                         Entropy::ECS::Components::Position pos);
+void Entity_UpdatePosition(const uint64_t entity_id,
+                           Entropy::ECS::Components::Position pos);
+
 void Entity_AddDimension(const uint64_t entity_id,
                          Entropy::ECS::Components::Dimension dim);
 void Entity_AddRotation(const uint64_t entity_id,
@@ -45,12 +47,6 @@ void Entity_AddColor(const uint64_t entity_id,
                      Entropy::ECS::Components::Color col);
 void Entity_AddTexture(const uint64_t entity_id,
                        Entropy::ECS::Components::TextureComponent* tex);
-//void Entity_AddAsset(const uint64_t entity_id,
-//                     Entropy::Assets::IAssetManager::AssetHandle asset_handle);
-
-// TextureAtlas
-//Entropy::Assets::IAssetManager::AssetHandle TextureAtlas_Create(MonoArray* paths);
-//void TextureAtlas_AddAndRebuild(const Entropy::Assets::IAssetManager::AssetHandle& handle, MonoString *path);
 }
 
 /*

@@ -22,4 +22,9 @@ public struct Rotation : IComponent
     {
         NativeBindings.EntityAddRotation(entityId, this);
     }
+
+    public void Update(ulong entityId)
+    {
+        //NativeBindings.EntityUpdateRotation(entityId, this);
+    }
 }

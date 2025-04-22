@@ -40,6 +40,17 @@ void Entity_AddPosition(const uint64_t entity_id, Position pos) {
   }
 }
 
+void Entity_UpdatePosition(const uint64_t entity_id, Position pos) {
+  auto entity =
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
+          entity_id);
+  if (entity.is_valid()) {
+    entity.get_mut<Position>()->x = pos.x;
+    entity.get_mut<Position>()->y = pos.y;
+    entity.get_mut<Position>()->z = pos.z;
+  }
+}
+
 void Entity_AddDimension(const uint64_t entity_id, Dimension dim) {
   auto entity =
       ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(

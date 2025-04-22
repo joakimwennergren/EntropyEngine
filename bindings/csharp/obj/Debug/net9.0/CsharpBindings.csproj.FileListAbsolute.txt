@@ -1,11 +1,11 @@
+/Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/bin/Debug/net9.0/CsharpBindings.deps.json
+/Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/bin/Debug/net9.0/CsharpBindings.dll
+/Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/bin/Debug/net9.0/CsharpBindings.pdb
 /Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/obj/Debug/net9.0/CsharpBindings.GeneratedMSBuildEditorConfig.editorconfig
 /Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/obj/Debug/net9.0/CsharpBindings.AssemblyInfoInputs.cache
 /Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/obj/Debug/net9.0/CsharpBindings.AssemblyInfo.cs
 /Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/obj/Debug/net9.0/CsharpBindings.csproj.CoreCompileInputs.cache
 /Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/obj/Debug/net9.0/CsharpBindings.sourcelink.json
-/Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/bin/Debug/net9.0/CsharpBindings.deps.json
-/Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/bin/Debug/net9.0/CsharpBindings.dll
-/Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/bin/Debug/net9.0/CsharpBindings.pdb
 /Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/obj/Debug/net9.0/CsharpBindings.dll
 /Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/obj/Debug/net9.0/refint/CsharpBindings.dll
 /Users/joakimwennergren/Projects/Entropy-Engine/bindings/csharp/obj/Debug/net9.0/CsharpBindings.pdb
