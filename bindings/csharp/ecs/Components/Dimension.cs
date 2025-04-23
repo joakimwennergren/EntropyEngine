@@ -30,6 +30,6 @@ public struct Dimension : IComponent
 
     public void Update(ulong entityId)
     {
-        //NativeBindings.EntityUpdateDimension(entityId, this);
+        NativeBindings.EntityUpdateDimension(entityId, this);
     }
 }

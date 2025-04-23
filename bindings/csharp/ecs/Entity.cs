@@ -23,7 +23,7 @@ public class Entity : IDisposable
         NativeBindings.EntityDestroy(entityId_);
     }
 
-    public void UpdateComponent(IComponent component)
+    public void Update(IComponent component)
     {
         component.Update(entityId_);
     }

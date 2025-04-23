@@ -31,8 +31,8 @@ struct UBOData {
 };
 
 struct InstanceDataTwoD {
-  glm::vec2 pos;
-  glm::vec2 dim;
+  glm::vec3 pos;
+  glm::vec3 dim;
   float rot;
   float texture_index = -1.0f;
   glm::vec4 atlasCoords;

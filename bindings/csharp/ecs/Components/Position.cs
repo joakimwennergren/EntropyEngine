@@ -16,13 +16,6 @@ public struct Position : IComponent
         this.z = z;
     }
 
-    public Position(float x, float y)
-    {
-        this.x = x;
-        this.y = y;
-        this.z = 0;
-    }
-
     public void AddTo(ulong entityId)
     {
         NativeBindings.EntityAddPosition(entityId, this);

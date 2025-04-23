@@ -60,6 +60,18 @@ void Entity_AddDimension(const uint64_t entity_id, Dimension dim) {
   }
 }
 
+void Entity_UpdateDimension(const uint64_t entity_id,
+                            Entropy::ECS::Components::Dimension dim) {
+  auto entity =
+      ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(
+          entity_id);
+  if (entity.is_valid()) {
+    entity.get_mut<Dimension>()->x = dim.x;
+    entity.get_mut<Dimension>()->y = dim.y;
+    entity.get_mut<Dimension>()->z = dim.z;
+  }
+}
+
 void Entity_AddRotation(const uint64_t entity_id, Rotation rot) {
   auto entity =
       ServiceLocator::GetInstance()->GetService<IWorld>()->Get()->entity(

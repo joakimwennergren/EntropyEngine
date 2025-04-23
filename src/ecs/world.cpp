@@ -28,8 +28,8 @@ World::World() {
     entityData.vertices.push_back({{-1.0f, 1.0f, 0.0f}, {1.0f, 1.0f}});
     entityData.indices = {0, 1, 2, 2, 3, 0};
     entityData.data.emplace_back(InstanceDataTwoD{
-        .pos = {0.0f, 0.0f},
-        .dim = {0.0f, 0.0f},
+        .pos = {0.0f, 0.0f, 0.0f},
+        .dim = {0.0f, 0.0f, 0.0f},
         .rot = 0.0f,
         .texture_index = -1.0f,
         .atlasCoords = {0.0f, 0.0f, 0.0f, 0.0f},
@@ -37,9 +37,9 @@ World::World() {
     });
   });
 
-  gameWorld_->system<Tags::D2, Components::Position>("2D::Position")
-      .each([&](const Tags::D2 d2, const Components::Position& pos) {
-        static uint32_t index;
+  gameWorld_->system<Components::Position>("2D::Position")
+      .each([&](const Components::Position& pos) {
+        static uint32_t index = 0;
         renderer_->entityData.data[index].pos = glm::vec3{pos.x, pos.y, pos.z};
         index = (index + 1) % renderer_->entityData.data.size();
       });
@@ -47,7 +47,7 @@ World::World() {
   gameWorld_->system<Tags::D2, Components::Dimension>("2D::Dimension")
       .each([&](const Tags::D2 d2, const Components::Dimension& dim) {
         static uint32_t index;
-        renderer_->entityData.data[index].dim = glm::vec2{dim.x, dim.y};
+        renderer_->entityData.data[index].dim = glm::vec3{dim.x, dim.y, dim.z};
         index = (index + 1) % renderer_->entityData.data.size();
       });
 

@@ -26,12 +26,11 @@
 namespace Entropy::Vulkan::Textures {
 class Texture final : public BaseTexture {
  public:
-  explicit Texture() = default;
+  explicit Texture();
   explicit Texture(int32_t width, int32_t height);
   explicit Texture(const std::vector<uint8_t>& data, int width, int height);
   explicit Texture(const std::string& path);
-  explicit Texture(std::vector<std::string>& paths, uint32_t targetWidth,
-                   uint32_t targetHeight);
+  void AddLayer(std::string path, uint32_t targetWidth, uint32_t targetHeight);
   static std::vector<uint8_t> LoadAndResize(const std::string& path,
                                             uint32_t targetWidth,
                                             uint32_t targetHeight);
@@ -39,7 +38,7 @@ class Texture final : public BaseTexture {
  private:
   void Create(int width, int height);
   void CreateTextureSampler();
-  std::vector<std::string> loaded_paths_;
+  std::vector<std::vector<uint8_t>> pixel_buffers_;
 };
 }  // namespace Entropy::Vulkan::Textures
 

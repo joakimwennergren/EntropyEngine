@@ -57,7 +57,7 @@ class BaseTexture {
 
   void CreateImage(uint32_t width, uint32_t height, VkFormat format,
                    VkImageTiling tiling, VkImageUsageFlags usage,
-                   VkImage& image);
+                   VkImage& image, uint32_t layers);
 
   std::unique_ptr<CommandBuffer> commandBuffer_;
   std::unique_ptr<StagingBuffer> stagingBuffer_;

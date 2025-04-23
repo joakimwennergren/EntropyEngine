@@ -123,7 +123,8 @@ void BaseTexture::CopyBufferToImage(const VkBuffer buffer, const VkImage image,
 
 void BaseTexture::CreateImage(const uint32_t width, const uint32_t height,
                               const VkFormat format, const VkImageTiling tiling,
-                              const VkImageUsageFlags usage, VkImage& image) {
+                              const VkImageUsageFlags usage, VkImage& image,
+                              uint32_t layers) {
   // Assert on parameters
   assert(width != 0);
   assert(height != 0);
@@ -140,7 +141,7 @@ void BaseTexture::CreateImage(const uint32_t width, const uint32_t height,
   imageInfo.extent.height = height;
   imageInfo.extent.depth = 1;
   imageInfo.mipLevels = 1;
-  imageInfo.arrayLayers = 1;
+  imageInfo.arrayLayers = layers;
   imageInfo.format = format;
   imageInfo.tiling = tiling;
   imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;

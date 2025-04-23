@@ -35,8 +35,7 @@ class TextureAsset : public IAsset {
 
   void AddLayer(const std::string& path) {
     paths_.emplace_back(path);
-    texture = std::make_shared<Entropy::Vulkan::Textures::Texture>(paths_, 2048,
-                                                                   2048);
+    texture->AddLayer(path, 512, 512);
     index++;
   }
 

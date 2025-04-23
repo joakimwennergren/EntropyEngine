@@ -41,6 +41,9 @@ void Entity_UpdatePosition(const uint64_t entity_id,
 
 void Entity_AddDimension(const uint64_t entity_id,
                          Entropy::ECS::Components::Dimension dim);
+void Entity_UpdateDimension(const uint64_t entity_id,
+                            Entropy::ECS::Components::Dimension dim);
+
 void Entity_AddRotation(const uint64_t entity_id,
                         Entropy::ECS::Components::Rotation rot);
 void Entity_AddColor(const uint64_t entity_id,
